@@ -1,0 +1,989 @@
+画面を確認しました。技術記事の検索・管理システムですね。ソクラティックな対話を通じて、プロジェクト全体の要件を深掘りしていきましょう。
+
+  🎯 LinkLoom プロジェクト要件ブレインストーミング
+
+  画面から見える機能を整理しつつ、いくつか質問させてください。
+
+  📊 現状理解（スクリーンショットから）
+
+  確認できる機能:
+  - 記事カード表示（タイトル、説明、タグ、難易度、投稿日、ビュー数）
+  - プラットフォーム別表示（note, Qiita, Zenn）
+  - 難易度フィルタ（初級・中級・上級）
+  - タグフィルタ（Claude Code, Tips/技術立ち回り, OSS, MCP/外部連携）
+  - キーワード検索
+  - ブックマーク機能（カード上のアイコン）
+
+  🤔 深掘り質問
+
+  1. ユーザーと利用シーン
+
+  - このシステムを使うのは主に誰ですか？（個人利用？チーム利用？）
+  - どんな状況で使いますか？（学習中？実装中の参照？後で読む？）
+  - 複数ユーザーで使う予定はありますか？
+
+  2. 記事の管理方法
+
+  - 記事は手動で1つずつ登録する？それとも自動収集の機能が欲しい？
+    - 例: URLを貼ると自動でタイトル・説明を取得
+    - 例: RSSフィードから自動収集
+  - プラットフォームは note/Qiita/Zenn 以外にも対応したい？
+  - 記事の編集・削除機能は必要？
+
+  3. 検索・フィルタリングの詳細
+
+  - タグは自由入力？それとも事前定義されたタグから選択？
+  - 難易度は誰が設定する？（登録時に自分で判断？AIが自動判定？）
+  - 検索結果の並び替えは？（新着順、人気順、関連度順など）
+
+  4. データ保存
+
+  - データはどこに保存したい？
+    - ローカルストレージ（ブラウザ内）
+    - バックエンドサーバー + データベース
+    - クラウドストレージ（Firebase, Supabase等）
+  - 複数デバイスで同期したい？
+
+  5. 優先したい機能
+
+  画面に見える機能以外で、特に重要だと思うものはありますか？
+  - メモ・コメント機能（記事に対する自分のメモ）
+  - 学習進捗管理（読んだ/理解した/実践した）
+  - 関連記事の推薦
+  - エクスポート機能（Markdown, PDF等）
+
+  まずはこの5つの観点でお聞きしたいです。全部答えていただく必要はなく、特に重要だと思うものやすでに決まっていることから教えてください！
+
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+回答
+1. ユーザーと利用シーン
+個人開発なのでお金の面で最小コストになる構成にしたいです。
+まず自分だけが使う想定で、良い感じに育ったら同じ会社の開発メンバーも使えるようにしたいです。
+
+目についた気になった記事はとりあえず保存し、後で読むケースが多いです。
+一度読んだ記事でもまた実装時等で参照にしたいケースで探せるようにしたいです。
+
+2. 記事の管理方法
+手動登録も自動収集もしたいです。
+AI関連記事などをよく保存しています。
+でも自動だとあまり自分に役立たない記事も収集しそうな懸念もあります。
+note/Qiita/Zenn 以外もあります。はてぶや、ドクセルなどの技術スライド、海外記事など。
+記事の編集はタグの追加削除、詳細の編集、難易度の変更が必要です。
+不要になった記事は削除したりアーカイブしたりもしたいです、
+
+3. 検索・フィルタリングの詳細
+タグは事前定義されたタグから選択で、なければその場で新規登録できるようにします。
+難易度は初期登録時はAIが自動判定し、自分で変更可能にします。AIがお金かかるなら自分だけ設定するで良いです。
+ソート順は登録順だけで良いです。
+
+4. データ保存。
+クラウドストレージにしたいです。
+Firebaseは使ったことあります。
+Supabaseは使ったことないですが、興味あります。お金がそんなにかからないなら勉強がてら使ってみたいです。
+複数デバイスで同期可能にします。
+
+5. 画面に見える機能以外で、特に重要だと思うものはありますか？
+メモ・コメント機能欲しいです。
+学習進捗管理（読んだ/理解した/実践した）も欲しいです。
+関連記事の推薦は不要です。
+エクスポート機能は不要です。
+
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+
+⏺ 📝 LinkLoom 要件整理
+
+  ✅ 確定事項
+
+  プロジェクト特性
+
+  - ユーザー: 個人 → 将来的にチーム拡張
+  - コスト: 最小コスト構成（個人開発）
+  - 利用シーン:
+    - 気になった記事を保存（後で読む）
+    - 実装時の参照用に検索
+
+  コア機能
+
+  1. 記事管理
+    - ✅ 手動登録（URL入力）
+    - ✅ 自動収集（RSS等、ただし質の担保が課題）
+    - ✅ 編集（タグ、難易度、詳細）
+    - ✅ 削除/アーカイブ
+  2. メタデータ
+    - プラットフォーム: note, Qiita, Zenn, はてぶ, ドクセル, 海外記事など
+    - タグ: 事前定義 + その場で新規登録可能
+    - 難易度: AI自動判定（コスト次第） or 手動設定
+  3. 検索・フィルタリング
+    - キーワード検索
+    - タグフィルタ（複数選択）
+    - 難易度フィルタ
+    - ソート: 登録順のみ
+  4. 追加機能
+    - ✅ メモ・コメント機能
+    - ✅ 学習進捗管理（読んだ/理解した/実践した）
+    - ❌ 関連記事推薦
+    - ❌ エクスポート
+  5. データ保存
+    - クラウドストレージ（Firebase or Supabase）
+    - 複数デバイス同期
+
+  ---
+  🤔 追加の深掘り質問
+
+  A. 自動収集の詳細
+
+  自動収集は「質の担保が課題」とのことですが：
+  - オプション1: RSS登録 + 手動で「保存」ボタンを押す（半自動）
+  - オプション2: キーワード設定で自動収集 + 後で不要なものを削除
+  - オプション3: 最初は手動登録のみで、将来的に自動収集追加
+
+  どのアプローチが良さそうですか？個人的には**オプション1（半自動）**が質とコストのバランスが良いと思います。
+
+  B. データベース選択（Supabase vs Firebase）
+
+  | 項目       | Supabase                   | Firebase                  |
+  |----------|----------------------------|---------------------------|
+  | コスト      | 無料枠: 500MB DB, 1GB ストレージ   | 無料枠: 1GB ストレージ, 50K読み取り/日 |
+  | 学習コスト    | PostgreSQL（SQL知識が活かせる）     | NoSQL（慣れている）              |
+  | 認証       | 組み込み認証（メール、Google等）        | Firebase Auth             |
+  | リアルタイム同期 | あり（Realtime Subscriptions） | あり（Realtime Database）     |
+  | 興味度      | ⭐ 勉強したい                    | ⭐ 使用経験あり                  |
+
+  質問:
+  - 将来チーム利用する場合、ユーザー数は何人くらいを想定？（5人？10人？50人？）
+  - SQLとNoSQL、どちらが扱いやすいと感じますか？
+
+  C. MVP（最小実装）の範囲
+
+  初期リリースで絶対に必要な機能と、後回しにできる機能を分けましょう：
+
+  Phase 1（MVP）候補:
+  - ✅ 手動で記事登録（URL, タイトル, 説明, タグ, 難易度）
+  - ✅ 記事一覧表示（カード形式）
+  - ✅ キーワード検索
+  - ✅ タグ・難易度フィルタ
+  - ✅ 基本的なCRUD（作成・読取・更新・削除）
+  - ✅ Supabase/Firebase認証とデータ同期
+
+  Phase 2（機能拡張）候補:
+  - メモ・コメント機能
+  - 学習進捗管理
+  - アーカイブ機能
+  - 自動収集（RSS）
+  - AI難易度判定
+
+  Phase 3（チーム対応）候補:
+  - マルチユーザー対応
+  - 記事の共有機能
+  - チーム内での記事推薦
+
+  この分け方で良いですか？それとも、Phase 1にメモや進捗管理も含めたいですか？
+
+  D. フロントエンド技術
+
+  スクリーンショットのUIを見る限り、モダンなWebアプリですが：
+  - フレームワーク希望: React? Vue? Next.js? Nuxt?
+  - UIライブラリ: 既に使い慣れたものはありますか？（Tailwind CSS, Material UI, shadcn/ui等）
+  - TypeScript: 使いたいですか？
+
+  ---
+  次のステップ
+
+  上記の質問（A, B, C, D）に答えていただければ、以下のドキュメントを作成できます：
+
+  1. Steeringドキュメント (/kiro:steering)
+    - product.md: プロダクトビジョンと要件
+    - tech.md: 技術スタック決定
+    - structure.md: プロジェクト構造
+  2. フェーズ別機能分割
+    - Phase 1〜3の詳細仕様
+  3. 最初のspec作成
+    - /kiro:spec-init で具体的な機能から着手
+
+  全部答えなくても大丈夫です。特に決めたいことや相談したいことから教えてください！
+
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+回答
+A. 自動収集の詳細
+オプション1か3で検討しています。
+今はgoogleのおすすめ記事一覧で気になったものをチームやツイッターに共有したり、ブックマークしたりしています。
+これを自動化できたら便利だと思います。
+実装が難しければ最初は手動だけでも良いと思います。
+
+B. データベース選択（Supabase vs Firebase）
+- 将来チーム利用する場合は10人以下です。
+- SQLとNoSQL、どちらが扱いやすいかはデータ次第かと思います。まあどちらでも扱えます。
+
+C. MVP（最小実装）の範囲
+その案で良いです。
+
+D. フロントエンド技術
+React、Tailwind CSS、TypeScript
+
+でお願いします。
+
+その他の技術選定は不要でしょうか？
+
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+
+⏺ ありがとうございます！では、追加の技術選定をいくつか確認させてください。
+
+  🛠 追加の技術選定
+
+  1. バックエンド構成
+
+  選択肢A: Supabase（フルスタック）
+  - フロントエンド: React + TypeScript + Tailwind CSS
+  - バックエンド: Supabase（PostgreSQL + Auth + Storage + Realtime）
+  - ホスティング: Vercel（フロント）+ Supabase（バックエンド）
+  - メリット: バックエンドコード不要、すべてクライアントSDKで完結
+  - デメリット: Supabaseに強く依存
+
+  選択肢B: Next.js + Supabase
+  - フロントエンド: Next.js（App Router） + TypeScript + Tailwind CSS
+  - バックエンド: Next.js API Routes + Supabase
+  - ホスティング: Vercel
+  - メリット: SSR/ISR可能、API経由でバックエンドロジック管理
+  - デメリット: 少し複雑
+
+  選択肢C: Firebase（フルスタック）
+  - フロントエンド: React + TypeScript + Tailwind CSS
+  - バックエンド: Firebase（Firestore + Auth + Storage）
+  - ホスティング: Vercel or Firebase Hosting
+  - メリット: 使用経験あり、信頼性高い
+  - デメリット: Supabaseの学習機会を逃す
+
+  推奨: 個人的には**選択肢B（Next.js + Supabase）**をおすすめします。理由：
+  - Next.jsはReactのフレームワークで学習コスト低め
+  - API Routesでバックエンドロジック（AI難易度判定、自動収集等）を管理しやすい
+  - Supabaseの学習にもなる
+  - Vercel無料枠でホスティング可能
+
+  どれが良さそうですか？
+
+  ---
+  2. 状態管理
+
+  Reactアプリで複雑な状態（フィルタ、検索、記事リスト等）を管理する必要があります：
+
+  - なし（useState/useContext）: シンプルなアプリなら十分
+  - Zustand: 軽量でシンプル（推奨）
+  - Redux Toolkit: 複雑な状態管理向け（オーバースペック？）
+  - TanStack Query（React Query）: サーバー状態管理に特化（Supabaseと相性良い）
+
+  推奨: TanStack Query または Zustand + TanStack Query
+  - TanStack QueryでSupabaseのデータフェッチ、キャッシュ管理
+  - クライアント状態（フィルタ等）はZustandで管理
+
+  状態管理は必要ですか？それとも後で考えますか？
+
+  ---
+  3. ルーティング
+
+  - React Router: Reactのみで開発する場合
+  - Next.js App Router: Next.jsを採用する場合（標準）
+
+  これは選択肢A（React）ならReact Router、選択肢B（Next.js）ならApp Routerで自動決定です。
+
+  ---
+  4. 認証方式
+
+  Supabase/Firebaseどちらでも以下が可能：
+
+  - メール/パスワード: 基本
+  - Googleログイン: 簡単
+  - マジックリンク（パスワードレス）: ユーザビリティ◎
+
+  Phase 1では何を実装しますか？
+  - 推奨: Googleログイン（実装簡単 + UX良い）
+
+  ---
+  5. UIコンポーネントライブラリ
+
+  Tailwind CSSは確定ですが、コンポーネントライブラリも使いますか？
+
+  - なし（自作）: カスタマイズ性◎、時間かかる
+  - shadcn/ui: Tailwind CSS + Radix UI、コピペで使える（推奨）
+  - Headless UI: Tailwind公式、アクセシビリティ◎
+  - DaisyUI: Tailwind CSS プラグイン、簡単
+
+  推奨: shadcn/ui（モダン、カスタマイズ性高い、TypeScript対応）
+
+  ---
+  6. 開発ツール
+
+  - Linter/Formatter: ESLint + Prettier（標準）
+  - テスト: Phase 1では不要？後で Vitest + Testing Library
+  - CI/CD: Vercelの自動デプロイで十分
+  - バージョン管理: Git + GitHub
+
+  ---
+  📋 技術スタック提案（まとめ）
+
+  以下で進めて良いですか？
+
+  Phase 1（MVP）技術スタック
+
+  Frontend:
+    Framework: Next.js 14+ (App Router)
+    Language: TypeScript
+    Styling: Tailwind CSS
+    UI Components: shadcn/ui
+    State Management: TanStack Query (+ Zustand if needed)
+
+  Backend:
+    BaaS: Supabase
+    Database: PostgreSQL (Supabase)
+    Auth: Supabase Auth (Googleログイン)
+    Storage: Supabase Storage (記事サムネイル等)
+
+  Infrastructure:
+    Hosting: Vercel (フロントエンド + API Routes)
+    Database: Supabase (マネージドPostgreSQL)
+
+  Development:
+    Package Manager: npm (or pnpm/yarn)
+    Linter: ESLint
+    Formatter: Prettier
+    Git: GitHub
+
+  コスト見積もり（月額）
+
+  - Vercel: $0（Hobbyプラン）
+  - Supabase: $0（Freeプラン、500MB DBまで）
+  - 合計: $0/月（無料枠内）
+
+  この構成で良ければ、次はSteeringドキュメント作成と機能分割に進みます。
+
+  変更したい点や質問があれば教えてください！
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+回答＆質問
+
+1. バックエンド構成
+Next.jsを使わないSupabaseのみの場合、AI難易度判定、自動収集等の処理はどこで行いますか？
+
+2. 状態管理
+Zustand + TanStack Queryにします。
+
+4. 認証方式
+Googleログインにします。
+
+5. UIコンポーネントライブラリ
+shadcn/uiにします。 
+
+6. 開発ツール
+テスト
+Phase 1からUIは欲しいです。（Vitest）
+Testing Libraryはいらないです。
+はやめの段階でPlaywrightでE2Eもやりたいです。
+あとは提案通りで。
+ちなみにyarnのv1でやりたいです。
+
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+
+⏺ 良い質問です！バックエンド構成について詳しく説明しますね。
+
+  💡 バックエンド構成の選択肢
+
+  質問1への回答: Supabaseのみの場合の処理場所
+
+  選択肢A: React + Supabase（Next.jsなし）
+
+  AI難易度判定や自動収集は以下で実装します：
+
+  1. Supabase Edge Functions（推奨）
+
+  // Supabase Edge Functions（Deno runtime）
+  // デプロイ先: Supabaseのサーバー
+  // コスト: 無料枠 500K実行/月
+
+  // supabase/functions/analyze-difficulty/index.ts
+  import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+
+  serve(async (req) => {
+    const { title, description } = await req.json()
+
+    // OpenAI APIで難易度判定
+    const difficulty = await analyzeWithAI(title, description)
+
+    return new Response(JSON.stringify({ difficulty }))
+  })
+
+  メリット:
+  - バックエンドコード不要（Supabase内で完結）
+  - TypeScript/Deno環境
+  - 無料枠が大きい
+
+  デメリット:
+  - Deno環境（Node.jsと微妙に違う）
+  - デバッグが少し面倒
+
+  2. Supabase Database Functions（PostgreSQL）
+
+  -- PostgreSQL関数として実装
+  -- 簡単なロジックならこれで十分
+
+  CREATE OR REPLACE FUNCTION auto_set_defaults()
+  RETURNS TRIGGER AS $$
+  BEGIN
+    NEW.created_at = NOW();
+    NEW.view_count = 0;
+    RETURN NEW;
+  END;
+  $$ LANGUAGE plpgsql;
+
+  メリット:
+  - データベース側で完結
+  - 高速
+
+  デメリット:
+  - 複雑なロジック（AI呼び出し等）は難しい
+
+  3. クライアント側（React）
+
+  // フロントエンドで実行
+  const handleSubmit = async () => {
+    // AI APIを直接呼び出し（APIキーをクライアント側で持つのは危険）
+    const difficulty = await fetch('https://api.openai.com/...', {
+      headers: { 'Authorization': `Bearer ${OPENAI_API_KEY}` } // ❌セキュリティリスク
+    })
+  }
+
+  デメリット:
+  - ❌ APIキーがクライアントに露出（セキュリティリスク大）
+  - ❌ ユーザーのネットワーク環境に依存
+
+  ---
+  選択肢B: Next.js + Supabase
+
+  Next.js API Routesで実装：
+
+  // app/api/analyze-difficulty/route.ts
+  import { NextResponse } from 'next/server'
+
+  export async function POST(request: Request) {
+    const { title, description } = await request.json()
+
+    // OpenAI APIで難易度判定（サーバー側で安全に実行）
+    const difficulty = await analyzeWithAI(title, description)
+
+    return NextResponse.json({ difficulty })
+  }
+
+  メリット:
+  - Node.js環境（慣れている）
+  - デバッグしやすい
+  - サーバー側で安全にAPIキー管理
+
+  デメリット:
+  - Next.jsの学習コストが少しかかる
+
+  ---
+  🎯 推奨構成
+
+  テスト要件（Vitest + Playwright）を考慮すると、Next.js + Supabaseを推奨します。
+
+  理由：
+
+  1. AI難易度判定: Next.js API Routesで安全に実装
+  2. 自動収集（RSS）: Next.js API Routes or Supabase Edge Functions
+  3. Vitest: Next.jsと相性良い（Viteベース）
+  4. Playwright: Next.jsの開発サーバーと統合しやすい
+  5. デバッグ: Node.js環境で慣れたツールが使える
+
+  ---
+  📋 最終技術スタック提案
+
+  Frontend:
+    Framework: Next.js 14+ (App Router)
+    Language: TypeScript
+    Styling: Tailwind CSS
+    UI Components: shadcn/ui
+    State Management: Zustand + TanStack Query
+
+  Backend:
+    Framework: Next.js API Routes
+    BaaS: Supabase
+    Database: PostgreSQL (Supabase)
+    Auth: Supabase Auth (Googleログイン)
+    Storage: Supabase Storage
+    AI Integration: OpenAI API (via Next.js API Routes)
+
+  Infrastructure:
+    Hosting: Vercel
+    Database: Supabase
+
+  Development:
+    Package Manager: Yarn v1
+    Testing (Unit): Vitest
+    Testing (E2E): Playwright
+    Linter: ESLint
+    Formatter: Prettier
+    Git: GitHub
+
+  External APIs (Phase 2):
+    RSS Parsing: rss-parser (Node.js)
+    AI Difficulty: OpenAI API or Anthropic Claude API
+
+  Phase別のテスト戦略
+
+  Phase 1 (MVP):
+    - Vitest: コンポーネント単体テスト
+    - Playwright: 基本的なE2Eフロー（ログイン、記事登録、検索）
+
+  Phase 2 (機能拡張):
+    - Playwright: 追加機能のE2E（メモ、進捗管理、RSS収集）
+    - Vitest: ユーティリティ関数、フックのテスト
+
+  ---
+  この構成で良いですか？
+
+  もし「Next.jsを学習したくない、Reactだけが良い」という場合は、React + Supabase Edge Functionsでも実装可能ですが、テストやデバッグの面ではNext.jsの方が開発体験が良いです。
+
+  どちらで進めますか？
+
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+回答＆質問
+
+それではNext.js + Supabaseで進めます。
+
+ちなみに、yarn v1でやりたい と言いましたが、
+できればモノレポでやりたいと思っております。
+pnpm、yarn, npm どれが適しているでしょうか?
+
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+⏺ 良い質問です！モノレポ構成を考えるなら、パッケージマネージャーの選択は重要ですね。
+
+  📦 モノレポ向けパッケージマネージャー比較
+
+  モノレポ構成の想定
+
+  LinkLoomでモノレポにする場合、以下の構成が考えられます：
+
+  linkloom/
+  ├── apps/
+  │   ├── web/          # Next.js フロントエンド
+  │   └── docs/         # (将来) ドキュメントサイト
+  ├── packages/
+  │   ├── ui/           # 共通UIコンポーネント
+  │   ├── types/        # 共通型定義
+  │   ├── config/       # 共通設定（eslint, tsconfig等）
+  │   └── utils/        # 共通ユーティリティ関数
+  └── package.json
+
+  ---
+  パッケージマネージャー比較
+
+  1. pnpm ⭐ 推奨
+
+  | 項目     | 評価    | 詳細                             |
+  |--------|-------|--------------------------------|
+  | モノレポ対応 | ⭐⭐⭐⭐⭐ | Workspaces機能が標準、優れたシンボリックリンク   |
+  | 速度     | ⭐⭐⭐⭐⭐ | 最速（ハードリンク使用）                   |
+  | ディスク効率 | ⭐⭐⭐⭐⭐ | 依存関係を1箇所に保存、重複なし               |
+  | エコシステム | ⭐⭐⭐⭐  | Next.js, Turborepo, Vitestと相性◎ |
+  | 学習コスト  | ⭐⭐⭐⭐  | npm/yarnと似た使い心地                |
+
+  モノレポ設定例:
+  # pnpm-workspace.yaml
+  packages:
+    - 'apps/*'
+    - 'packages/*'
+
+  メリット:
+  - 最も効率的なモノレポ管理
+  - Turborepo（モノレポビルドツール）との相性◎
+  - Next.js公式も推奨
+  - 依存関係の厳密な管理（幽霊依存を防ぐ）
+
+  デメリット:
+  - 新しいツール（学習が必要）
+  - 一部のレガシーパッケージで問題が出る可能性
+
+  ---
+  2. Yarn v1 ❌ 非推奨（モノレポには不向き）
+
+  | 項目     | 評価    | 詳細                  |
+  |--------|-------|---------------------|
+  | モノレポ対応 | ⭐⭐    | Workspaces機能はあるが基本的 |
+  | 速度     | ⭐⭐⭐   | 普通                  |
+  | ディスク効率 | ⭐⭐    | 各プロジェクトで重複          |
+  | エコシステム | ⭐⭐⭐   | 広く使われている            |
+  | 学習コスト  | ⭐⭐⭐⭐⭐ | 使い慣れている             |
+
+  デメリット:
+  - Yarn v1はメンテナンス終了（Yarn v2+への移行推奨）
+  - モノレポでの依存関係解決が弱い
+  - pnpmに比べて遅い
+
+  ---
+  3. Yarn v3/v4 (Berry) ⚠️ 要検討
+
+  | 項目     | 評価    | 詳細                     |
+  |--------|-------|------------------------|
+  | モノレポ対応 | ⭐⭐⭐⭐⭐ | 強力なWorkspaces機能        |
+  | 速度     | ⭐⭐⭐⭐  | 速い（Plug'n'Play）        |
+  | ディスク効率 | ⭐⭐⭐⭐  | Plug'n'Playで効率化        |
+  | エコシステム | ⭐⭐⭐   | まだエコシステムが追いついていない部分あり  |
+  | 学習コスト  | ⭐⭐    | v1から大きく変わった（.yarnrcなど） |
+
+  メリット:
+  - モノレポ対応が強力
+  - Plug'n'Play（node_modulesなし）
+
+  デメリット:
+  - v1から設定が大きく変わる（.yarnrc.ymlなど）
+  - エディタやツールとの互換性問題がある
+  - 学習コストが高い
+
+  ---
+  4. npm ⭐⭐⭐ 選択肢として有り
+
+  | 項目     | 評価    | 詳細                     |
+  |--------|-------|------------------------|
+  | モノレポ対応 | ⭐⭐⭐⭐  | Workspaces機能あり（npm 7+） |
+  | 速度     | ⭐⭐⭐   | 普通                     |
+  | ディスク効率 | ⭐⭐⭐   | 普通                     |
+  | エコシステム | ⭐⭐⭐⭐⭐ | 標準、最も広く使われている          |
+  | 学習コスト  | ⭐⭐⭐⭐⭐ | 標準ツール                  |
+
+  メリット:
+  - Node.js標準、追加インストール不要
+  - Workspaces機能（npm 7+）でモノレポ対応
+  - 安定している
+
+  デメリット:
+  - pnpmより遅い
+  - ディスク効率が劣る
+
+  ---
+  🎯 推奨: pnpm + Turborepo
+
+  モノレポで開発するなら、以下の構成が最適です：
+
+  Package Manager: pnpm
+  Monorepo Tool: Turborepo (ビルド・タスクの並列実行)
+  Structure:
+    - apps/web (Next.js)
+    - packages/ui (shadcn/ui + 共通コンポーネント)
+    - packages/types (共通型定義)
+    - packages/config (ESLint, TypeScript設定)
+
+  メリット:
+
+  1. 速度: pnpm + Turborepoの組み合わせで最速ビルド
+  2. 効率: 依存関係の重複なし
+  3. Next.js公式推奨: Vercel（Next.js開発元）が推奨する構成
+  4. 学習リソース: Turborepoの公式ドキュメントが充実
+
+  設定例:
+
+  pnpm-workspace.yaml
+  packages:
+    - 'apps/*'
+    - 'packages/*'
+
+  turbo.json
+  {
+    "$schema": "https://turbo.build/schema.json",
+    "pipeline": {
+      "build": {
+        "dependsOn": ["^build"],
+        "outputs": [".next/**", "dist/**"]
+      },
+      "dev": {
+        "cache": false
+      },
+      "test": {
+        "dependsOn": ["^build"]
+      }
+    }
+  }
+
+  ---
+  代替案: npm Workspaces
+
+  「新しいツールを学びたくない」場合は、npm Workspacesでも十分です：
+
+  // package.json (root)
+  {
+    "name": "linkloom",
+    "workspaces": [
+      "apps/*",
+      "packages/*"
+    ]
+  }
+
+  メリット:
+  - 標準ツール、追加インストール不要
+  - シンプル
+
+  デメリット:
+  - pnpmより遅い
+  - Turborepoのような並列実行最適化なし
+
+  ---
+  質問
+
+  1. pnpmを試してみたいですか？（推奨）
+    - → pnpm + Turborepoで進める
+  2. 慣れたツールが良いですか？
+    - → npm Workspacesで進める
+  3. モノレポは必須ですか？
+    - 個人開発でPhase 1（MVP）のみなら、モノレポは不要かもしれません
+    - 最初はシンプルな単一Next.jsプロジェクトで始めて、後でモノレポに移行も可能
+
+  どれが良さそうですか？
+
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+回答
+
+フェーズ1では不要であればモノレポは最初はなくても良いです。
+モノレポをやるなら。pnpm + Turborepo にします。
+
+こちらで全てそろいましたでしょうか。
+他に検討すべきことがなければ、次のフェーズに進みたいです。
+
+
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+steering出力ファイルを見て気になったところがあるので修正お願いします。
+
+- 仕様
+ビュー数不要です
+難易度タグ、難易度フィルタはやっぱりいらないです。
+
+- Nextのバージョン
+Next.js 14+
+https://nextjs.org/blog
+今15が出ていて14は古いと思いますが、なぜ14なのでしょうか?
+
+- 型安全
+https://zod.dev/
+zodライブラリーを使いたいです
+
+- モノレポ
+Phase 2以降のディレクトリー例を見ましたがモノレポをやる必要性を感じませんでした
+
+- README.md
+ここまでの話をまとめ、
+README.mdに書きべきことの記載お願いしたいです。
+
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+
+ちなみにZod以外で、現代のReact、TypeScript開発において必須レベルのライブラリーは他にありますか?
+
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+⏺ 良い質問ですね！現代のReact + TypeScript開発で必須レベルのライブラリを整理します。
+
+  📦 既に技術スタックに含まれているもの
+
+  ✅ 確定済み
+
+  - React 19 (Next.js 15経由)
+  - TypeScript
+  - Zod (バリデーション)
+  - TanStack Query (サーバー状態管理)
+  - Zustand (クライアント状態管理)
+
+  ---
+  🎯 追加検討すべき必須級ライブラリ
+
+  1. React Hook Form ⭐ 強く推奨
+
+  用途: フォーム管理
+
+  なぜ必須級？
+  - 記事登録フォーム、編集フォームが複数ある
+  - Zodとの統合が完璧（@hookform/resolvers/zod）
+  - パフォーマンス◎（非制御コンポーネント）
+  - バリデーションエラー表示が簡単
+
+  使用例:
+  import { useForm } from 'react-hook-form'
+  import { zodResolver } from '@hookform/resolvers/zod'
+  import { z } from 'zod'
+
+  const articleSchema = z.object({
+    title: z.string().min(1, '必須です'),
+    url: z.string().url('有効なURLを入力してください'),
+    tags: z.array(z.string()).min(1),
+  })
+
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    resolver: zodResolver(articleSchema)
+  })
+
+  代替案: なし（React標準のフォーム管理は複雑すぎる）
+
+  ---
+  2. date-fns or Day.js 🕐 推奨
+
+  用途: 日付フォーマット
+
+  なぜ必要？
+  - 記事の投稿日表示（例: "2025年10月5日", "3日前"）
+  - 日本語ロケール対応
+  - 軽量（date-fns: tree-shakable, Day.js: 2KB）
+
+  使用例:
+  import { format, formatDistanceToNow } from 'date-fns'
+  import { ja } from 'date-fns/locale'
+
+  // "2025年10月5日"
+  format(new Date(), 'yyyy年MM月dd日', { locale: ja })
+
+  // "3日前"
+  formatDistanceToNow(new Date(article.created_at), {
+    locale: ja,
+    addSuffix: true
+  })
+
+  推奨: date-fns（Next.jsと相性◎、tree-shakable）
+
+  ---
+  3. clsx + tailwind-merge 🎨 必須
+
+  用途: className管理
+
+  なぜ必須？
+  - TailwindのclassNameを条件付きで結合
+  - 重複クラスの競合を解決（cnユーティリティ）
+
+  使用例:
+  import { clsx } from 'clsx'
+  import { twMerge } from 'tailwind-merge'
+
+  export function cn(...inputs: ClassValue[]) {
+    return twMerge(clsx(inputs))
+  }
+
+  // 使用
+  <div className={cn(
+    "p-4 rounded",
+    isActive && "bg-blue-500",
+    "hover:bg-blue-600" // 重複してもマージされる
+  )} />
+
+  shadcn/uiのデフォルト: 既に含まれている想定（lib/utils/cn.ts）
+
+  ---
+  4. sonner 🔔 推奨
+
+  用途: トースト通知
+
+  なぜ必要？
+  - 記事保存成功/失敗の通知
+  - 削除確認のフィードバック
+  - ユーザビリティ向上
+
+  使用例:
+  import { toast } from 'sonner'
+
+  toast.success('記事を保存しました')
+  toast.error('保存に失敗しました')
+
+  代替案: react-hot-toast（sonnerの方がモダン、shadcn/ui推奨）
+
+  ---
+  5. nanoid 🆔 任意（Supabaseが提供するIDがあれば不要）
+
+  用途: 一意なID生成
+
+  なぜ検討？
+  - クライアント側で一時的なID生成（楽観的更新時）
+  - タグのローカルID
+
+  Supabaseがあれば: UUID自動生成されるので不要かも
+
+  ---
+  6. nuqs 🔗 任意（高度な検索機能が必要なら）
+
+  用途: URL検索パラメータ管理
+
+  なぜ検討？
+  - フィルタ状態をURLに保存（例: ?tags=react,typescript）
+  - ブックマーク可能な検索結果
+  - Next.jsと相性◎
+
+  Phase 1では: 不要（Zustandで十分）
+  Phase 2で検討: 共有可能な検索URLが欲しい場合
+
+  ---
+  📋 推奨最終構成
+
+  必須追加
+
+  {
+    "dependencies": {
+      "react-hook-form": "^7.51.0",
+      "@hookform/resolvers": "^3.3.4",
+      "date-fns": "^3.3.1",
+      "clsx": "^2.1.0",
+      "tailwind-merge": "^2.2.1",
+      "sonner": "^1.4.0"
+    }
+  }
+
+  開発依存（既に含まれている想定）
+
+  {
+    "devDependencies": {
+      "@types/node": "^20",
+      "@types/react": "^18",
+      "@types/react-dom": "^18",
+      "typescript": "^5"
+    }
+  }
+
+  ---
+  🤔 不要なライブラリ（よくある誤解）
+
+  ❌ 不要: Lodash
+
+  - 理由: ES2015+の配列メソッドで十分（.map, .filter, .reduce）
+  - 例外: 深いオブジェクトの比較が頻繁にある場合のみlodash-esを部分的に
+
+  ❌ 不要: Moment.js
+
+  - 理由: 重い、メンテナンス終了
+  - 代替: date-fns or Day.js
+
+  ❌ 不要: Axios
+
+  - 理由: Fetch APIで十分、TanStack Queryがラップする
+  - Next.jsは標準でFetch拡張あり
+
+  ❌ 不要: Redux Toolkit
+
+  - 理由: Zustand + TanStack Queryで十分
+  - 小〜中規模アプリにはオーバースペック
+
+  ---
+  💡 まとめ
+
+  絶対追加すべき（必須級）
+
+  1. React Hook Form + @hookform/resolvers - フォーム管理
+  2. date-fns - 日付フォーマット
+  3. clsx + tailwind-merge - className管理（shadcn/uiに含まれているはず）
+  4. sonner - トースト通知
+
+  Phase 1で検討
+
+  - nanoid（任意）
+
+  Phase 2で検討
+
+  - nuqs（URL状態管理）
+
+  ---
+  これらを追加しますか？それとも、まず機能のspec作成に進みますか？
+
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+では
+React Hook Form
+Day.js
+clsx + tailwind-merge
+sonner
+は使いたいです。
+その他の任意は必要になったら追加で良いかと
