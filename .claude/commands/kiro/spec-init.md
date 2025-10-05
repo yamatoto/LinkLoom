@@ -1,32 +1,32 @@
 ---
-description: Initialize a new specification with detailed project description and requirements
+description: 詳細なプロジェクト説明と要件で新規仕様を初期化
 allowed-tools: Bash, Read, Write, Glob
 argument-hint: <project-description>
 ---
 
-# Spec Initialization
+# 仕様初期化
 
-Initialize a new specification based on the provided project description:
+提供されたプロジェクト説明に基づいて新規仕様を初期化します:
 
-**Project Description**: $ARGUMENTS
+**プロジェクト説明**: $ARGUMENTS
 
-## Task: Initialize Specification Structure
+## タスク: 仕様構造の初期化
 
-**SCOPE**: This command initializes the directory structure and metadata based on the detailed project description provided.
+**範囲**: このコマンドは、提供された詳細なプロジェクト説明に基づいてディレクトリ構造とメタデータを初期化します。
 
-### 1. Generate Feature Name
-Create a concise, descriptive feature name from the project description ($ARGUMENTS).
-**Check existing `.kiro/specs/` directory to ensure the generated feature name is unique. If a conflict exists, append a number suffix (e.g., feature-name-2).**
+### 1. 機能名の生成
+プロジェクト説明（$ARGUMENTS）から簡潔で説明的な機能名を作成します。
+**既存の`.kiro/specs/`ディレクトリを確認して、生成された機能名が一意であることを確認してください。競合が存在する場合は、数字のサフィックスを追加します（例: feature-name-2）。**
 
-### 2. Create Spec Directory
-Create `.kiro/specs/[generated-feature-name]/` directory with:
-- `spec.json` - Metadata and approval tracking
-- `requirements.md` - Lightweight template with project description
+### 2. 仕様ディレクトリの作成
+`.kiro/specs/[generated-feature-name]/`ディレクトリを以下のファイルで作成:
+- `spec.json` - メタデータと承認追跡
+- `requirements.md` - プロジェクト説明を含む軽量テンプレート
 
-**Note**: design.md and tasks.md will be created by their respective commands during the development process.
+**注意**: design.mdとtasks.mdは、開発プロセス中にそれぞれのコマンドによって作成されます。
 
-### 3. Initialize spec.json Metadata
-Create initial metadata with approval tracking:
+### 3. spec.jsonメタデータの初期化
+承認追跡を含む初期メタデータを作成:
 ```json
 {
   "feature_name": "[generated-feature-name]",
@@ -52,8 +52,8 @@ Create initial metadata with approval tracking:
 }
 ```
 
-### 4. Create Requirements Template
-Create requirements.md with project description:
+### 4. 要件テンプレートの作成
+プロジェクト説明を含むrequirements.mdを作成:
 ```markdown
 # Requirements Document
 
@@ -64,23 +64,23 @@ $ARGUMENTS
 <!-- Will be generated in /kiro:spec-requirements phase -->
 ```
 
-### 5. Update CLAUDE.md Reference
-Add the new spec to the active specifications list with the generated feature name and a brief description.
+### 5. CLAUDE.md参照の更新
+生成された機能名と簡単な説明を含めて、アクティブな仕様リストに新しい仕様を追加します。
 
-## Next Steps After Initialization
+## 初期化後の次のステップ
 
-Follow the strict spec-driven development workflow:
-1. **`/kiro:spec-requirements <feature-name>`** - Create and generate requirements.md
-2. **`/kiro:spec-design <feature-name>`** - Create and generate design.md (requires approved requirements)
-3. **`/kiro:spec-tasks <feature-name>`** - Create and generate tasks.md (requires approved design)
+厳格な仕様駆動開発ワークフローに従ってください:
+1. **`/kiro:spec-requirements <feature-name>`** - requirements.mdを作成して生成
+2. **`/kiro:spec-design <feature-name>`** - design.mdを作成して生成（承認された要件が必要）
+3. **`/kiro:spec-tasks <feature-name>`** - tasks.mdを作成して生成（承認された設計が必要）
 
-**Important**: Each phase creates its respective file and requires approval before proceeding to the next phase.
+**重要**: 各フェーズはそれぞれのファイルを作成し、次のフェーズに進む前に承認が必要です。
 
-## Output Format
+## 出力形式
 
-After initialization, provide:
-1. Generated feature name and rationale
-2. Brief project summary
-3. Created spec.json path
-4. **Clear next step**: `/kiro:spec-requirements <feature-name>`
-5. Explanation that only spec.json was created, following stage-by-stage development principles
+初期化後、以下を提供します:
+1. 生成された機能名と根拠
+2. 簡単なプロジェクト概要
+3. 作成されたspec.jsonのパス
+4. **明確な次のステップ**: `/kiro:spec-requirements <feature-name>`
+5. ステージごとの開発原則に従って、spec.jsonのみが作成されたことの説明

@@ -1,62 +1,62 @@
 ---
-description: Execute spec tasks using TDD methodology
+description: TDD方法論を使用して仕様タスクを実行
 allowed-tools: Bash, Read, Write, Edit, MultiEdit, Grep, Glob, LS, WebFetch, WebSearch
 argument-hint: <feature-name> [task-numbers]
 ---
 
-# Execute Spec Tasks with TDD
+# TDDによる仕様タスク実行
 
-Execute implementation tasks for **$1** using Kent Beck's Test-Driven Development methodology.
+Kent BeckのTest-Driven Development方法論を使用して、**$1**の実装タスクを実行します。
 
-## Instructions
+## 指示
 
-### Pre-Execution Validation
-Validate required files exist for feature **$1**:
-- Requirements: `.kiro/specs/$1/requirements.md`
-- Design: `.kiro/specs/$1/design.md`  
-- Tasks: `.kiro/specs/$1/tasks.md`
-- Metadata: `.kiro/specs/$1/spec.json`
+### 実行前検証
+機能 **$1** に必要なファイルが存在することを検証:
+- 要件: `.kiro/specs/$1/requirements.md`
+- 設計: `.kiro/specs/$1/design.md`
+- タスク: `.kiro/specs/$1/tasks.md`
+- メタデータ: `.kiro/specs/$1/spec.json`
 
-### Context Loading
+### コンテキスト読み込み
 
-**Core Steering:**
-- Structure: @.kiro/steering/structure.md
-- Tech Stack: @.kiro/steering/tech.md  
-- Product: @.kiro/steering/product.md
+**コアSteering:**
+- 構造: @.kiro/steering/structure.md
+- 技術スタック: @.kiro/steering/tech.md
+- プロダクト: @.kiro/steering/product.md
 
-**Custom Steering:**
-- Additional `*.md` files in `.kiro/steering/` (excluding structure.md, tech.md, product.md)
+**カスタムSteering:**
+- `.kiro/steering/`内の追加`*.md`ファイル（structure.md、tech.md、product.mdを除く）
 
-**Spec Documents for $1:**
-- Metadata: @.kiro/specs/$1/spec.json
-- Requirements: @.kiro/specs/$1/requirements.md
-- Design: @.kiro/specs/$1/design.md
-- Tasks: @.kiro/specs/$1/tasks.md
+**$1の仕様ドキュメント:**
+- メタデータ: @.kiro/specs/$1/spec.json
+- 要件: @.kiro/specs/$1/requirements.md
+- 設計: @.kiro/specs/$1/design.md
+- タスク: @.kiro/specs/$1/tasks.md
 
-### Task Execution
-1. **Feature**: $1  
-2. **Task numbers**: $2 (optional, defaults to all pending tasks)
-3. **Load all context** (steering + spec documents)
-4. **Execute selected tasks** using TDD methodology
+### タスク実行
+1. **機能**: $1
+2. **タスク番号**: $2（オプション、デフォルトはすべての未完了タスク）
+3. **すべてのコンテキストを読み込み**（Steering + 仕様ドキュメント）
+4. **選択されたタスクを実行** TDD方法論を使用
 
-### TDD Implementation
-For each selected task:
+### TDD実装
+選択された各タスクについて:
 
-1. **RED**: Write failing tests first
-2. **GREEN**: Write minimal code to pass tests  
-3. **REFACTOR**: Clean up and improve code structure
-4. **Verify**: 
-   - All tests pass
-   - No regressions in existing tests
-   - Code quality and test coverage maintained
-5. **Mark Complete**: Update checkbox from `- [ ]` to `- [x]` in tasks.md
+1. **RED**: 最初に失敗するテストを書く
+2. **GREEN**: テストをパスする最小限のコードを書く
+3. **REFACTOR**: コード構造をクリーンアップして改善
+4. **検証**:
+   - すべてのテストがパス
+   - 既存のテストに退行がない
+   - コード品質とテストカバレッジが維持されている
+5. **完了マーク**: tasks.mdでチェックボックスを`- [ ]`から`- [x]`に更新
 
-**Note**: Follow Kent Beck's TDD methodology strictly, implementing only the specific task requirements.
+**注意**: Kent BeckのTDD方法論に厳密に従い、特定のタスク要件のみを実装してください。
 
-## Implementation Notes
+## 実装ノート
 
-- **Feature**: Use `$1` for feature name
-- **Tasks**: Use `$2` for specific task numbers (optional)
-- **Validation**: Check all required spec files exist
-- **TDD Focus**: Always write tests before implementation
-- **Task Tracking**: Update checkboxes in tasks.md as completed
+- **機能**: 機能名に`$1`を使用
+- **タスク**: 特定のタスク番号に`$2`を使用（オプション）
+- **検証**: すべての必要な仕様ファイルが存在することを確認
+- **TDDフォーカス**: 常に実装前にテストを書く
+- **タスクトラッキング**: 完了したらtasks.mdでチェックボックスを更新

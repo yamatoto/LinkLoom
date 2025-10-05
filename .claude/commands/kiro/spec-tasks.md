@@ -1,177 +1,177 @@
 ---
-description: Generate implementation tasks for a specification
+description: 仕様の実装タスクを生成
 allowed-tools: Read, Write, Edit, MultiEdit, Glob, Grep
 argument-hint: <feature-name> [-y]
 ---
 
-# Implementation Tasks
+# 実装タスク
 
-Generate detailed implementation tasks for feature: **$1**
+機能 **$1** の詳細な実装タスクを生成します
 
-## Task: Generate Implementation Tasks
+## タスク: 実装タスクの生成
 
-### Prerequisites & Context Loading
-- If invoked with `-y` flag ($2 == "-y"): Auto-approve requirements and design in `spec.json`
-- Otherwise: Stop if requirements/design missing or unapproved with message:
-  "Run `/kiro:spec-requirements` and `/kiro:spec-design` first, or use `-y` flag to auto-approve"
-- If tasks.md exists: Prompt [o]verwrite/[m]erge/[c]ancel
+### 前提条件とコンテキスト読み込み
+- `-y`フラグで起動された場合（$2 == "-y"）: `spec.json`で要件と設計を自動承認
+- それ以外の場合: 要件/設計が欠落または未承認であれば、メッセージで停止:
+  "`/kiro:spec-requirements`と`/kiro:spec-design`を最初に実行するか、`-y`フラグを使用して自動承認してください"
+- tasks.mdが存在する場合: [o]上書き/[m]マージ/[c]キャンセルをプロンプト
 
-**Context Loading (Full Paths)**:
-1. `.kiro/specs/$1/requirements.md` - Feature requirements (EARS format)
-2. `.kiro/specs/$1/design.md` - Technical design document
-3. `.kiro/steering/` - Project-wide guidelines and constraints:
-   - **Core files (always load)**:
-     - @.kiro/steering/product.md - Business context, product vision, user needs
-     - @.kiro/steering/tech.md - Technology stack, frameworks, libraries
-     - @.kiro/steering/structure.md - File organization, naming conventions, code patterns
-   - **Custom steering files** (load all EXCEPT "Manual" mode in `AGENTS.md`):
-     - Any additional `*.md` files in `.kiro/steering/` directory
-     - Examples: `api.md`, `testing.md`, `security.md`, etc.
-   - (Task planning benefits from comprehensive context)
-4. `.kiro/specs/$1/tasks.md` - Existing tasks (only if merge mode)
+**コンテキスト読み込み（完全パス）**:
+1. `.kiro/specs/$1/requirements.md` - 機能要件（EARS形式）
+2. `.kiro/specs/$1/design.md` - 技術設計ドキュメント
+3. `.kiro/steering/` - プロジェクト全体のガイドラインと制約:
+   - **コアファイル（常に読み込む）**:
+     - @.kiro/steering/product.md - ビジネスコンテキスト、プロダクトビジョン、ユーザーニーズ
+     - @.kiro/steering/tech.md - 技術スタック、フレームワーク、ライブラリ
+     - @.kiro/steering/structure.md - ファイル構成、命名規則、コードパターン
+   - **カスタムSteeringファイル**（`AGENTS.md`の"Manual"モードを除くすべてを読み込む）:
+     - `.kiro/steering/`ディレクトリ内の追加`*.md`ファイル
+     - 例: `api.md`、`testing.md`、`security.md`など
+   - （タスク計画は包括的なコンテキストから利益を得る）
+4. `.kiro/specs/$1/tasks.md` - 既存のタスク（マージモードの場合のみ）
 
-### CRITICAL Task Numbering Rules (MUST FOLLOW)
+### 重要なタスク番号付けルール（必須）
 
-**⚠️ MANDATORY: Sequential major task numbering & hierarchy limits**
-- Major tasks: 1, 2, 3, 4, 5... (MUST increment sequentially)
-- Sub-tasks: 1.1, 1.2, 2.1, 2.2... (reset per major task)
-- **Maximum 2 levels of hierarchy** (no 1.1.1 or deeper)
-- Format exactly as:
+**⚠️ 必須: 順次主要タスク番号付けと階層制限**
+- 主要タスク: 1、2、3、4、5...（順次インクリメント必須）
+- サブタスク: 1.1、1.2、2.1、2.2...（主要タスクごとにリセット）
+- **階層は最大2レベル**（1.1.1以降は不可）
+- 以下のように正確にフォーマット:
 ```markdown
-- [ ] 1. Major task description
-- [ ] 1.1 Sub-task description
-  - Detail item 1
-  - Detail item 2
+- [ ] 1. 主要タスクの説明
+- [ ] 1.1 サブタスクの説明
+  - 詳細項目1
+  - 詳細項目2
   - _Requirements: X.X, Y.Y_
 
-- [ ] 1.2 Sub-task description
-  - Detail items...
+- [ ] 1.2 サブタスクの説明
+  - 詳細項目...
   - _Requirements: X.X_
 
-- [ ] 2. Next major task (NOT 1 again!)
-- [ ] 2.1 Sub-task...
+- [ ] 2. 次の主要タスク（1を再び使わない！）
+- [ ] 2.1 サブタスク...
 ```
 
-### Task Generation Rules
+### タスク生成ルール
 
-1. **Natural language descriptions**: Focus on capabilities and outcomes, not code structure
-   - Describe **what functionality to achieve**, not file locations or code organization
-   - Specify **business logic and behavior**, not method signatures or type definitions
-   - Reference **features and capabilities**, not class names or API contracts
-   - Use **domain language**, not programming constructs
-   - **Avoid**: File paths, function/method names, type signatures, class/interface names, specific data structures
-   - **Include**: User-facing functionality, business rules, system behaviors, data relationships
-   - Implementation details (files, methods, types) come from design.md
-2. **Task integration & progression**:
-   - Each task must build on previous outputs (no orphaned code)
-   - End with integration tasks to wire everything together
-   - No hanging features - every component must connect to the system
-   - Incremental complexity - no big jumps between tasks
-   - Validate core functionality early in the sequence
-3. **Flexible task sizing**:
-   - Major tasks: As many sub-tasks as logically needed
-   - Sub-tasks: 1-3 hours each, 3-10 details per sub
-   - Group by cohesion, not arbitrary numbers
-   - Balance between too granular and too broad
-4. **Requirements mapping**: End details with `_Requirements: X.X, Y.Y_` or `_Requirements: [description]_`
-5. **Code-only focus**: Include ONLY coding/testing tasks, exclude deployment/docs/user testing
+1. **自然言語の説明**: 機能と成果に焦点を当て、コード構造ではない
+   - **達成すべき機能**を説明し、ファイルの場所やコード構成ではない
+   - **ビジネスロジックと振る舞い**を指定し、メソッドシグネチャや型定義ではない
+   - **機能と能力**を参照し、クラス名やAPIコントラクトではない
+   - **ドメイン言語**を使用し、プログラミング構造ではない
+   - **避けるべき**: ファイルパス、関数/メソッド名、型シグネチャ、クラス/インターフェース名、特定のデータ構造
+   - **含めるべき**: ユーザー向け機能、ビジネスルール、システムの振る舞い、データ関係
+   - 実装の詳細（ファイル、メソッド、型）はdesign.mdから来る
+2. **タスク統合と進行**:
+   - 各タスクは前の出力の上に構築する必要がある（孤立したコードなし）
+   - すべてを統合するための統合タスクで終了
+   - 浮いた機能なし - すべてのコンポーネントはシステムに接続する必要がある
+   - 段階的な複雑さ - タスク間で大きなジャンプなし
+   - シーケンスの早い段階でコア機能を検証
+3. **柔軟なタスクサイズ**:
+   - 主要タスク: 論理的に必要なだけのサブタスク
+   - サブタスク: 各1-3時間、サブごとに3-10の詳細
+   - 任意の数ではなく、凝集度でグループ化
+   - 細かすぎることと広すぎることのバランス
+4. **要件マッピング**: 詳細の最後に`_Requirements: X.X, Y.Y_`または`_Requirements: [説明]_`を追加
+5. **コードのみに焦点**: コーディング/テストタスクのみを含め、デプロイ/ドキュメント/ユーザーテストは除外
 
-### Example Structure (FORMAT REFERENCE ONLY)
+### 構造例（フォーマット参照のみ）
 
 ```markdown
 # Implementation Plan
 
-- [ ] 1. Set up project foundation and infrastructure
-  - Initialize project with required technology stack
-  - Configure server infrastructure and request handling
-  - Establish data storage and caching layer
-  - Set up configuration and environment management
-  - _Requirements: All requirements need foundational setup_
+- [ ] 1. プロジェクトの基盤とインフラストラクチャをセットアップ
+  - 必要な技術スタックでプロジェクトを初期化
+  - サーバーインフラストラクチャとリクエスト処理を設定
+  - データストレージとキャッシングレイヤーを確立
+  - 設定と環境管理をセットアップ
+  - _Requirements: すべての要件には基盤セットアップが必要_
 
-- [ ] 2. Build authentication and user management system
-- [ ] 2.1 Implement core authentication functionality
-  - Set up user data storage with validation rules
-  - Implement secure authentication mechanism
-  - Build user registration functionality
-  - Add login and session management features
+- [ ] 2. 認証とユーザー管理システムを構築
+- [ ] 2.1 コア認証機能を実装
+  - 検証ルールを持つユーザーデータストレージをセットアップ
+  - 安全な認証メカニズムを実装
+  - ユーザー登録機能を構築
+  - ログインとセッション管理機能を追加
   - _Requirements: 7.1, 7.2_
 
-- [ ] 2.2 Enable email service integration
-  - Implement secure credential storage system
-  - Build authentication flow for email providers
-  - Create email connection validation logic
-  - Develop email account management features
+- [ ] 2.2 メールサービス統合を有効化
+  - 安全な資格情報ストレージシステムを実装
+  - メールプロバイダーの認証フローを構築
+  - メール接続検証ロジックを作成
+  - メールアカウント管理機能を開発
   - _Requirements: 5.1, 5.2, 5.4_
 ```
 
-### Requirements Coverage Check
-- **MANDATORY**: Ensure ALL requirements from requirements.md are covered
-- Cross-reference every requirement ID with task mappings
-- If gaps found: Return to requirements or design phase
-- No requirement should be left without corresponding tasks
+### 要件カバレッジチェック
+- **必須**: requirements.mdのすべての要件がカバーされていることを確認
+- すべての要件IDをタスクマッピングと相互参照
+- ギャップが見つかった場合: 要件または設計フェーズに戻る
+- 対応するタスクなしで残される要件があってはならない
 
-### Document Generation
-- Generate `.kiro/specs/$1/tasks.md` using the exact numbering format above
-- **Language**: Use language from `spec.json.language` field, default to English
-- **Task descriptions**: Use natural language for "what to do" (implementation details in design.md)
- - Update `.kiro/specs/$1/spec.json`:
-  - Set `phase: "tasks-generated"`
-  - Set approvals map exactly as:
+### ドキュメント生成
+- 上記の正確な番号付け形式を使用して`.kiro/specs/$1/tasks.md`を生成
+- **言語**: `spec.json.language`フィールドの言語を使用、デフォルトは英語
+- **タスク説明**: "何をすべきか"に自然言語を使用（実装の詳細はdesign.mdに）
+- `.kiro/specs/$1/spec.json`を更新:
+  - `phase: "tasks-generated"`を設定
+  - 承認マップを以下のように正確に設定:
     - `approvals.tasks = { "generated": true, "approved": false }`
-  - Preserve existing metadata (e.g., `language`), do not remove unrelated fields
-  - If invoked with `-y` flag: ensure the above approval booleans are applied even if previously unset/false
-  - Set `updated_at` to current ISO8601 timestamp
-  - Use file tools only (no shell commands)
+  - 既存のメタデータを保持（例: `language`）、無関係なフィールドを削除しない
+  - `-y`フラグで起動された場合: 以前に未設定/falseであっても上記の承認ブール値を適用
+  - `updated_at`を現在のISO8601タイムスタンプに設定
+  - ファイルツールのみを使用（シェルコマンドなし）
 
 ---
 
-## INTERACTIVE APPROVAL IMPLEMENTED (Not included in document)
+## インタラクティブ承認実装（ドキュメントに含めない）
 
-The following is for Claude Code conversation only - NOT for the generated document:
+以下はClaude Code会話のみ用 - 生成されたドキュメント用ではありません:
 
-## Next Phase: Implementation Ready
+## 次のフェーズ: 実装準備完了
 
-After generating tasks.md, review the implementation tasks:
+tasks.mdを生成した後、実装タスクをレビュー:
 
-**If tasks look good:**
-Begin implementation following the generated task sequence
+**タスクが良好な場合:**
+生成されたタスクシーケンスに従って実装を開始
 
-**If tasks need modification:**
-Request changes and re-run this command after modifications
+**タスクの修正が必要な場合:**
+変更を要求し、修正後にこのコマンドを再実行
 
-Tasks represent the final planning phase - implementation can begin once tasks are approved.
+タスクは最終計画フェーズを表します - タスクが承認されると実装を開始できます。
 
-**Final approval process for implementation**:
+**実装の最終承認プロセス**:
 ```
-📋 Tasks review completed. Ready for implementation.
-📄 Generated: .kiro/specs/$1/tasks.md
-✅ All phases approved. Implementation can now begin.
+📋 タスクレビュー完了。実装準備完了。
+📄 生成: .kiro/specs/$1/tasks.md
+✅ すべてのフェーズが承認されました。実装を開始できます。
 ```
 
-### Next Steps: Implementation
-Once tasks are approved, start implementation:
+### 次のステップ: 実装
+タスクが承認されたら、実装を開始:
 ```bash
-/kiro:spec-impl $1          # Execute all pending tasks
-/kiro:spec-impl $1 1.1      # Execute specific task
-/kiro:spec-impl $1 1,2,3    # Execute multiple tasks
+/kiro:spec-impl $1          # すべての未完了タスクを実行
+/kiro:spec-impl $1 1.1      # 特定のタスクを実行
+/kiro:spec-impl $1 1,2,3    # 複数のタスクを実行
 ```
 
-**Implementation Tips**:
-- Use `/clear` if conversation becomes too long, then continue with spec commands
-- All spec files (.kiro/specs/) are preserved and will be reloaded as needed
+**実装のヒント**:
+- 会話が長くなりすぎたら`/clear`を使用し、その後specコマンドで続行
+- すべての仕様ファイル（.kiro/specs/）は保持され、必要に応じて再読み込みされます
 
-### Review Checklist (for user reference):
-- [ ] Tasks are properly sized (1-3 hours each)
-- [ ] All requirements are covered by tasks
-- [ ] Task dependencies are correct
-- [ ] Technology choices match the design
-- [ ] Testing tasks are included
+### レビューチェックリスト（ユーザー参照用）:
+- [ ] タスクのサイズが適切（各1-3時間）
+- [ ] すべての要件がタスクでカバーされている
+- [ ] タスクの依存関係が正しい
+- [ ] 技術選択が設計と一致している
+- [ ] テストタスクが含まれている
 
-### Implementation Instructions
-When tasks are approved, the implementation phase begins:
-1. Work through tasks sequentially
-2. Mark tasks as completed in tasks.md
-3. Each task should produce working, tested code
-4. Commit code after each major task completion
+### 実装指示
+タスクが承認されたら、実装フェーズが始まります:
+1. タスクを順次処理
+2. tasks.mdでタスクを完了としてマーク
+3. 各タスクは動作する、テストされたコードを生成すべき
+4. 各主要タスク完了後にコードをコミット
 
-think deeply
+深く考えてください

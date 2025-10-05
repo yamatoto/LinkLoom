@@ -1,156 +1,156 @@
 ---
-description: Analyze implementation gap between requirements and existing codebase
+description: 要件と既存コードベース間の実装ギャップを分析
 allowed-tools: Bash, Glob, Grep, Read, Write, Edit, MultiEdit, WebSearch, WebFetch
 argument-hint: <feature-name>
 ---
 
-# Implementation Gap Validation
+# 実装ギャップ検証
 
-Analyze implementation requirements and existing codebase for feature: **$1**
+機能 **$1** の実装要件と既存コードベースを分析
 
-## Context Validation
+## コンテキスト検証
 
-### Steering Context
-- Architecture context: @.kiro/steering/structure.md
-- Technical constraints: @.kiro/steering/tech.md
-- Product context: @.kiro/steering/product.md
-- Custom steering: Load all "Always" mode custom steering files from .kiro/steering/
+### Steeringコンテキスト
+- アーキテクチャコンテキスト: @.kiro/steering/structure.md
+- 技術的制約: @.kiro/steering/tech.md
+- プロダクトコンテキスト: @.kiro/steering/product.md
+- カスタムSteering: .kiro/steering/からすべての"Always"モードのカスタムSteeringファイルを読み込み
 
-### Existing Spec Context
-- Current spec directory: !`ls -la .kiro/specs/$1/ 2>/dev/null || echo "No spec directory found"`
-- Requirements document: @.kiro/specs/$1/requirements.md
-- Spec metadata: @.kiro/specs/$1/spec.json
+### 既存仕様コンテキスト
+- 現在の仕様ディレクトリ: !`ls -la .kiro/specs/$1/ 2>/dev/null || echo "仕様ディレクトリが見つかりません"`
+- 要件ドキュメント: @.kiro/specs/$1/requirements.md
+- 仕様メタデータ: @.kiro/specs/$1/spec.json
 
-## Task: Implementation Gap Analysis
+## タスク: 実装ギャップ分析
 
-### Prerequisites
-- Requirements document must exist: `.kiro/specs/$1/requirements.md`
-- If not exist, stop with message: "Run `/kiro:spec-requirements $1` first to generate requirements"
+### 前提条件
+- 要件ドキュメントが存在する必要があります: `.kiro/specs/$1/requirements.md`
+- 存在しない場合、以下のメッセージで停止: "最初に `/kiro:spec-requirements $1` を実行して要件を生成してください"
 
-### Analysis Process
+### 分析プロセス
 
-#### 1. Current State Investigation
-**Existing Codebase Analysis**:
-- Identify files and modules related to the feature domain
-- Map current architecture patterns, conventions, and tech stack usage
-- Document existing services, utilities, and reusable components
-- Understand current data models, APIs, and integration patterns
+#### 1. 現状調査
+**既存コードベース分析**:
+- 機能ドメインに関連するファイルとモジュールを特定
+- 現在のアーキテクチャパターン、規約、技術スタック使用状況をマッピング
+- 既存のサービス、ユーティリティ、再利用可能なコンポーネントを文書化
+- 現在のデータモデル、API、統合パターンを理解
 
-**Code Structure Assessment**:
-- Document file organization, naming conventions, and architectural layers
-- Extract import/export patterns and module dependency structures  
-- Identify existing testing patterns (file placement, frameworks, mocking approaches)
-- Map API client, database, and authentication implementation approaches currently used
-- Note established coding standards and development practices
+**コード構造評価**:
+- ファイル構成、命名規則、アーキテクチャレイヤーを文書化
+- インポート/エクスポートパターンとモジュール依存関係構造を抽出
+- 既存のテストパターン（ファイル配置、フレームワーク、モックアプローチ）を特定
+- 現在使用されているAPIクライアント、データベース、認証実装アプローチをマッピング
+- 確立されたコーディング標準と開発プラクティスを記録
 
-#### 2. Requirements Feasibility Analysis
-**Technical Requirements Extraction**:
-- Parse EARS format requirements from requirements.md
-- Identify technical components needed for each requirement
-- Extract non-functional requirements (security, performance, etc.)
-- Map business logic complexity and integration points
+#### 2. 要件実現可能性分析
+**技術要件抽出**:
+- requirements.mdからEARS形式の要件を解析
+- 各要件に必要な技術コンポーネントを特定
+- 非機能要件（セキュリティ、パフォーマンスなど）を抽出
+- ビジネスロジックの複雑さと統合ポイントをマッピング
 
-**Gap Identification**:
-- Missing technical capabilities vs requirements
-- Unknown technologies or external dependencies
-- Potential integration challenges with existing systems
-- Areas requiring research or proof-of-concept work
+**ギャップ特定**:
+- 要件に対して不足している技術的能力
+- 未知の技術または外部依存関係
+- 既存システムとの潜在的な統合課題
+- 研究または概念実証作業が必要な領域
 
-#### 3. Implementation Approach Options
-**Multiple Strategy Evaluation**:
-- **Option A**: Extend existing components/files
-  - Which existing files/modules to extend
-  - Compatibility with current patterns
-  - Code complexity and maintainability impact
+#### 3. 実装アプローチオプション
+**複数戦略評価**:
+- **オプションA**: 既存コンポーネント/ファイルを拡張
+  - 拡張する既存ファイル/モジュール
+  - 現在のパターンとの互換性
+  - コードの複雑さと保守性への影響
 
-- **Option B**: Create new components (when justified)
-  - Clear rationale for new file creation
-  - Integration points with existing system
-  - Responsibility boundaries and interfaces
+- **オプションB**: 新しいコンポーネントを作成（正当な理由がある場合）
+  - 新しいファイル作成の明確な根拠
+  - 既存システムとの統合ポイント
+  - 責任境界とインターフェース
 
-- **Option C**: Hybrid approach
-  - Combination of extension and new creation
-  - Phased implementation strategy
-  - Risk mitigation approach
+- **オプションC**: ハイブリッドアプローチ
+  - 拡張と新規作成の組み合わせ
+  - 段階的実装戦略
+  - リスク軽減アプローチ
 
-#### 4. Technical Research Requirements
-**External Dependencies Analysis** (if any):
-- Required libraries, APIs, or services not currently used
-- Version compatibility with existing dependencies
-- Authentication, configuration, and setup requirements
-- Rate limits, usage constraints, and cost implications
+#### 4. 技術調査要件
+**外部依存関係分析**（ある場合）:
+- 現在使用されていない必要なライブラリ、API、サービス
+- 既存依存関係とのバージョン互換性
+- 認証、設定、セットアップ要件
+- レート制限、使用制約、コスト影響
 
-**Knowledge Gap Assessment**:
-- Technologies unfamiliar to the team
-- Complex integration patterns requiring research
-- Performance or security considerations needing investigation
-- Best practice research requirements
+**知識ギャップ評価**:
+- チームにとって未知の技術
+- 研究が必要な複雑な統合パターン
+- 調査が必要なパフォーマンスまたはセキュリティの考慮事項
+- ベストプラクティス研究要件
 
-#### 5. Implementation Complexity Assessment
-**Effort Estimation**:
-- **Small (S)**: 1-3 days, mostly using existing patterns
-- **Medium (M)**: 3-7 days, some new patterns or integrations
-- **Large (L)**: 1-2 weeks, significant new functionality
-- **Extra Large (XL)**: 2+ weeks, complex architecture changes
+#### 5. 実装複雑度評価
+**工数見積もり**:
+- **小（S）**: 1-3日、主に既存パターンを使用
+- **中（M）**: 3-7日、一部の新しいパターンまたは統合
+- **大（L）**: 1-2週間、重要な新機能
+- **特大（XL）**: 2週間以上、複雑なアーキテクチャ変更
 
-**Risk Factors**:
-- High: Unknown technologies, complex integrations, architectural changes
-- Medium: New patterns, external dependencies, performance requirements
-- Low: Extending existing patterns, well-understood technologies
+**リスク要因**:
+- 高: 未知の技術、複雑な統合、アーキテクチャ変更
+- 中: 新しいパターン、外部依存関係、パフォーマンス要件
+- 低: 既存パターンの拡張、よく理解された技術
 
-### Output Format
+### 出力フォーマット
 
-Generate analysis in the language specified in spec.json (check `.kiro/specs/$1/spec.json` for "language" field):
+spec.jsonで指定された言語で分析を生成（`.kiro/specs/$1/spec.json`の"language"フィールドを確認）:
 
-#### Analysis Summary
-- Feature scope and complexity overview
-- Key technical challenges identified
-- Overall implementation approach recommendation
+#### 分析サマリー
+- 機能スコープと複雑度の概要
+- 特定された主要な技術的課題
+- 全体的な実装アプローチ推奨事項
 
-#### Existing Codebase Insights
-- Relevant existing components and their current responsibilities
-- Established patterns and conventions to follow
-- Reusable utilities and services available
+#### 既存コードベースインサイト
+- 関連する既存コンポーネントとその現在の責任
+- 従うべき確立されたパターンと規約
+- 利用可能な再利用可能ユーティリティとサービス
 
-#### Implementation Strategy Options
-For each viable approach:
-- **Approach**: [Extension/New/Hybrid]
-- **Rationale**: Why this approach makes sense
-- **Trade-offs**: Pros and cons of this approach
-- **Complexity**: [S/M/L/XL] with reasoning
+#### 実装戦略オプション
+各実行可能アプローチについて:
+- **アプローチ**: [拡張/新規/ハイブリッド]
+- **根拠**: このアプローチが理にかなう理由
+- **トレードオフ**: このアプローチの長所と短所
+- **複雑度**: [S/M/L/XL] と理由
 
-#### Technical Research Needs
-- External dependencies requiring investigation
-- Unknown technologies needing research
-- Integration patterns requiring proof-of-concept
-- Performance or security considerations to investigate
+#### 技術調査ニーズ
+- 調査が必要な外部依存関係
+- 研究が必要な未知の技術
+- 概念実証が必要な統合パターン
+- 調査すべきパフォーマンスまたはセキュリティの考慮事項
 
-#### Recommendations for Design Phase
-- Preferred implementation approach with rationale
-- Key architectural decisions that need to be made
-- Areas requiring further investigation during design
-- Potential risks to address in design phase
+#### 設計フェーズへの推奨事項
+- 根拠を持つ推奨実装アプローチ
+- 行う必要がある主要なアーキテクチャ決定
+- 設計中にさらに調査が必要な領域
+- 設計フェーズで対処すべき潜在的リスク
 
-## Instructions
+## 指示
 
-1. **Check spec.json for language** - Use the language specified in the metadata
-2. **Prerequisites validation** - Ensure requirements are approved
-3. **Thorough investigation** - Analyze existing codebase comprehensively
-4. **Multiple options** - Present viable implementation approaches
-5. **Information focus** - Provide analysis, not final decisions
-6. **Research identification** - Flag areas needing investigation
-7. **Design preparation** - Set up design phase for success
+1. **spec.jsonで言語を確認** - メタデータで指定された言語を使用
+2. **前提条件検証** - 要件が承認されていることを確認
+3. **徹底的な調査** - 既存コードベースを包括的に分析
+4. **複数オプション** - 実行可能な実装アプローチを提示
+5. **情報焦点** - 最終決定ではなく分析を提供
+6. **研究特定** - 調査が必要な領域をフラグ
+7. **設計準備** - 設計フェーズの成功のためのセットアップ
 
-**CRITICAL**: This is an analysis phase. Provide information and options, not final implementation decisions. The design phase will make strategic choices based on this analysis.
+**重要**: これは分析フェーズです。最終的な実装決定ではなく、情報とオプションを提供してください。設計フェーズがこの分析に基づいて戦略的選択を行います。
 
 ---
 
-## Next Phase: Design Generation
+## 次のフェーズ: 設計生成
 
-After validation, proceed to design phase:
+検証後、設計フェーズに進みます:
 
-**Generate design based on analysis:**
-Run `/kiro:spec-design $1` to create technical design document
+**分析に基づいて設計を生成:**
+`/kiro:spec-design $1` を実行して技術設計ドキュメントを作成
 
-**Auto-approve and proceed:**  
-Run `/kiro:spec-design $1 -y` to auto-approve requirements and generate design directly
+**自動承認して進む:**
+`/kiro:spec-design $1 -y` を実行して要件を自動承認し、直接設計を生成

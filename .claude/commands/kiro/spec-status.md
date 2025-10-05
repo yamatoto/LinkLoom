@@ -1,97 +1,97 @@
 ---
-description: Show specification status and progress
+description: 仕様のステータスと進捗を表示
 allowed-tools: Bash, Read, Glob, Write, Edit, MultiEdit, Update
 argument-hint: <feature-name>
 ---
 
-# Specification Status
+# 仕様ステータス
 
-Show current status and progress for feature: **$1**
+機能 **$1** の現在のステータスと進捗を表示します
 
-## Spec Context
+## 仕様コンテキスト
 
-### Spec Files
-- Spec directory: !`ls -la .kiro/specs/$1/ 2>/dev/null || echo "No spec directory found"`
-- Spec metadata: `.kiro/specs/$1/spec.json`
-- Requirements: `.kiro/specs/$1/requirements.md`
-- Design: `.kiro/specs/$1/design.md`
-- Tasks: `.kiro/specs/$1/tasks.md`
+### 仕様ファイル
+- 仕様ディレクトリ: !`ls -la .kiro/specs/$1/ 2>/dev/null || echo "仕様ディレクトリが見つかりません"`
+- 仕様メタデータ: `.kiro/specs/$1/spec.json`
+- 要件: `.kiro/specs/$1/requirements.md`
+- 設計: `.kiro/specs/$1/design.md`
+- タスク: `.kiro/specs/$1/tasks.md`
 
-### All Specs Overview
-- Available specs: !`ls -la .kiro/specs/ 2>/dev/null || echo "No specs directory found"`
-- Active specs: !`find .kiro/specs/ -name "spec.json" -exec grep -l "implementation_ready.*true" {} \; 2>/dev/null || echo "No active specs"`
+### すべての仕様の概要
+- 利用可能な仕様: !`ls -la .kiro/specs/ 2>/dev/null || echo "仕様ディレクトリが見つかりません"`
+- アクティブな仕様: !`find .kiro/specs/ -name "spec.json" -exec grep -l "implementation_ready.*true" {} \; 2>/dev/null || echo "アクティブな仕様なし"`
 
-## Task: Generate Status Report
+## タスク: ステータスレポートの生成
 
-Create comprehensive status report for the specification in the language specified in spec.json (check `.kiro/specs/$1/spec.json` for "language" field):
+spec.jsonで指定された言語で仕様の包括的なステータスレポートを作成（`.kiro/specs/$1/spec.json`の"language"フィールドを確認）:
 
-### 1. Specification Overview
-Display:
-- Feature name and description
-- Creation date and last update
-- Current phase (requirements/design/tasks/implementation)
-- Overall completion percentage
+### 1. 仕様概要
+表示内容:
+- 機能名と説明
+- 作成日と最終更新日
+- 現在のフェーズ（要件/設計/タスク/実装）
+- 全体の完了率
 
-### 2. Phase Status
-For each phase, show:
-- ✅ **Requirements Phase**: [completion %]
-  - Requirements count: [number]
-  - Acceptance criteria defined: [yes/no]
-  - Requirements coverage: [complete/partial/missing]
+### 2. フェーズステータス
+各フェーズについて表示:
+- ✅ **要件フェーズ**: [完了率 %]
+  - 要件数: [数]
+  - 受け入れ基準が定義されている: [はい/いいえ]
+  - 要件カバレッジ: [完全/部分的/不足]
 
-- ✅ **Design Phase**: [completion %]
-  - Architecture documented: [yes/no]
-  - Components defined: [yes/no]
-  - Diagrams created: [yes/no]
-  - Integration planned: [yes/no]
+- ✅ **設計フェーズ**: [完了率 %]
+  - アーキテクチャが文書化されている: [はい/いいえ]
+  - コンポーネントが定義されている: [はい/いいえ]
+  - 図が作成されている: [はい/いいえ]
+  - 統合が計画されている: [はい/いいえ]
 
-- ✅ **Tasks Phase**: [completion %]
-  - Total tasks: [number]
-  - Completed tasks: [number]
-  - Remaining tasks: [number]
-  - Blocked tasks: [number]
+- ✅ **タスクフェーズ**: [完了率 %]
+  - 総タスク数: [数]
+  - 完了したタスク: [数]
+  - 残りのタスク: [数]
+  - ブロックされたタスク: [数]
 
-### 3. Implementation Progress
-If in implementation phase:
-- Task completion breakdown
-- Current blockers or issues
-- Estimated time to completion
-- Next actions needed
+### 3. 実装の進捗
+実装フェーズの場合:
+- タスク完了の内訳
+- 現在のブロッカーまたは問題
+- 完了までの推定時間
+- 必要な次のアクション
 
-#### Task Completion Tracking
-- Parse tasks.md checkbox status: `- [x]` (completed) vs `- [ ]` (pending)
-- Count completed vs total tasks
-- Show completion percentage
-- Identify next uncompleted task
+#### タスク完了追跡
+- tasks.mdのチェックボックスステータスを解析: `- [x]`（完了） vs `- [ ]`（未完了）
+- 完了したタスクと総タスク数をカウント
+- 完了率を表示
+- 次の未完了タスクを特定
 
-### 4. Quality Metrics
-Show:
-- Requirements coverage: [percentage]
-- Design completeness: [percentage]
-- Task granularity: [appropriate/too large/too small]
-- Dependencies resolved: [yes/no]
+### 4. 品質メトリクス
+表示内容:
+- 要件カバレッジ: [パーセンテージ]
+- 設計の完全性: [パーセンテージ]
+- タスクの粒度: [適切/大きすぎる/小さすぎる]
+- 依存関係が解決されている: [はい/いいえ]
 
-### 5. Recommendations
-Based on status, provide:
-- Next steps to take
-- Potential issues to address
-- Suggested improvements
-- Missing elements to complete
+### 5. 推奨事項
+ステータスに基づいて提供:
+- 実行すべき次のステップ
+- 対処すべき潜在的な問題
+- 提案される改善
+- 完了するために不足している要素
 
-### 6. Steering Alignment
-Check alignment with steering documents:
-- Architecture consistency: [aligned/misaligned]
-- Technology stack compliance: [compliant/non-compliant]
-- Product requirements alignment: [aligned/misaligned]
+### 6. Steering整合性
+Steeringドキュメントとの整合性を確認:
+- アーキテクチャの一貫性: [整合/不整合]
+- 技術スタックのコンプライアンス: [準拠/非準拠]
+- プロダクト要件の整合性: [整合/不整合]
 
-## Instructions
+## 指示
 
-1. **Check spec.json for language** - Use the language specified in the metadata
-2. **Parse all spec files** to understand current state
-3. **Calculate completion percentages** for each phase
-4. **Identify next actions** based on current progress
-5. **Highlight any blockers** or issues
-6. **Provide clear recommendations** for moving forward
-7. **Check steering alignment** to ensure consistency
+1. **言語のためにspec.jsonを確認** - メタデータで指定された言語を使用
+2. **すべての仕様ファイルを解析** して現在の状態を理解
+3. **各フェーズの完了率を計算**
+4. **次のアクションを特定** 現在の進捗に基づいて
+5. **ブロッカーや問題を強調表示**
+6. **明確な推奨事項を提供** 前進するために
+7. **Steering整合性を確認** 一貫性を確保するため
 
-Generate status report that provides clear visibility into spec progress and next steps.
+仕様の進捗と次のステップへの明確な可視性を提供するステータスレポートを生成してください。

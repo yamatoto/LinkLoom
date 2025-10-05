@@ -1,172 +1,172 @@
 ---
-description: Create or update Kiro steering documents intelligently based on project state
+description: プロジェクト状態に基づいてKiro Steeringドキュメントをインテリジェントに作成または更新
 allowed-tools: Bash, Read, Write, Edit, MultiEdit, Glob, Grep, LS
 ---
 
-# Kiro Steering Management
+# Kiro Steering管理
 
-Intelligently create or update steering documents in `.kiro/steering/` to maintain accurate project knowledge for spec-driven development. This command detects existing documents and handles them appropriately.
+仕様駆動開発のための正確なプロジェクト知識を維持するため、`.kiro/steering/`内のSteeringドキュメントをインテリジェントに作成または更新します。このコマンドは既存のドキュメントを検出し、適切に処理します。
 
-## Existing Files Check
+## 既存ファイルチェック
 
-### Current steering documents status
-- Product overview: !`[ -f ".kiro/steering/product.md" ] && echo "✅ EXISTS - Will be updated preserving custom content" || echo "📝 Not found - Will be created"`
-- Technology stack: !`[ -f ".kiro/steering/tech.md" ] && echo "✅ EXISTS - Will be updated preserving custom content" || echo "📝 Not found - Will be created"`
-- Project structure: !`[ -f ".kiro/steering/structure.md" ] && echo "✅ EXISTS - Will be updated preserving custom content" || echo "📝 Not found - Will be created"`
-- Custom steering files: !`ls .kiro/steering/*.md 2>/dev/null | grep -v -E "(product|tech|structure)\.md$" | wc -l | awk '{if($1>0) print "🔧 " $1 " custom file(s) found - Will be preserved"; else print "📋 No custom files"}'`
+### 現在のSteeringドキュメントステータス
+- プロダクト概要: !`[ -f ".kiro/steering/product.md" ] && echo "✅ 存在 - カスタムコンテンツを保持して更新" || echo "📝 見つかりません - 作成されます"`
+- 技術スタック: !`[ -f ".kiro/steering/tech.md" ] && echo "✅ 存在 - カスタムコンテンツを保持して更新" || echo "📝 見つかりません - 作成されます"`
+- プロジェクト構造: !`[ -f ".kiro/steering/structure.md" ] && echo "✅ 存在 - カスタムコンテンツを保持して更新" || echo "📝 見つかりません - 作成されます"`
+- カスタムSteeringファイル: !`ls .kiro/steering/*.md 2>/dev/null | grep -v -E "(product|tech|structure)\.md$" | wc -l | awk '{if($1>0) print "🔧 " $1 " カスタムファイル発見 - 保持されます"; else print "📋 カスタムファイルなし"}'`
 
-## Project Analysis
+## プロジェクト分析
 
-### Current Project State
-- Project files: !`find . -path ./node_modules -prune -o -path ./.git -prune -o -path ./dist -prune -o -type f \( -name "*.py" -o -name "*.js" -o -name "*.ts" -o -name "*.jsx" -o -name "*.tsx" -o -name "*.java" -o -name "*.go" -o -name "*.rs" \) -print 2>/dev/null || echo "No source files found"`
-- Configuration files: !`find . -maxdepth 3 \( -name "package.json" -o -name "requirements.txt" -o -name "pom.xml" -o -name "Cargo.toml" -o -name "go.mod" -o -name "pyproject.toml" -o -name "tsconfig.json" \) 2>/dev/null || echo "No config files found"`
-- Documentation: !`find . -maxdepth 3 -path ./node_modules -prune -o -path ./.git -prune -o -path ./.kiro -prune -o \( -name "README*" -o -name "CHANGELOG*" -o -name "LICENSE*" -o -name "*.md" \) -print 2>/dev/null || echo "No documentation files found"`
+### 現在のプロジェクト状態
+- プロジェクトファイル: !`find . -path ./node_modules -prune -o -path ./.git -prune -o -path ./dist -prune -o -type f \( -name "*.py" -o -name "*.js" -o -name "*.ts" -o -name "*.jsx" -o -name "*.tsx" -o -name "*.java" -o -name "*.go" -o -name "*.rs" \) -print 2>/dev/null || echo "ソースファイルが見つかりません"`
+- 設定ファイル: !`find . -maxdepth 3 \( -name "package.json" -o -name "requirements.txt" -o -name "pom.xml" -o -name "Cargo.toml" -o -name "go.mod" -o -name "pyproject.toml" -o -name "tsconfig.json" \) 2>/dev/null || echo "設定ファイルが見つかりません"`
+- ドキュメント: !`find . -maxdepth 3 -path ./node_modules -prune -o -path ./.git -prune -o -path ./.kiro -prune -o \( -name "README*" -o -name "CHANGELOG*" -o -name "LICENSE*" -o -name "*.md" \) -print 2>/dev/null || echo "ドキュメントファイルが見つかりません"`
 
-### Recent Changes (if updating)
-- Last steering update: !`git log -1 --oneline -- .kiro/steering/ 2>/dev/null || echo "No previous steering commits"`
-- Commits since last steering update: !`LAST_COMMIT=$(git log -1 --format=%H -- .kiro/steering/ 2>/dev/null); if [ -n "$LAST_COMMIT" ]; then git log --oneline ${LAST_COMMIT}..HEAD --max-count=20 2>/dev/null || echo "Not a git repository"; else echo "No previous steering update found"; fi`
-- Working tree status: !`git status --porcelain 2>/dev/null || echo "Not a git repository"`
+### 最近の変更（更新時）
+- 最後のSteering更新: !`git log -1 --oneline -- .kiro/steering/ 2>/dev/null || echo "前回のSteeringコミットなし"`
+- 最後のSteering更新以降のコミット: !`LAST_COMMIT=$(git log -1 --format=%H -- .kiro/steering/ 2>/dev/null); if [ -n "$LAST_COMMIT" ]; then git log --oneline ${LAST_COMMIT}..HEAD --max-count=20 2>/dev/null || echo "Gitリポジトリではありません"; else echo "前回のSteering更新が見つかりません"; fi`
+- 作業ツリーステータス: !`git status --porcelain 2>/dev/null || echo "Gitリポジトリではありません"`
 
-### Existing Documentation
-- Main README: @README.md
-- Package configuration: @package.json
-- Python requirements: @requirements.txt
-- TypeScript config: @tsconfig.json
-- Project documentation: @docs/
-- Coding Agent Project memory: @AGENTS.md
+### 既存のドキュメント
+- メインREADME: @README.md
+- パッケージ設定: @package.json
+- Python要件: @requirements.txt
+- TypeScript設定: @tsconfig.json
+- プロジェクトドキュメント: @docs/
+- コーディングエージェントプロジェクトメモリ: @AGENTS.md
 
-## Smart Update Strategy
+## スマート更新戦略
 
-Based on the existing files check above, this command will:
+上記の既存ファイルチェックに基づき、このコマンドは以下を実行します:
 
-### For NEW files (showing "📝 Not found"):
-Generate comprehensive initial content covering all aspects of the project.
+### 新規ファイル（"📝 見つかりません"と表示）の場合:
+プロジェクトのすべての側面をカバーする包括的な初期コンテンツを生成します。
 
-### For EXISTING files (showing "✅ EXISTS"):
-1. **Preserve user customizations** - Any manual edits or custom sections
-2. **Update factual information** - Dependencies, file structures, commands
-3. **Add new sections** - Only if significant new capabilities exist
-4. **Mark deprecated content** - Rather than deleting
-5. **Maintain formatting** - Keep consistent with existing style
+### 既存ファイル（"✅ 存在"と表示）の場合:
+1. **ユーザーカスタマイズを保持** - 手動編集やカスタムセクション
+2. **事実情報を更新** - 依存関係、ファイル構造、コマンド
+3. **新しいセクションを追加** - 重要な新機能が存在する場合のみ
+4. **廃止されたコンテンツをマーク** - 削除ではなく
+5. **フォーマットを維持** - 既存のスタイルと一貫性を保つ
 
-## Inclusion Modes for Core Steering Files
+## コアSteeringファイルの包含モード
 
-The three core steering files (product.md, tech.md, structure.md) are designed to be **Always Included** - loaded in every AI interaction to provide consistent project context.
+3つのコアSteeringファイル（product.md、tech.md、structure.md）は**常に含まれる**ように設計されています - 一貫したプロジェクトコンテキストを提供するため、すべてのAIインタラクションで読み込まれます。
 
-### Understanding Inclusion Modes
-- **Always Included (Default for core files)**: Loaded in every interaction - ensures consistent project knowledge
-- **Conditional**: Loaded only when working with matching file patterns (mainly for custom steering)  
-- **Manual**: Referenced on-demand with @filename syntax (for specialized contexts)
+### 包含モードの理解
+- **常に含まれる（コアファイルのデフォルト）**: すべてのインタラクションで読み込まれる - 一貫したプロジェクト知識を保証
+- **条件付き**: マッチングファイルパターンで作業する場合のみ読み込まれる（主にカスタムSteeringに使用）
+- **手動**: @filename構文でオンデマンドで参照（専門的なコンテキスト用）
 
-### Core Files Strategy
-- `product.md`: Always - Business context needed for all development decisions
-- `tech.md`: Always - Technical constraints affect all code generation
-- `structure.md`: Always - Architectural decisions impact all file organization
+### コアファイル戦略
+- `product.md`: 常に - すべての開発決定にビジネスコンテキストが必要
+- `tech.md`: 常に - 技術的制約はすべてのコード生成に影響
+- `structure.md`: 常に - アーキテクチャの決定はすべてのファイル構成に影響
 
-## Task: Create or Update Steering Documents
+## タスク: Steeringドキュメントの作成または更新
 
-### 1. Product Overview (`product.md`)
+### 1. プロダクト概要（`product.md`）
 
-#### For NEW file:
-Generate comprehensive product overview including:
-- **Product Overview**: Brief description of what the product is
-- **Core Features**: Bulleted list of main capabilities
-- **Target Use Case**: Specific scenarios the product addresses
-- **Key Value Proposition**: Unique benefits and differentiators
+#### 新規ファイルの場合:
+以下を含む包括的なプロダクト概要を生成:
+- **プロダクト概要**: プロダクトが何であるかの簡単な説明
+- **コア機能**: 主要機能の箇条書きリスト
+- **ターゲットユースケース**: プロダクトが対処する特定のシナリオ
+- **主要な価値提案**: 独自の利点と差別化要因
 
-#### For EXISTING file:
-Update only if there are:
-- **New features** added to the product
-- **Removed features** or deprecated functionality
-- **Changed use cases** or target audience
-- **Updated value propositions** or benefits
+#### 既存ファイルの場合:
+以下がある場合のみ更新:
+- プロダクトに**追加された新機能**
+- **削除された機能**または廃止された機能
+- **変更されたユースケース**またはターゲットオーディエンス
+- **更新された価値提案**または利点
 
-### 2. Technology Stack (`tech.md`)
+### 2. 技術スタック（`tech.md`）
 
-#### For NEW file:
-Document the complete technology landscape:
-- **Architecture**: High-level system design
-- **Frontend**: Frameworks, libraries, build tools (if applicable)
-- **Backend**: Language, framework, server technology (if applicable)
-- **Development Environment**: Required tools and setup
-- **Common Commands**: Frequently used development commands
-- **Environment Variables**: Key configuration variables
-- **Port Configuration**: Standard ports used by services
+#### 新規ファイルの場合:
+完全な技術ランドスケープを文書化:
+- **アーキテクチャ**: 高レベルのシステム設計
+- **フロントエンド**: フレームワーク、ライブラリ、ビルドツール（該当する場合）
+- **バックエンド**: 言語、フレームワーク、サーバー技術（該当する場合）
+- **開発環境**: 必要なツールとセットアップ
+- **共通コマンド**: 頻繁に使用される開発コマンド
+- **環境変数**: 主要な設定変数
+- **ポート設定**: サービスで使用される標準ポート
 
-#### For EXISTING file:
-Check for changes in:
-- **New dependencies** added via package managers
-- **Removed libraries** or frameworks
-- **Version upgrades** of major dependencies
-- **New development tools** or build processes
-- **Changed environment variables** or configuration
-- **Modified port assignments** or service architecture
+#### 既存ファイルの場合:
+以下の変更を確認:
+- パッケージマネージャーを介して**追加された新しい依存関係**
+- **削除されたライブラリ**またはフレームワーク
+- 主要な依存関係の**バージョンアップグレード**
+- **新しい開発ツール**またはビルドプロセス
+- **変更された環境変数**または設定
+- **変更されたポート割り当て**またはサービスアーキテクチャ
 
-### 3. Project Structure (`structure.md`)
+### 3. プロジェクト構造（`structure.md`）
 
-#### For NEW file:
-Outline the codebase organization:
-- **Root Directory Organization**: Top-level structure with descriptions
-- **Subdirectory Structures**: Detailed breakdown of key directories
-- **Code Organization Patterns**: How code is structured
-- **File Naming Conventions**: Standards for naming files and directories
-- **Import Organization**: How imports/dependencies are organized
-- **Key Architectural Principles**: Core design decisions and patterns
+#### 新規ファイルの場合:
+コードベース構成の概要:
+- **ルートディレクトリ構成**: 説明付きのトップレベル構造
+- **サブディレクトリ構造**: 主要ディレクトリの詳細な分解
+- **コード構成パターン**: コードがどのように構造化されているか
+- **ファイル命名規則**: ファイルとディレクトリの命名基準
+- **インポート構成**: インポート/依存関係がどのように構成されているか
+- **主要アーキテクチャ原則**: コア設計決定とパターン
 
-#### For EXISTING file:
-Look for changes in:
-- **New directories** or major reorganization
-- **Changed file organization** patterns
-- **New or modified naming conventions**
-- **Updated architectural patterns** or principles
-- **Refactored code structure** or module boundaries
+#### 既存ファイルの場合:
+以下の変更を探す:
+- **新しいディレクトリ**または大規模な再編成
+- **変更されたファイル構成**パターン
+- **新しいまたは変更された命名規則**
+- **更新されたアーキテクチャパターン**または原則
+- **リファクタリングされたコード構造**またはモジュール境界
 
-### 4. Custom Steering Files
-If custom steering files exist:
-- **Preserve them** - Do not modify unless specifically outdated
-- **Check relevance** - Note if they reference removed features
-- **Suggest new custom files** - If new specialized areas emerge
+### 4. カスタムSteeringファイル
+カスタムSteeringファイルが存在する場合:
+- **保持する** - 特に古くなっていない限り変更しない
+- **関連性をチェック** - 削除された機能を参照している場合は記録
+- **新しいカスタムファイルを提案** - 新しい専門領域が出現した場合
 
-## Instructions
+## 指示
 
-1. **Create `.kiro/steering/` directory** if it doesn't exist
-2. **Check existing files** to determine create vs update mode
-3. **Analyze the codebase** using native tools (Glob, Grep, LS)
-4. **For NEW files**: Generate comprehensive initial documentation
-5. **For EXISTING files**: 
-   - Read current content first
-   - Preserve user customizations and comments
-   - Update only factual/technical information
-   - Maintain existing structure and style
-6. **Use clear markdown formatting** with proper headers and sections
-7. **Include concrete examples** where helpful for understanding
-8. **Focus on facts over assumptions** - document what exists
-9. **Follow spec-driven development principles**
+1. **`.kiro/steering/`ディレクトリを作成** 存在しない場合
+2. **既存ファイルをチェック** 作成モードと更新モードを判断
+3. **コードベースを分析** ネイティブツール（Glob、Grep、LS）を使用
+4. **新規ファイルの場合**: 包括的な初期ドキュメントを生成
+5. **既存ファイルの場合**:
+   - 最初に現在のコンテンツを読む
+   - ユーザーカスタマイズとコメントを保持
+   - 事実/技術情報のみを更新
+   - 既存の構造とスタイルを維持
+6. **明確なMarkdownフォーマットを使用** 適切な見出しとセクションで
+7. **理解に役立つ具体的な例を含める**
+8. **仮定よりも事実に焦点** - 存在するものを文書化
+9. **仕様駆動開発原則に従う**
 
-## Important Principles
+## 重要な原則
 
-### Security Guidelines
-- **Never include sensitive data**: No API keys, passwords, database credentials, or personal information
-- **Review before commit**: Always review steering content before version control
-- **Team sharing consideration**: Remember steering files are shared with all project collaborators
+### セキュリティガイドライン
+- **機密データを含めない**: APIキー、パスワード、データベース資格情報、個人情報は不可
+- **コミット前にレビュー**: バージョン管理前に常にSteeringコンテンツをレビュー
+- **チーム共有の考慮**: Steeringファイルはすべてのプロジェクト協力者と共有されることを忘れずに
 
-### Content Quality Guidelines  
-- **Single domain focus**: Each steering file should cover one specific area
-- **Clear, descriptive content**: Provide concrete examples and rationale for decisions
-- **Regular maintenance**: Review and update steering files after major project changes
-- **Actionable guidance**: Write specific, implementable guidelines rather than abstract principles
+### コンテンツ品質ガイドライン
+- **単一ドメイン焦点**: 各Steeringファイルは1つの特定の領域をカバーすべき
+- **明確で説明的なコンテンツ**: 決定の具体的な例と根拠を提供
+- **定期的なメンテナンス**: 主要なプロジェクト変更後にSteeringファイルをレビューして更新
+- **実行可能なガイダンス**: 抽象的な原則ではなく、具体的で実装可能なガイドラインを書く
 
-### Preservation Strategy
-- **User sections**: Any section not in the standard template should be preserved
-- **Custom examples**: User-added examples should be maintained
-- **Comments**: Inline comments or notes should be kept
-- **Formatting preferences**: Respect existing markdown style choices
+### 保持戦略
+- **ユーザーセクション**: 標準テンプレートにないセクションは保持すべき
+- **カスタム例**: ユーザーが追加した例は維持すべき
+- **コメント**: インラインコメントやノートは保持すべき
+- **フォーマット設定**: 既存のMarkdownスタイル選択を尊重
 
-### Update Philosophy
-- **Additive by default**: Add new information rather than replacing
-- **Mark deprecation**: Use strikethrough or [DEPRECATED] tags
-- **Date significant changes**: Add update timestamps for major changes
-- **Explain changes**: Brief notes on why something was updated
+### 更新哲学
+- **デフォルトで追加的**: 置き換えるのではなく新しい情報を追加
+- **廃止をマーク**: 取り消し線または[DEPRECATED]タグを使用
+- **重要な変更に日付**: 主要な変更に更新タイムスタンプを追加
+- **変更を説明**: 何かが更新された理由についての簡単なノート
 
-The goal is to maintain living documentation that stays current while respecting user customizations, supporting effective spec-driven development without requiring users to worry about losing their work.
+目標は、ユーザーのカスタマイズを尊重しながら最新の状態を保つ生きたドキュメントを維持し、ユーザーが自分の作業を失うことを心配することなく効果的な仕様駆動開発をサポートすることです。
 ultrathink

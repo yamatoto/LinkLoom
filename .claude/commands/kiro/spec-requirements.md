@@ -1,91 +1,91 @@
 ---
-description: Generate comprehensive requirements for a specification
+description: 仕様の包括的な要件を生成
 allowed-tools: Bash, Glob, Grep, LS, Read, Write, Edit, MultiEdit, Update, WebSearch, WebFetch
 argument-hint: <feature-name>
 ---
 
-# Requirements Generation
+# 要件生成
 
-Generate comprehensive requirements for feature: **$1**
+機能 **$1** の包括的な要件を生成します
 
-## Context Validation
+## コンテキスト検証
 
-### Steering Context
-- Architecture context: @.kiro/steering/structure.md
-- Technical constraints: @.kiro/steering/tech.md
-- Product context: @.kiro/steering/product.md
-- Custom steering: Load all "Always" mode custom steering files from .kiro/steering/
+### Steeringコンテキスト
+- アーキテクチャコンテキスト: @.kiro/steering/structure.md
+- 技術的制約: @.kiro/steering/tech.md
+- プロダクトコンテキスト: @.kiro/steering/product.md
+- カスタムSteering: .kiro/steering/からすべての"Always"モードのカスタムSteeringファイルを読み込む
 
-### Existing Spec Context
-- Current spec directory: !`ls -la .kiro/specs/$1/`
-- Current requirements: `.kiro/specs/$1/requirements.md`
-- Spec metadata: `.kiro/specs/$1/spec.json`
+### 既存仕様コンテキスト
+- 現在の仕様ディレクトリ: !`ls -la .kiro/specs/$1/`
+- 現在の要件: `.kiro/specs/$1/requirements.md`
+- 仕様メタデータ: `.kiro/specs/$1/spec.json`
 
-## Task: Generate Initial Requirements
+## タスク: 初期要件の生成
 
-### 1. Read Existing Requirements Template
-Read the existing requirements.md file created by spec-init to extract the project description.
+### 1. 既存要件テンプレートの読み込み
+spec-initによって作成された既存のrequirements.mdファイルを読み込み、プロジェクト説明を抽出します。
 
-### 2. Generate Complete Requirements
-Generate an initial set of requirements in EARS format based on the project description, then iterate with the user to refine them until they are complete and accurate.
+### 2. 完全な要件の生成
+プロジェクト説明に基づいてEARS形式で初期要件セットを生成し、完全で正確になるまでユーザーと反復して洗練させます。
 
-Don't focus on implementation details in this phase. Instead, just focus on writing requirements which will later be turned into a design.
+このフェーズでは実装の詳細に焦点を当てないでください。代わりに、後で設計に変換される要件の作成に集中してください。
 
-### Requirements Generation Guidelines
-1. **Focus on Core Functionality**: Start with the essential features from the user's idea
-2. **Use EARS Format**: All acceptance criteria must use proper EARS syntax
-3. **No Sequential Questions**: Generate initial version first, then iterate based on user feedback
-4. **Keep It Manageable**: Create a solid foundation that can be expanded through user review
-5. **Choose an appropriate subject**: For software projects, use the concrete system/service name (e.g., "Checkout Service") instead of a generic subject. For non-software, choose a responsible subject (e.g., process/workflow, team/role, artifact/document, campaign, protocol).
+### 要件生成ガイドライン
+1. **コア機能に焦点**: ユーザーのアイデアから本質的な機能から始める
+2. **EARS形式を使用**: すべての受け入れ基準は適切なEARS構文を使用する必要がある
+3. **順次質問なし**: 最初にバージョンを生成し、その後ユーザーフィードバックに基づいて反復
+4. **管理可能に保つ**: ユーザーレビューを通じて拡張可能な堅固な基盤を作成
+5. **適切な主語を選択**: ソフトウェアプロジェクトの場合、一般的な主語の代わりに具体的なシステム/サービス名（例: "チェックアウトサービス"）を使用。ソフトウェア以外の場合、責任のある主語（例: プロセス/ワークフロー、チーム/役割、成果物/ドキュメント、キャンペーン、プロトコル）を選択。
 
-### 3. EARS Format Requirements
+### 3. EARS形式要件
 
-**EARS (Easy Approach to Requirements Syntax)** is the recommended format for acceptance criteria:
+**EARS（Easy Approach to Requirements Syntax）**は受け入れ基準に推奨される形式です:
 
-**Primary EARS Patterns:**
-- WHEN [event/condition] THEN [system/subject] SHALL [response]
-- IF [precondition/state] THEN [system/subject] SHALL [response]
-- WHILE [ongoing condition] THE [system/subject] SHALL [continuous behavior]
-- WHERE [location/context/trigger] THE [system/subject] SHALL [contextual behavior]
+**主要EARSパターン:**
+- WHEN [イベント/条件] THEN [システム/主語] SHALL [応答]
+- IF [事前条件/状態] THEN [システム/主語] SHALL [応答]
+- WHILE [継続的条件] THE [システム/主語] SHALL [継続的振る舞い]
+- WHERE [場所/コンテキスト/トリガー] THE [システム/主語] SHALL [文脈的振る舞い]
 
-**Combined Patterns:**
-- WHEN [event] AND [additional condition] THEN [system/subject] SHALL [response]
-- IF [condition] AND [additional condition] THEN [system/subject] SHALL [response]
+**組み合わせパターン:**
+- WHEN [イベント] AND [追加条件] THEN [システム/主語] SHALL [応答]
+- IF [条件] AND [追加条件] THEN [システム/主語] SHALL [応答]
 
-### 4. Requirements Document Structure
-Update requirements.md with complete content in the language specified in spec.json (check `.kiro/specs/$1/spec.json` for "language" field):
+### 4. 要件ドキュメント構造
+spec.jsonで指定された言語で完全なコンテンツを含むrequirements.mdを更新（`.kiro/specs/$1/spec.json`の"language"フィールドを確認）:
 
 ```markdown
 # Requirements Document
 
 ## Introduction
-[Clear introduction summarizing the feature and its business value]
+[機能とそのビジネス価値を要約する明確な導入]
 
 ## Requirements
 
-### Requirement 1: [Major Objective Area]
-**Objective:** As a [role/stakeholder], I want [feature/capability/outcome], so that [benefit]
+### Requirement 1: [主要目標領域]
+**Objective:** [役割/ステークホルダー]として、[機能/能力/成果]を望む。それにより[利益]を得る。
 
-#### Acceptance Criteria
-This section should have EARS requirements
+#### 受け入れ条件
+このセクションにはEARS要件が必要
 
-1. WHEN [event] THEN [system/subject] SHALL [response]
-2. IF [precondition] THEN [system/subject] SHALL [response]
-3. WHILE [ongoing condition] THE [system/subject] SHALL [continuous behavior]
-4. WHERE [location/context/trigger] THE [system/subject] SHALL [contextual behavior]
+1. WHEN [イベント] THEN [システム/主語] SHALL [応答]
+2. IF [事前条件] THEN [システム/主語] SHALL [応答]
+3. WHILE [継続的条件] THE [システム/主語] SHALL [継続的振る舞い]
+4. WHERE [場所/コンテキスト/トリガー] THE [システム/主語] SHALL [文脈的振る舞い]
 
-### Requirement 2: [Next Major Objective Area]
-**Objective:** As a [role/stakeholder], I want [feature/capability/outcome], so that [benefit]
+### Requirement 2: [次の主要目標領域]
+**Objective:** [役割/ステークホルダー]として、[機能/能力/成果]を望む。それにより[利益]を得る。
 
-1. WHEN [event] THEN [system/subject] SHALL [response]
-2. WHEN [event] AND [condition] THEN [system/subject] SHALL [response]
+1. WHEN [イベント] THEN [システム/主語] SHALL [応答]
+2. WHEN [イベント] AND [条件] THEN [システム/主語] SHALL [応答]
 
-### Requirement 3: [Additional Major Areas]
-[Continue pattern for all major functional areas]
+### Requirement 3: [追加の主要領域]
+[すべての主要機能領域のパターンを継続]
 ```
 
-### 5. Update Metadata
-Update spec.json with:
+### 5. メタデータの更新
+spec.jsonを以下で更新:
 ```json
 {
   "phase": "requirements-generated",
@@ -99,32 +99,32 @@ Update spec.json with:
 }
 ```
 
-### 6. Document Generation Only
-Generate the requirements document content ONLY. Do not include any review or approval instructions in the actual document file.
+### 6. ドキュメント生成のみ
+要件ドキュメントのコンテンツのみを生成してください。実際のドキュメントファイルにレビューや承認の指示を含めないでください。
 
 ---
 
-## Next Phase: Interactive Approval
+## 次のフェーズ: インタラクティブ承認
 
-After generating requirements.md, review the requirements and choose:
+requirements.mdを生成した後、要件をレビューして選択してください:
 
-**If requirements look good:**
-Run `/kiro:spec-design $1 -y` to proceed to design phase
+**要件が良好な場合:**
+設計フェーズに進むために`/kiro:spec-design $1 -y`を実行
 
-**If requirements need modification:**
-Request changes, then re-run this command after modifications
+**要件の修正が必要な場合:**
+変更を要求し、修正後にこのコマンドを再実行
 
-The `-y` flag auto-approves requirements and generates design directly, streamlining the workflow while maintaining review enforcement.
+`-y`フラグは要件を自動承認し、設計を直接生成することで、レビューの実施を維持しながらワークフローを合理化します。
 
-## Instructions
+## 指示
 
-1. **Check spec.json for language** - Use the language specified in the metadata
-2. **Generate initial requirements** based on the feature idea WITHOUT asking sequential questions first
-3. **Apply EARS format** - Use proper EARS syntax patterns for all acceptance criteria
-4. **Focus on core functionality** - Start with essential features and user workflows
-5. **Structure clearly** - Group related functionality into logical requirement areas
-6. **Make requirements testable** - Each acceptance criterion should be verifiable
-7. **Update tracking metadata** upon completion
+1. **言語のためにspec.jsonを確認** - メタデータで指定された言語を使用
+2. **初期要件を生成** 最初に順次質問をせずに機能アイデアに基づいて
+3. **EARS形式を適用** - すべての受け入れ基準に適切なEARS構文パターンを使用
+4. **コア機能に焦点** - 本質的な機能とユーザーワークフローから始める
+5. **明確に構造化** - 関連する機能を論理的な要件領域にグループ化
+6. **要件をテスト可能にする** - 各受け入れ基準は検証可能であるべき
+7. **追跡メタデータを更新** 完了時
 
-Generate requirements that provide a solid foundation for the design phase, focusing on the core functionality from the feature idea.
+機能アイデアからコア機能に焦点を当て、設計フェーズのための堅固な基盤を提供する要件を生成してください。
 think

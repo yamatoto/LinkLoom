@@ -1,180 +1,180 @@
 ---
-description: Interactive technical design quality review and validation
+description: インタラクティブな技術設計品質レビューと検証
 allowed-tools: Read, Glob, Grep
 argument-hint: <feature-name>
 ---
 
-# Technical Design Validation
+# 技術設計検証
 
-Interactive design quality review for feature: **$1**
+機能 **$1** のインタラクティブな設計品質レビュー
 
-## Context Loading
+## コンテキスト読み込み
 
-### Prerequisites Validation
-- Design document must exist: `.kiro/specs/$1/design.md`
-- If not exist, stop with message: "Run `/kiro:spec-design $1` first to generate design document"
+### 前提条件の検証
+- 設計ドキュメントが存在する必要があります: `.kiro/specs/$1/design.md`
+- 存在しない場合、以下のメッセージで停止: "最初に `/kiro:spec-design $1` を実行して設計ドキュメントを生成してください"
 
-### Review Context
-- Spec metadata: @.kiro/specs/$1/spec.json
-- Requirements document: @.kiro/specs/$1/requirements.md
-- Design document: @.kiro/specs/$1/design.md
-- Core steering documents:
-  - Architecture: @.kiro/steering/structure.md
-  - Technology: @.kiro/steering/tech.md
-  - Product context: @.kiro/steering/product.md
-- Custom steering: All additional `.md` files in `.kiro/steering/` directory
+### レビューコンテキスト
+- 仕様メタデータ: @.kiro/specs/$1/spec.json
+- 要件ドキュメント: @.kiro/specs/$1/requirements.md
+- 設計ドキュメント: @.kiro/specs/$1/design.md
+- コアSteeringドキュメント:
+  - アーキテクチャ: @.kiro/steering/structure.md
+  - 技術: @.kiro/steering/tech.md
+  - プロダクトコンテキスト: @.kiro/steering/product.md
+- カスタムSteering: `.kiro/steering/` ディレクトリ内のすべての追加 `.md` ファイル
 
-## Task: Interactive Design Quality Review
+## タスク: インタラクティブな設計品質レビュー
 
-### Review Methodology
+### レビュー方法論
 
-**Focus**: Critical issues only - limit to 3 most important concerns
-**Format**: Interactive dialogue with immediate feedback and improvement suggestions
-**Outcome**: GO/NO-GO decision with clear rationale
+**焦点**: 重大な問題のみ - 最も重要な3つの懸念事項に限定
+**形式**: 即座のフィードバックと改善提案を伴うインタラクティブな対話
+**成果**: 明確な根拠を持つGO/NO-GO決定
 
-### Core Review Criteria
+### コアレビュー基準
 
-#### 1. Existing Architecture Alignment (Critical)
-**Evaluation Points**:
-- Integration with existing system boundaries and layers
-- Consistency with established architectural patterns
-- Proper dependency direction and coupling management
-- Alignment with current module organization and responsibilities
+#### 1. 既存アーキテクチャとの整合性（重要）
+**評価ポイント**:
+- 既存のシステム境界とレイヤーとの統合
+- 確立されたアーキテクチャパターンとの一貫性
+- 適切な依存関係の方向と結合管理
+- 現在のモジュール構成と責任との整合性
 
-**Review Questions**:
-- Does this design respect existing architectural boundaries?
-- Are new components properly integrated with existing systems?
-- Does the design follow established patterns and conventions?
+**レビュー質問**:
+- この設計は既存のアーキテクチャ境界を尊重していますか？
+- 新しいコンポーネントは既存システムと適切に統合されていますか？
+- 設計は確立されたパターンと規約に従っていますか？
 
-#### 2. Design Consistency & Standards
-**Evaluation Points**:
-- Adherence to project naming conventions and code standards
-- Consistent error handling and logging strategies
-- Uniform approach to configuration and dependency management
-- Alignment with established data modeling patterns
+#### 2. 設計の一貫性と標準
+**評価ポイント**:
+- プロジェクトの命名規則とコード標準への準拠
+- 一貫したエラー処理とログ戦略
+- 設定と依存関係管理への統一的なアプローチ
+- 確立されたデータモデリングパターンとの整合性
 
-**Review Questions**:
-- Is the design consistent with existing code standards?
-- Are error handling and configuration approaches unified?
-- Does naming and structure follow project conventions?
+**レビュー質問**:
+- 設計は既存のコード標準と一貫していますか？
+- エラー処理と設定のアプローチは統一されていますか？
+- 命名と構造はプロジェクトの規約に従っていますか？
 
-#### 3. Extensibility & Maintainability
-**Evaluation Points**:
-- Design flexibility for future requirements changes
-- Clear separation of concerns and single responsibility principle
-- Testability and debugging considerations
-- Documentation and code clarity requirements
+#### 3. 拡張性と保守性
+**評価ポイント**:
+- 将来の要件変更に対する設計の柔軟性
+- 関心の明確な分離と単一責任原則
+- テスタビリティとデバッグの考慮事項
+- ドキュメントとコードの明確性要件
 
-**Review Questions**:
-- How well does this design handle future changes?
-- Are responsibilities clearly separated and testable?
-- Is the design complexity appropriate for the requirements?
+**レビュー質問**:
+- この設計は将来の変更にどの程度対応できますか？
+- 責任は明確に分離されテスト可能ですか？
+- 設計の複雑さは要件に対して適切ですか？
 
-#### 4. Type Safety & Interface Design
-**Evaluation Points** (for TypeScript projects):
-- Proper type definitions and interface contracts
-- Avoidance of `any` types and unsafe patterns
-- Clear API boundaries and data structure definitions
-- Input validation and error handling coverage
+#### 4. 型安全性とインターフェース設計
+**評価ポイント**（TypeScriptプロジェクトの場合）:
+- 適切な型定義とインターフェース契約
+- `any` 型と安全でないパターンの回避
+- 明確なAPI境界とデータ構造定義
+- 入力検証とエラー処理のカバレッジ
 
-**Review Questions**:
-- Are types properly defined and interfaces clear?
-- Is the API design robust and well-defined?
-- Are edge cases and error conditions handled appropriately?
+**レビュー質問**:
+- 型は適切に定義されインターフェースは明確ですか？
+- API設計は堅牢で明確に定義されていますか？
+- エッジケースとエラー条件は適切に処理されていますか？
 
-### Interactive Review Process
+### インタラクティブレビュープロセス
 
-#### Step 1: Design Analysis
-Thoroughly analyze the design document against all review criteria, identifying the most critical issues that could impact:
-- System integration and compatibility
-- Long-term maintainability
-- Implementation complexity and risks
-- Requirements fulfillment accuracy
+#### ステップ1: 設計分析
+すべてのレビュー基準に対して設計ドキュメントを徹底的に分析し、以下に影響を与える可能性のある最も重大な問題を特定します:
+- システム統合と互換性
+- 長期的な保守性
+- 実装の複雑さとリスク
+- 要件充足の正確性
 
-#### Step 2: Critical Issues Identification
-**Limit to 3 most important concerns maximum**. For each critical issue:
+#### ステップ2: 重大な問題の特定
+**最大3つの最も重要な懸念事項に限定**。各重大な問題について:
 
-**Issue Format**:
+**問題フォーマット**:
 ```
-🔴 **Critical Issue [1-3]**: [Brief title]
-**Concern**: [Specific problem description]
-**Impact**: [Why this matters for the project]
-**Suggestion**: [Concrete improvement recommendation]
+🔴 **重大な問題 [1-3]**: [簡潔なタイトル]
+**懸念事項**: [具体的な問題の説明]
+**影響**: [プロジェクトにとってこれが重要な理由]
+**提案**: [具体的な改善推奨事項]
 ```
 
-#### Step 3: Design Strengths Recognition
-Acknowledge 1-2 strong aspects of the design to maintain balanced feedback.
+#### ステップ3: 設計の強みの認識
+バランスの取れたフィードバックを維持するため、設計の1〜2つの強力な側面を認識します。
 
-#### Step 4: GO/NO-GO Decision
+#### ステップ4: GO/NO-GO決定
 
-**GO Criteria**:
-- No critical architectural misalignment
-- Requirements adequately addressed
-- Implementation path is clear and reasonable
-- Risks are acceptable and manageable
+**GO基準**:
+- 重大なアーキテクチャの不整合がない
+- 要件が適切に対処されている
+- 実装パスが明確で合理的
+- リスクが許容可能で管理可能
 
-**NO-GO Criteria**:
-- Fundamental architectural conflicts
-- Critical requirements not addressed
-- Implementation approach has high failure risk
-- Design complexity disproportionate to requirements
+**NO-GO基準**:
+- 根本的なアーキテクチャの競合
+- 重大な要件が対処されていない
+- 実装アプローチに高い失敗リスクがある
+- 設計の複雑さが要件に対して不釣り合い
 
-### Output Format
+### 出力フォーマット
 
-Generate review in the language specified in spec.json (check `.kiro/specs/$1/spec.json` for "language" field):
+spec.jsonで指定された言語でレビューを生成（`.kiro/specs/$1/spec.json`の"language"フィールドを確認）:
 
-#### Design Review Summary
-Brief overview of the design's overall quality and readiness.
+#### 設計レビューサマリー
+設計の全体的な品質と準備状況の簡単な概要。
 
-#### Critical Issues (Maximum 3)
-For each issue identified:
-- **Issue**: Clear problem statement
-- **Impact**: Why it matters
-- **Recommendation**: Specific improvement suggestion
+#### 重大な問題（最大3つ）
+特定された各問題について:
+- **問題**: 明確な問題ステートメント
+- **影響**: それが重要な理由
+- **推奨事項**: 具体的な改善提案
 
-#### Design Strengths
-1-2 positive aspects worth highlighting.
+#### 設計の強み
+強調する価値のある1〜2つの肯定的な側面。
 
-#### Final Assessment
-**Decision**: GO / NO-GO
-**Rationale**: Clear reasoning for the decision
-**Next Steps**: What should happen next
+#### 最終評価
+**決定**: GO / NO-GO
+**根拠**: 決定の明確な理由
+**次のステップ**: 次に何をすべきか
 
-#### Interactive Discussion
-Engage in dialogue about:
-- Designer's perspective on identified issues
-- Alternative approaches or trade-offs
-- Clarification of design decisions
-- Agreement on necessary changes (if any)
+#### インタラクティブディスカッション
+以下について対話を行う:
+- 特定された問題に対する設計者の視点
+- 代替アプローチまたはトレードオフ
+- 設計決定の明確化
+- 必要な変更（ある場合）への合意
 
-## Review Guidelines
+## レビューガイドライン
 
-1. **Critical Focus**: Only flag issues that significantly impact success
-2. **Constructive Tone**: Provide solutions, not just criticism
-3. **Interactive Approach**: Engage in dialogue rather than one-way evaluation
-4. **Balanced Assessment**: Recognize both strengths and weaknesses
-5. **Clear Decision**: Make definitive GO/NO-GO recommendation
-6. **Actionable Feedback**: Ensure all suggestions are implementable
+1. **重要事項に焦点**: 成功に大きく影響する問題のみをフラグ
+2. **建設的なトーン**: 批判だけでなく解決策を提供
+3. **インタラクティブアプローチ**: 一方的な評価ではなく対話を行う
+4. **バランスの取れた評価**: 強みと弱みの両方を認識
+5. **明確な決定**: 明確なGO/NO-GO推奨を行う
+6. **実行可能なフィードバック**: すべての提案が実装可能であることを確認
 
-## Instructions
+## 指示
 
-1. **Load all context documents** - Understand full project scope
-2. **Analyze design thoroughly** - Review against all criteria
-3. **Identify critical issues only** - Focus on most important problems
-4. **Engage interactively** - Discuss findings with user
-5. **Make clear decision** - Provide definitive GO/NO-GO
-6. **Guide next steps** - Clear direction for proceeding
+1. **すべてのコンテキストドキュメントを読み込む** - プロジェクト全体のスコープを理解
+2. **設計を徹底的に分析** - すべての基準に対してレビュー
+3. **重大な問題のみを特定** - 最も重要な問題に焦点
+4. **インタラクティブに関与** - ユーザーと調査結果を議論
+5. **明確な決定を下す** - 明確なGO/NO-GOを提供
+6. **次のステップをガイド** - 進行のための明確な方向性
 
-**Remember**: This is quality assurance, not perfection seeking. The goal is ensuring the design is solid enough to proceed to implementation with acceptable risk.
+**注意**: これは品質保証であり、完璧を求めることではありません。目標は、許容可能なリスクで実装に進むのに十分堅牢な設計であることを確認することです。
 
 ---
 
-## Next Phase: Task Generation
+## 次のフェーズ: タスク生成
 
-After design validation:
+設計検証後:
 
-**If design passes validation (GO decision):**
-Run `/kiro:spec-tasks $1` to generate implementation tasks
+**設計が検証に合格した場合（GO決定）:**
+`/kiro:spec-tasks $1` を実行して実装タスクを生成
 
-**Auto-approve and proceed:**
-Run `/kiro:spec-tasks $1 -y` to auto-approve requirements and design, then generate tasks directly
+**自動承認して進む:**
+`/kiro:spec-tasks $1 -y` を実行して要件と設計を自動承認し、直接タスクを生成

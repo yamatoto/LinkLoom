@@ -1,153 +1,153 @@
 ---
-description: Create custom Kiro steering documents for specialized project contexts
+description: 専門的なプロジェクトコンテキスト用のカスタムKiro Steeringドキュメントを作成
 allowed-tools: Bash, Read, Write, Edit, MultiEdit, Glob, Grep, LS
 ---
 
-# Kiro Custom Steering Creation
+# Kiroカスタム Steering作成
 
-Create custom steering documents in `.kiro/steering/` for specialized contexts beyond the three foundational files (product.md, tech.md, structure.md).
+3つの基礎ファイル（product.md、tech.md、structure.md）を超えた専門的なコンテキスト用に、`.kiro/steering/`にカスタムSteeringドキュメントを作成します。
 
-## Current Steering Status
+## 現在のSteeringステータス
 
-### Existing Steering Documents
-- Core steering files: !`ls -la .kiro/steering/*.md 2>/dev/null || echo "No steering directory found"`
-- Custom steering count: !`if [ -d ".kiro/steering" ]; then count=0; for f in .kiro/steering/*.md; do if [ -f "$f" ] && [ "$f" != ".kiro/steering/product.md" ] && [ "$f" != ".kiro/steering/tech.md" ] && [ "$f" != ".kiro/steering/structure.md" ]; then count=$((count + 1)); fi; done; echo "$count"; else echo "0"; fi`
+### 既存のSteeringドキュメント
+- コアSteeringファイル: !`ls -la .kiro/steering/*.md 2>/dev/null || echo "Steeringディレクトリが見つかりません"`
+- カスタムSteering数: !`if [ -d ".kiro/steering" ]; then count=0; for f in .kiro/steering/*.md; do if [ -f "$f" ] && [ "$f" != ".kiro/steering/product.md" ] && [ "$f" != ".kiro/steering/tech.md" ] && [ "$f" != ".kiro/steering/structure.md" ]; then count=$((count + 1)); fi; done; echo "$count"; else echo "0"; fi`
 
-### Project Analysis
-- Specialized areas: !`find . -path ./node_modules -prune -o -path ./.git -prune -o -type d \( -name "test*" -o -name "spec*" -o -name "api" -o -name "auth" -o -name "security" \) -print 2>/dev/null || echo "No specialized directories found"`
-- Config patterns: !`find . -path ./node_modules -prune -o \( -name "*.config.*" -o -name "*rc.*" -o -name ".*rc" \) -print 2>/dev/null || echo "No config files found"`
+### プロジェクト分析
+- 専門領域: !`find . -path ./node_modules -prune -o -path ./.git -prune -o -type d \( -name "test*" -o -name "spec*" -o -name "api" -o -name "auth" -o -name "security" \) -print 2>/dev/null || echo "専門ディレクトリが見つかりません"`
+- 設定パターン: !`find . -path ./node_modules -prune -o \( -name "*.config.*" -o -name "*rc.*" -o -name ".*rc" \) -print 2>/dev/null || echo "設定ファイルが見つかりません"`
 
-## Task: Create Custom Steering Document
+## タスク: カスタムSteeringドキュメントの作成
 
-You will create a new custom steering document based on user requirements. Common use cases include:
+ユーザー要件に基づいて新しいカスタムSteeringドキュメントを作成します。一般的な使用例には以下が含まれます:
 
-### Common Custom Steering Types
+### 一般的なカスタムSteeringタイプ
 
-1. **API Standards** (`api-standards.md`)
-   - REST/GraphQL conventions
-   - Error handling patterns
-   - Authentication/authorization approaches
-   - API versioning strategy
+1. **API標準** (`api-standards.md`)
+   - REST/GraphQL規約
+   - エラー処理パターン
+   - 認証/認可アプローチ
+   - APIバージョニング戦略
 
-2. **Testing Approach** (`testing.md`)
-   - Test file organization
-   - Naming conventions for tests
-   - Mocking strategies
-   - Coverage requirements
-   - E2E vs unit vs integration testing
+2. **テストアプローチ** (`testing.md`)
+   - テストファイル構成
+   - テストの命名規則
+   - モック戦略
+   - カバレッジ要件
+   - E2E vs ユニット vs 統合テスト
 
-3. **Code Style Guidelines** (`code-style.md`)
-   - Language-specific conventions
-   - Formatting rules beyond linters
-   - Comment standards
-   - Function/variable naming patterns
-   - Code organization principles
+3. **コードスタイルガイドライン** (`code-style.md`)
+   - 言語固有の規約
+   - リンターを超えるフォーマットルール
+   - コメント基準
+   - 関数/変数の命名パターン
+   - コード構成原則
 
-4. **Security Policies** (`security.md`)
-   - Input validation requirements
-   - Authentication patterns
-   - Secrets management
-   - OWASP compliance guidelines
-   - Security review checklist
+4. **セキュリティポリシー** (`security.md`)
+   - 入力検証要件
+   - 認証パターン
+   - シークレット管理
+   - OWASPコンプライアンスガイドライン
+   - セキュリティレビューチェックリスト
 
-5. **Database Conventions** (`database.md`)
-   - Schema design patterns
-   - Migration strategies
-   - Query optimization guidelines
-   - Connection pooling settings
-   - Backup and recovery procedures
+5. **データベース規約** (`database.md`)
+   - スキーマ設計パターン
+   - マイグレーション戦略
+   - クエリ最適化ガイドライン
+   - コネクションプーリング設定
+   - バックアップとリカバリ手順
 
-6. **Performance Standards** (`performance.md`)
-   - Load time requirements
-   - Memory usage limits
-   - Optimization techniques
-   - Caching strategies
-   - Monitoring and profiling
+6. **パフォーマンス基準** (`performance.md`)
+   - 読み込み時間要件
+   - メモリ使用制限
+   - 最適化技術
+   - キャッシング戦略
+   - モニタリングとプロファイリング
 
-7. **Deployment Workflow** (`deployment.md`)
-   - CI/CD pipeline stages
-   - Environment configurations
-   - Release procedures
-   - Rollback strategies
-   - Health check requirements
+7. **デプロイワークフロー** (`deployment.md`)
+   - CI/CDパイプラインステージ
+   - 環境設定
+   - リリース手順
+   - ロールバック戦略
+   - ヘルスチェック要件
 
-## Inclusion Mode Selection
+## 包含モード選択
 
-Choose the inclusion mode based on how frequently and in what context this steering document should be referenced:
+このSteeringドキュメントをどの頻度とコンテキストで参照すべきかに基づいて包含モードを選択します:
 
-### 1. Always Included (Use sparingly for custom files)
-- **When to use**: Universal standards that apply to ALL code (security policies, core conventions)
-- **Impact**: Increases context size for every interaction
-- **Example**: `security-standards.md` for critical security requirements
-- **Recommendation**: Only use for truly universal guidelines
+### 1. 常に含まれる（カスタムファイルでは控えめに使用）
+- **使用する場合**: すべてのコードに適用される普遍的な基準（セキュリティポリシー、コア規約）
+- **影響**: すべてのインタラクションでコンテキストサイズが増加
+- **例**: 重要なセキュリティ要件のための`security-standards.md`
+- **推奨**: 本当に普遍的なガイドラインにのみ使用
 
-### 2. Conditional Inclusion (Recommended for most custom files)  
-- **When to use**: Domain-specific guidelines for particular file types or directories
-- **File patterns**: `"*.test.js"`, `"src/api/**/*"`, `"**/auth/*"`, `"*.config.*"`
-- **Example**: `testing-approach.md` only loads when editing test files
-- **Benefits**: Relevant context without overwhelming general interactions
+### 2. 条件付き包含（ほとんどのカスタムファイルに推奨）
+- **使用する場合**: 特定のファイルタイプやディレクトリのドメイン固有ガイドライン
+- **ファイルパターン**: `"*.test.js"`, `"src/api/**/*"`, `"**/auth/*"`, `"*.config.*"`
+- **例**: テストファイルを編集する場合のみ読み込まれる`testing-approach.md`
+- **利点**: 一般的なインタラクションを圧倒することなく関連するコンテキスト
 
-### 3. Manual Inclusion (Best for specialized contexts)
-- **When to use**: Specialized knowledge needed occasionally 
-- **Usage**: Reference with `@filename.md` during specific conversations
-- **Example**: `deployment-runbook.md` for deployment-specific tasks
-- **Benefits**: Available when needed, doesn't clutter routine interactions
+### 3. 手動包含（専門的なコンテキストに最適）
+- **使用する場合**: 時々必要とされる専門知識
+- **使用方法**: 特定の会話中に`@filename.md`で参照
+- **例**: デプロイ固有のタスクのための`deployment-runbook.md`
+- **利点**: 必要な時に利用可能で、日常的なインタラクションを散らかさない
 
-## Document Structure Guidelines
+## ドキュメント構造ガイドライン
 
-Create the custom steering document with:
+以下を含むカスタムSteeringドキュメントを作成:
 
-1. **Clear Title and Purpose**
-   - What aspect of the project this document covers
-   - When this guidance should be applied
+1. **明確なタイトルと目的**
+   - このドキュメントがカバーするプロジェクトの側面
+   - このガイダンスをいつ適用すべきか
 
-2. **Specific Guidelines**
-   - Concrete rules and patterns to follow
-   - Rationale for important decisions
+2. **具体的なガイドライン**
+   - 従うべき具体的なルールとパターン
+   - 重要な決定の根拠
 
-3. **Code Examples**
-   - Show correct implementation patterns
-   - Include counter-examples if helpful
+3. **コード例**
+   - 正しい実装パターンを示す
+   - 役立つ場合は反例を含める
 
-4. **Integration Points**
-   - How this relates to other steering documents
-   - Dependencies or prerequisites
+4. **統合ポイント**
+   - 他のSteeringドキュメントとの関係
+   - 依存関係または前提条件
 
-## Security and Quality Guidelines
+## セキュリティと品質ガイドライン
 
-### Security Requirements
-- **Never include sensitive data**: No API keys, passwords, database URLs, secrets
-- **Review sensitive context**: Avoid internal server names, private API endpoints
-- **Team access awareness**: All steering content is shared with team members
+### セキュリティ要件
+- **機密データを含めない**: APIキー、パスワード、データベースURL、シークレットは不可
+- **機密コンテキストをレビュー**: 内部サーバー名、プライベートAPIエンドポイントを避ける
+- **チームアクセス意識**: すべてのSteeringコンテンツはチームメンバーと共有される
 
-### Content Quality Standards
-- **Single responsibility**: One steering file = one domain (don't mix API + database guidelines)
-- **Concrete examples**: Include code snippets and real project examples  
-- **Clear rationale**: Explain WHY certain approaches are preferred
-- **Maintainable size**: Target 2-3 minute read time per file
+### コンテンツ品質基準
+- **単一責任**: 1つのSteeringファイル = 1つのドメイン（API + データベースガイドラインを混在させない）
+- **具体的な例**: コードスニペットと実際のプロジェクト例を含める
+- **明確な根拠**: 特定のアプローチが好まれる理由を説明
+- **保守可能なサイズ**: ファイルごとに2-3分の読み取り時間を目標
 
-## Instructions
+## 指示
 
-1. **Ask the user** for:
-   - Document name (descriptive filename ending in .md)
-   - Topic/purpose of the custom steering
-   - Inclusion mode preference
-   - Specific patterns for conditional inclusion (if applicable)
+1. **ユーザーに尋ねる**:
+   - ドキュメント名（.mdで終わる説明的なファイル名）
+   - カスタムSteeringのトピック/目的
+   - 包含モードの好み
+   - 条件付き包含の具体的なパターン（該当する場合）
 
-2. **Create the document** in `.kiro/steering/` with:
-   - Clear, focused content (2-3 minute read)
-   - Practical examples
-   - Consistent formatting with other steering files
+2. **ドキュメントを作成** `.kiro/steering/`に:
+   - 明確で焦点を絞ったコンテンツ（2-3分の読み取り）
+   - 実践的な例
+   - 他のSteeringファイルと一貫したフォーマット
 
-3. **Document the inclusion mode** by adding a comment at the top:
+3. **包含モードを文書化** トップにコメントを追加:
    ```markdown
    <!-- Inclusion Mode: Always | Conditional: "pattern" | Manual -->
    ```
 
-4. **Validate** that the document:
-   - Doesn't duplicate existing steering content
-   - Provides unique value for the specified context
-   - Follows markdown best practices
+4. **検証** ドキュメントが:
+   - 既存のSteeringコンテンツと重複しない
+   - 指定されたコンテキストに固有の価値を提供
+   - Markdownベストプラクティスに従う
 
-Remember: Custom steering documents should supplement, not replace, the foundational three files. They provide specialized context for specific aspects of your project.
+記憶: カスタムSteeringドキュメントは、基礎的な3つのファイルを補完するものであり、置き換えるものではありません。プロジェクトの特定の側面に専門的なコンテキストを提供します。
 ultrathink

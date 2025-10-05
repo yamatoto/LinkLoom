@@ -1,442 +1,442 @@
 ---
-description: Create comprehensive technical design for a specification  
+description: 仕様の包括的な技術設計を作成
 allowed-tools: Bash, Glob, Grep, LS, Read, Write, Edit, MultiEdit, Update, WebSearch, WebFetch
 argument-hint: <feature-name> [-y]
 ---
 
-# Technical Design
+# 技術設計
 
-Generate a **technical design document** for feature **$1**.
+機能 **$1** の**技術設計ドキュメント**を生成します。
 
-## Task: Create Technical Design Document
+## タスク: 技術設計ドキュメントの作成
 
-### 1. Prerequisites & File Handling
-- **Requirements Approval Check**: 
-  - If invoked with `-y` ($2 == "-y"), set `requirements.approved=true` in `spec.json`
-  - Otherwise, **stop** with an actionable message if requirements are missing or unapproved
-- **Design File Handling**:
-  - If design.md does not exist: Create new design.md file
-  - If design.md exists: Interactive prompt with options:
-    - **[o] Overwrite**: Generate completely new design document
-    - **[m] Merge**: Generate new design document using existing content as reference context  
-    - **[c] Cancel**: Stop execution for manual review
-- **Context Loading**: Read `.kiro/specs/$1/requirements.md`, core steering documents, and existing design.md (if merge mode)
+### 1. 前提条件とファイル処理
+- **要件承認チェック**:
+  - `-y`フラグで起動された場合（$2 == "-y"）、`spec.json`で`requirements.approved=true`を設定
+  - それ以外の場合、要件が欠落または未承認であれば、実行可能なメッセージで**停止**
+- **設計ファイル処理**:
+  - design.mdが存在しない場合: 新しいdesign.mdファイルを作成
+  - design.mdが存在する場合: オプション付きインタラクティブプロンプト:
+    - **[o] Overwrite（上書き）**: 完全に新しい設計ドキュメントを生成
+    - **[m] Merge（マージ）**: 既存コンテンツを参照コンテキストとして使用し新しい設計ドキュメントを生成
+    - **[c] Cancel（キャンセル）**: 手動レビューのため実行を停止
+- **コンテキスト読み込み**: `.kiro/specs/$1/requirements.md`、コアSteeringドキュメント、および既存のdesign.md（マージモードの場合）を読み込む
 
-### 2. Discovery & Analysis Phase
+### 2. 発見と分析フェーズ
 
-**CRITICAL**: Before generating the design, conduct thorough research and analysis:
+**重要**: 設計を生成する前に、徹底的な調査と分析を実施:
 
-#### Feature Classification & Process Adaptation
-**Classify feature type to adapt process scope**:
-- **New Feature** (greenfield): Full process including technology selection and architecture decisions
-- **Extension** (existing system): Focus on integration analysis, minimal architectural changes
-- **Simple Addition** (CRUD, UI): Streamlined process, follow established patterns
-- **Complex Integration** (external systems, new domains): Comprehensive analysis and risk assessment
+#### 機能分類とプロセス適応
+**機能タイプを分類してプロセス範囲を適応**:
+- **新機能**（グリーンフィールド）: 技術選択とアーキテクチャ決定を含む完全なプロセス
+- **拡張**（既存システム）: 統合分析に焦点、最小限のアーキテクチャ変更
+- **シンプルな追加**（CRUD、UI）: 合理化されたプロセス、確立されたパターンに従う
+- **複雑な統合**（外部システム、新ドメイン）: 包括的な分析とリスク評価
 
-**Process Adaptation**: Skip or streamline analysis steps based on classification above
+**プロセス適応**: 上記の分類に基づいて分析ステップをスキップまたは合理化
 
-#### A. Requirements to Technical Components Mapping
-- Map requirements (EARS format) to technical components
-- Extract non-functional requirements (performance, security, scalability)
-- Identify core technical challenges and constraints
+#### A. 要件から技術コンポーネントへのマッピング
+- 要件（EARS形式）を技術コンポーネントにマッピング
+- 非機能要件（パフォーマンス、セキュリティ、スケーラビリティ）を抽出
+- コア技術的課題と制約を特定
 
-#### B. Existing Implementation Analysis 
-**MANDATORY when modifying or extending existing features**:
-- Analyze codebase structure, dependencies, patterns
-- Map reusable modules, services, utilities
-- Understand domain boundaries, layers, data flow
-- Determine extension vs. refactor vs. wrap approach
-- Prioritize minimal changes and file reuse
+#### B. 既存実装分析
+**既存機能を変更または拡張する場合は必須**:
+- コードベース構造、依存関係、パターンを分析
+- 再利用可能なモジュール、サービス、ユーティリティをマッピング
+- ドメイン境界、レイヤー、データフローを理解
+- 拡張 vs. リファクタリング vs. ラップアプローチを決定
+- 最小限の変更とファイルの再利用を優先
 
-**Optional for completely new features**: Review existing patterns for consistency and reuse opportunities
+**完全に新しい機能の場合はオプション**: 一貫性と再利用の機会のために既存パターンをレビュー
 
-#### C. Steering Alignment Check
-- Verify alignment with core steering documents (`structure.md`, `tech.md`, `product.md`) and any custom steering files
-  - **Core steering**: @.kiro/steering/structure.md, @.kiro/steering/tech.md, @.kiro/steering/product.md
-  - **Custom steering**: All additional `.md` files in `.kiro/steering/` directory (e.g., `api.md`, `testing.md`, `security.md`)
-- Document deviations with rationale for steering updates
+#### C. Steering整合性チェック
+- コアSteeringドキュメント（`structure.md`、`tech.md`、`product.md`）およびカスタムSteeringファイルとの整合性を検証
+  - **コアSteering**: @.kiro/steering/structure.md、@.kiro/steering/tech.md、@.kiro/steering/product.md
+  - **カスタムSteering**: `.kiro/steering/`ディレクトリ内のすべての追加`.md`ファイル（例: `api.md`、`testing.md`、`security.md`）
+- Steering更新の根拠とともに逸脱を文書化
 
-#### D. Technology & Alternative Analysis
-**For New Features or Unknown Technology Areas**:
-- Research latest best practices using WebSearch/WebFetch when needed in parallel
-- Compare relevant architecture patterns (MVC, Clean, Hexagonal) if pattern selection is required
-- Assess technology stack alternatives only when technology choices are being made
-- Document key findings that impact design decisions
+#### D. 技術と代替案の分析
+**新機能または未知の技術領域の場合**:
+- 必要に応じてWebSearch/WebFetchを使用して最新のベストプラクティスを並行調査
+- パターン選択が必要な場合、関連するアーキテクチャパターン（MVC、クリーン、ヘキサゴナル）を比較
+- 技術選択が行われる場合のみ、技術スタックの代替案を評価
+- 設計決定に影響を与える主要な発見を文書化
 
-**Skip this step if**: Using established team technology stack and patterns for straightforward feature additions
+**このステップをスキップする条件**: 確立されたチーム技術スタックとパターンを使用した直接的な機能追加の場合
 
-#### E. Implementation-Specific Investigation
-**When new technology or complex integration is involved**:
-- Verify specific API capabilities needed for requirements
-- Check version compatibility with existing dependencies
-- Identify configuration and setup requirements
-- Document any migration or integration challenges
+#### E. 実装固有の調査
+**新技術または複雑な統合が関与する場合**:
+- 要件に必要な特定のAPI機能を検証
+- 既存の依存関係とのバージョン互換性を確認
+- 設定とセットアップ要件を特定
+- 移行または統合の課題を文書化
 
-**For ANY external dependencies (libraries, APIs, services)**:
-- Use WebSearch to find official documentation and community resources
-- Use WebFetch to analyze specific documentation pages
-- Document authentication flows, rate limits, and usage constraints
-- Note any gaps in understanding for implementation phase
+**外部依存関係（ライブラリ、API、サービス）がある場合**:
+- WebSearchを使用して公式ドキュメントとコミュニティリソースを検索
+- WebFetchを使用して特定のドキュメントページを分析
+- 認証フロー、レート制限、使用制約を文書化
+- 実装フェーズの理解のギャップを記録
 
-**Skip only if**: Using well-established internal libraries with no external dependencies
+**スキップする条件のみ**: 外部依存関係のない、確立された内部ライブラリを使用する場合
 
-#### F. Technical Risk Assessment
-- Performance/scalability risks: bottlenecks, capacity, growth
-- Security vulnerabilities: attack vectors, compliance gaps
-- Maintainability risks: complexity, knowledge, support
-- Integration complexity: dependencies, coupling, API changes
-- Technical debt: new creation vs. existing resolution
+#### F. 技術的リスク評価
+- パフォーマンス/スケーラビリティリスク: ボトルネック、容量、成長
+- セキュリティ脆弱性: 攻撃ベクトル、コンプライアンスギャップ
+- 保守性リスク: 複雑性、知識、サポート
+- 統合複雑性: 依存関係、結合、API変更
+- 技術的負債: 新規作成 vs. 既存解決
 
-## Design Document Structure & Guidelines
+## 設計ドキュメント構造とガイドライン
 
-### Core Principles
-- **Review-optimized structure**: Critical technical decisions prominently placed to prevent oversight
-- **Contextual relevance**: Include sections only when applicable to project type and scope
-- **Visual-first design**: Essential Mermaid diagrams for architecture and data flow
-- **Design focus only**: Architecture and interfaces, NO implementation code
-- **Type safety**: Never use `any` type - define explicit types and interfaces
-- **Formal tone**: Use definitive, declarative statements without hedging language
-- **Language**: Use language from `spec.json.language` field, default to English
+### コア原則
+- **レビュー最適化構造**: 見落としを防ぐため、重要な技術決定を目立つ位置に配置
+- **文脈的関連性**: プロジェクトタイプと範囲に適用可能な場合のみセクションを含める
+- **ビジュアル優先設計**: アーキテクチャとデータフローのための必須Mermaid図
+- **設計のみに焦点**: アーキテクチャとインターフェース、実装コードは含めない
+- **型安全性**: `any`型を使用しない - 明示的な型とインターフェースを定義
+- **フォーマルトーン**: 曖昧な言語なしで断定的、宣言的なステートメントを使用
+- **言語**: `spec.json.language`フィールドの言語を使用、デフォルトは英語
 
-### Document Sections
+### ドキュメントセクション
 
-**CORE SECTIONS** (Include when relevant):
-- Overview, Architecture, Components and Interfaces (always)
-- Data Models, Error Handling, Testing Strategy (when applicable)
-- Security Considerations (when security implications exist)
+**コアセクション**（関連する場合に含める）:
+- 概要、アーキテクチャ、コンポーネントとインターフェース（常に）
+- データモデル、エラー処理、テスト戦略（該当する場合）
+- セキュリティ考慮事項（セキュリティへの影響がある場合）
 
-**CONDITIONAL SECTIONS** (Include only when specifically relevant):
-- Performance & Scalability (for performance-critical features)
-- Migration Strategy (for existing system modifications)
+**条件付きセクション**（特に関連する場合のみ含める）:
+- パフォーマンスとスケーラビリティ（パフォーマンスクリティカルな機能の場合）
+- 移行戦略（既存システム変更の場合）
 
 <structured-document>
-## Overview 
-2-3 paragraphs max
-**Purpose**: This feature delivers [specific value] to [target users].
-**Users**: [Target user groups] will utilize this for [specific workflows].
-**Impact** (if applicable): Changes the current [system state] by [specific modifications].
+## 概要
+最大2-3段落
+**目的**: この機能は[特定の価値]を[ターゲットユーザー]に提供します。
+**ユーザー**: [ターゲットユーザーグループ]が[特定のワークフロー]でこれを利用します。
+**影響**（該当する場合）: 現在の[システム状態]を[特定の変更]によって変更します。
 
 
-### Goals
-- Primary objective 1
-- Primary objective 2  
-- Success criteria
+### ゴール
+- 主要目標1
+- 主要目標2
+- 成功基準
 
-### Non-Goals
-- Explicitly excluded functionality
-- Future considerations outside current scope
-- Integration points deferred
+### 非ゴール
+- 明示的に除外された機能
+- 現在の範囲外の将来の検討事項
+- 延期された統合ポイント
 
-## Architecture
+## アーキテクチャ
 
-### Existing Architecture Analysis (if applicable)
-When modifying existing systems:
-- Current architecture patterns and constraints
-- Existing domain boundaries to be respected
-- Integration points that must be maintained
-- Technical debt addressed or worked around
+### 既存アーキテクチャ分析（該当する場合）
+既存システムを変更する場合:
+- 現在のアーキテクチャパターンと制約
+- 尊重すべき既存のドメイン境界
+- 維持すべき統合ポイント
+- 対処または回避する技術的負債
 
-### High-Level Architecture
-**RECOMMENDED**: Include Mermaid diagram showing system architecture (required for complex features, optional for simple additions)
+### 高レベルアーキテクチャ
+**推奨**: システムアーキテクチャを示すMermaid図を含める（複雑な機能には必須、シンプルな追加にはオプション）
 
-**Architecture Integration**:
-- Existing patterns preserved: [list key patterns]
-- New components rationale: [why each is needed]
-- Technology alignment: [how it fits current stack]
-- Steering compliance: [principles maintained]
+**アーキテクチャ統合**:
+- 保持された既存パターン: [主要パターンのリスト]
+- 新規コンポーネントの根拠: [各々が必要な理由]
+- 技術整合性: [現在のスタックへの適合方法]
+- Steering準拠: [維持された原則]
 
-### Technology Stack and Design Decisions
+### 技術スタックと設計決定
 
-**Generation Instructions** (DO NOT include this section in design.md):
-Adapt content based on feature classification from Discovery & Analysis Phase:
+**生成指示**（design.mdにこのセクションを含めないでください）:
+発見と分析フェーズの機能分類に基づいてコンテンツを適応:
 
-**For New Features (greenfield)**:
-Generate Technology Stack section with ONLY relevant layers:
-- Include only applicable technology layers (e.g., skip Frontend for CLI tools, skip Infrastructure for libraries)
-- For each technology choice, provide: selection, rationale, and alternatives considered
-- Include Architecture Pattern Selection if making architectural decisions
+**新機能（グリーンフィールド）の場合**:
+関連するレイヤーのみを含む技術スタックセクションを生成:
+- 該当する技術レイヤーのみを含める（例: CLIツールの場合フロントエンドをスキップ、ライブラリの場合インフラストラクチャをスキップ）
+- 各技術選択について: 選択、根拠、検討した代替案を提供
+- アーキテクチャ決定を行っている場合、アーキテクチャパターン選択を含める
 
-**For Extensions/Additions to Existing Systems**:
-Generate Technology Alignment section instead:
-- Document how feature aligns with existing technology stack
-- Note any new dependencies or libraries being introduced
-- Justify deviations from established patterns if necessary
+**既存システムへの拡張/追加の場合**:
+代わりに技術整合性セクションを生成:
+- 既存の技術スタックと機能がどのように整合するかを文書化
+- 導入される新しい依存関係やライブラリを記録
+- 必要に応じて確立されたパターンからの逸脱を正当化
 
-**Key Design Decisions**:
-Generate 1-3 critical technical decisions that significantly impact the implementation.
-Each decision should follow this format:
-- **Decision**: [Specific technical choice made]
-- **Context**: [Problem or requirement driving this decision]
-- **Alternatives**: [2-3 other approaches considered]
-- **Selected Approach**: [What was chosen and how it works]
-- **Rationale**: [Why this is optimal for the specific context]
-- **Trade-offs**: [What we gain vs. what we sacrifice]
+**主要設計決定**:
+実装に大きく影響する1-3の重要な技術決定を生成。
+各決定は以下の形式に従う必要があります:
+- **決定**: [行われた具体的な技術選択]
+- **コンテキスト**: [この決定を駆動する問題または要件]
+- **代替案**: [検討された他の2-3のアプローチ]
+- **選択されたアプローチ**: [選択されたものとその機能]
+- **根拠**: [特定のコンテキストで最適な理由]
+- **トレードオフ**: [得られるものと犠牲にするもの]
 
-Skip this entire section for simple CRUD operations or when following established patterns without deviation.
+シンプルなCRUD操作や、逸脱なく確立されたパターンに従う場合、このセクション全体をスキップします。
 
-## System Flows
+## システムフロー
 
-**Flow Design Generation Instructions** (DO NOT include this section in design.md):
-Generate appropriate flow diagrams ONLY when the feature requires flow visualization. Select from:
-- **Sequence Diagrams**: For user interactions across multiple components
-- **Process Flow Charts**: For complex algorithms, decision branches, or state machines  
-- **Data Flow Diagrams**: For data transformations, ETL processes, or data pipelines
-- **State Diagrams**: For complex state transitions
-- **Event Flow**: For async/event-driven architectures
+**フロー設計生成指示**（design.mdにこのセクションを含めないでください）:
+機能がフロー視覚化を必要とする場合のみ、適切なフロー図を生成。以下から選択:
+- **シーケンス図**: 複数コンポーネントにわたるユーザーインタラクション
+- **プロセスフローチャート**: 複雑なアルゴリズム、決定分岐、またはステートマシン
+- **データフロー図**: データ変換、ETLプロセス、またはデータパイプライン
+- **状態図**: 複雑な状態遷移
+- **イベントフロー**: 非同期/イベント駆動アーキテクチャ
 
-Skip this section entirely for simple CRUD operations or features without complex flows.
-When included, provide concise Mermaid diagrams specific to the actual feature requirements.
+シンプルなCRUD操作や複雑なフローのない機能の場合、このセクション全体をスキップします。
+含める場合、実際の機能要件に特化した簡潔なMermaid図を提供します。
 
-## Requirements Traceability
+## 要件トレーサビリティ
 
-**Traceability Generation Instructions** (DO NOT include this section in design.md):
-Generate traceability mapping ONLY for complex features with multiple requirements or when explicitly needed for compliance/validation.
+**トレーサビリティ生成指示**（design.mdにこのセクションを含めないでください）:
+複数の要件を持つ複雑な機能、またはコンプライアンス/検証のために明示的に必要な場合のみ、トレーサビリティマッピングを生成。
 
-When included, create a mapping table showing how each EARS requirement is realized:
-| Requirement | Requirement Summary | Components | Interfaces | Flows |
-|---------------|-------------------|------------|------------|-------|
-| 1.1 | Brief description | Component names | API/Methods | Relevant flow diagrams |
+含める場合、各EARS要件がどのように実現されるかを示すマッピングテーブルを作成:
+| 要件 | 要件概要 | コンポーネント | インターフェース | フロー |
+|------|----------|--------------|----------------|--------|
+| 1.1 | 簡潔な説明 | コンポーネント名 | API/メソッド | 関連フロー図 |
 
-Alternative format for simpler cases:
-- **1.1**: Realized by [Component X] through [Interface Y]
-- **1.2**: Implemented in [Component Z] with [Flow diagram reference]
+よりシンプルなケースのための代替形式:
+- **1.1**: [コンポーネントX]が[インターフェースY]を通じて実現
+- **1.2**: [コンポーネントZ]で[フロー図参照]を用いて実装
 
-Skip this section for simple features with straightforward 1:1 requirement-to-component mappings.
+1対1の要件からコンポーネントへの直接的なマッピングを持つシンプルな機能の場合、このセクションをスキップします。
 
-## Components and Interfaces
+## コンポーネントとインターフェース
 
-**Component Design Generation Instructions** (DO NOT include this section in design.md):
-Structure components by domain boundaries or architectural layers. Generate only relevant subsections based on component type.
-Group related components under domain/layer headings for clarity.
+**コンポーネント設計生成指示**（design.mdにこのセクションを含めないでください）:
+ドメイン境界またはアーキテクチャレイヤーごとにコンポーネントを構造化。コンポーネントタイプに基づいて関連するサブセクションのみを生成。
+明確性のためドメイン/レイヤー見出しの下で関連コンポーネントをグループ化。
 
-### [Domain/Layer Name]
+### [ドメイン/レイヤー名]
 
-#### [Component Name]
+#### [コンポーネント名]
 
-**Responsibility & Boundaries**
-- **Primary Responsibility**: Single, clear statement of what this component does
-- **Domain Boundary**: Which domain/subdomain this belongs to
-- **Data Ownership**: What data this component owns and manages
-- **Transaction Boundary**: Scope of transactional consistency (if applicable)
+**責任と境界**
+- **主要責任**: このコンポーネントが行うことの単一で明確なステートメント
+- **ドメイン境界**: これが属するドメイン/サブドメイン
+- **データ所有権**: このコンポーネントが所有し管理するデータ
+- **トランザクション境界**: トランザクション整合性の範囲（該当する場合）
 
-**Dependencies**
-- **Inbound**: Components/services that depend on this component
-- **Outbound**: Components/services this component depends on
-- **External**: Third-party services, libraries, or external systems
+**依存関係**
+- **インバウンド**: このコンポーネントに依存するコンポーネント/サービス
+- **アウトバウンド**: このコンポーネントが依存するコンポーネント/サービス
+- **外部**: サードパーティサービス、ライブラリ、または外部システム
 
-**External Dependencies Investigation** (when using external libraries/services):
-- Use WebSearch to locate official documentation, GitHub repos, and community resources
-- Use WebFetch to retrieve and analyze documentation pages, API references, and usage examples
-- Verify API signatures, authentication methods, and rate limits
-- Check version compatibility, breaking changes, and migration guides
-- Investigate common issues, best practices, and performance considerations
-- Document any assumptions, unknowns, or risks for implementation phase
-- If critical information is missing, clearly note "Requires investigation during implementation: [specific concern]"
+**外部依存関係調査**（外部ライブラリ/サービスを使用する場合）:
+- WebSearchを使用して公式ドキュメント、GitHubリポジトリ、コミュニティリソースを検索
+- WebFetchを使用してドキュメントページ、APIリファレンス、使用例を取得・分析
+- APIシグネチャ、認証方法、レート制限を検証
+- バージョン互換性、破壊的変更、移行ガイドを確認
+- 一般的な問題、ベストプラクティス、パフォーマンス考慮事項を調査
+- 実装フェーズのための仮定、不明点、リスクを文書化
+- 重要な情報が欠落している場合、明確に記録「実装中に調査が必要: [特定の懸念事項]」
 
-**Contract Definition**
+**コントラクト定義**
 
-Select and generate ONLY the relevant contract types for each component:
+各コンポーネントに関連するコントラクトタイプのみを選択して生成:
 
-**Service Interface** (for business logic components):
+**サービスインターフェース**（ビジネスロジックコンポーネント用）:
 ```typescript
 interface [ComponentName]Service {
-  // Method signatures with clear input/output types
-  // Include error types in return signatures
+  // 明確な入力/出力型を持つメソッドシグネチャ
+  // 戻り値シグネチャにエラー型を含める
   methodName(input: InputType): Result<OutputType, ErrorType>;
 }
 ```
-- **Preconditions**: What must be true before calling
-- **Postconditions**: What is guaranteed after successful execution
-- **Invariants**: What remains true throughout
+- **事前条件**: 呼び出し前に真でなければならないこと
+- **事後条件**: 正常実行後に保証されること
+- **不変条件**: 全体を通して真であり続けること
 
-**API Contract** (for REST/GraphQL endpoints):
-| Method | Endpoint | Request | Response | Errors |
-|--------|----------|---------|----------|--------|
+**APIコントラクト**（REST/GraphQLエンドポイント用）:
+| メソッド | エンドポイント | リクエスト | レスポンス | エラー |
+|---------|--------------|-----------|----------|--------|
 | POST | /api/resource | CreateRequest | Resource | 400, 409, 500 |
 
-With detailed schemas only for complex payloads
+複雑なペイロードのみの詳細スキーマ付き
 
-**Event Contract** (for event-driven components):
-- **Published Events**: Event name, schema, trigger conditions
-- **Subscribed Events**: Event name, handling strategy, idempotency
-- **Ordering**: Guaranteed order requirements
-- **Delivery**: At-least-once, at-most-once, or exactly-once
+**イベントコントラクト**（イベント駆動コンポーネント用）:
+- **公開イベント**: イベント名、スキーマ、トリガー条件
+- **購読イベント**: イベント名、処理戦略、べき等性
+- **順序**: 保証される順序要件
+- **配信**: 少なくとも1回、最大1回、または正確に1回
 
-**Batch/Job Contract** (for scheduled/triggered processes):
-- **Trigger**: Schedule, event, or manual trigger conditions
-- **Input**: Data source and validation rules
-- **Output**: Results destination and format
-- **Idempotency**: How repeat executions are handled
-- **Recovery**: Failure handling and retry strategy
+**バッチ/ジョブコントラクト**（スケジュール/トリガープロセス用）:
+- **トリガー**: スケジュール、イベント、または手動トリガー条件
+- **入力**: データソースと検証ルール
+- **出力**: 結果の宛先と形式
+- **べき等性**: 繰り返し実行の処理方法
+- **リカバリ**: 障害処理と再試行戦略
 
-**State Management** (only if component maintains state):
-- **State Model**: States and valid transitions
-- **Persistence**: Storage strategy and consistency model
-- **Concurrency**: Locking, optimistic/pessimistic control
+**状態管理**（コンポーネントが状態を維持する場合のみ）:
+- **状態モデル**: 状態と有効な遷移
+- **永続化**: ストレージ戦略と整合性モデル
+- **並行性**: ロック、楽観的/悲観的制御
 
-**Integration Strategy** (when modifying existing systems):
-- **Modification Approach**: Extend, wrap, or refactor existing code
-- **Backward Compatibility**: What must be maintained
-- **Migration Path**: How to transition from current to target state
+**統合戦略**（既存システムを変更する場合）:
+- **変更アプローチ**: 既存コードの拡張、ラップ、またはリファクタリング
+- **後方互換性**: 維持すべきもの
+- **移行パス**: 現在の状態からターゲット状態への移行方法
 
-## Data Models
+## データモデル
 
-**Data Model Generation Instructions** (DO NOT include this section in design.md):
-Generate only relevant data model sections based on the system's data requirements and chosen architecture.
-Progress from conceptual to physical as needed for implementation clarity.
+**データモデル生成指示**（design.mdにこのセクションを含めないでください）:
+システムのデータ要件と選択されたアーキテクチャに基づいて、関連するデータモデルセクションのみを生成。
+実装の明確性のために必要に応じて概念的から物理的へと進行。
 
-### Domain Model
-**When to include**: Complex business domains with rich behavior and rules
+### ドメインモデル
+**含める場合**: 豊富な振る舞いとルールを持つ複雑なビジネスドメイン
 
-**Core Concepts**:
-- **Aggregates**: Define transactional consistency boundaries
-- **Entities**: Business objects with unique identity and lifecycle
-- **Value Objects**: Immutable descriptive aspects without identity
-- **Domain Events**: Significant state changes in the domain
+**コアコンセプト**:
+- **集約**: トランザクション整合性境界を定義
+- **エンティティ**: 一意のアイデンティティとライフサイクルを持つビジネスオブジェクト
+- **値オブジェクト**: アイデンティティのない不変の記述的側面
+- **ドメインイベント**: ドメインにおける重要な状態変更
 
-**Business Rules & Invariants**:
-- Constraints that must always be true
-- Validation rules and their enforcement points
-- Cross-aggregate consistency strategies
+**ビジネスルールと不変条件**:
+- 常に真でなければならない制約
+- 検証ルールとその実施ポイント
+- 集約間の整合性戦略
 
-Include conceptual diagram (Mermaid) only when relationships are complex enough to benefit from visualization
+関係が視覚化によって利益を得るほど複雑な場合のみ、概念図（Mermaid）を含める
 
-### Logical Data Model
-**When to include**: When designing data structures independent of storage technology
+### 論理データモデル
+**含める場合**: ストレージ技術に依存しないデータ構造を設計する場合
 
-**Structure Definition**:
-- Entity relationships and cardinality
-- Attributes and their types
-- Natural keys and identifiers
-- Referential integrity rules
+**構造定義**:
+- エンティティ関係とカーディナリティ
+- 属性とその型
+- 自然キーと識別子
+- 参照整合性ルール
 
-**Consistency & Integrity**:
-- Transaction boundaries
-- Cascading rules
-- Temporal aspects (versioning, audit)
+**整合性と完全性**:
+- トランザクション境界
+- カスケードルール
+- 時間的側面（バージョニング、監査）
 
-### Physical Data Model
-**When to include**: When implementation requires specific storage design decisions
+### 物理データモデル
+**含める場合**: 実装が特定のストレージ設計決定を必要とする場合
 
-**For Relational Databases**:
-- Table definitions with data types
-- Primary/foreign keys and constraints
-- Indexes and performance optimizations
-- Partitioning strategy for scale
+**リレーショナルデータベースの場合**:
+- データ型を持つテーブル定義
+- 主キー/外部キーと制約
+- インデックスとパフォーマンス最適化
+- スケールのためのパーティショニング戦略
 
-**For Document Stores**:
-- Collection structures
-- Embedding vs referencing decisions
-- Sharding key design
-- Index definitions
+**ドキュメントストアの場合**:
+- コレクション構造
+- 埋め込み vs. 参照決定
+- シャーディングキー設計
+- インデックス定義
 
-**For Event Stores**:
-- Event schema definitions
-- Stream aggregation strategies
-- Snapshot policies
-- Projection definitions
+**イベントストアの場合**:
+- イベントスキーマ定義
+- ストリーム集約戦略
+- スナップショットポリシー
+- プロジェクション定義
 
-**For Key-Value/Wide-Column Stores**:
-- Key design patterns
-- Column families or value structures
-- TTL and compaction strategies
+**キーバリュー/ワイドカラムストアの場合**:
+- キー設計パターン
+- カラムファミリーまたは値構造
+- TTLとコンパクション戦略
 
-### Data Contracts & Integration
-**When to include**: Systems with service boundaries or external integrations
+### データコントラクトと統合
+**含める場合**: サービス境界または外部統合を持つシステム
 
-**API Data Transfer**:
-- Request/response schemas
-- Validation rules
-- Serialization format (JSON, Protobuf, etc.)
+**APIデータ転送**:
+- リクエスト/レスポンススキーマ
+- 検証ルール
+- シリアライゼーション形式（JSON、Protobufなど）
 
-**Event Schemas**:
-- Published event structures
-- Schema versioning strategy
-- Backward/forward compatibility rules
+**イベントスキーマ**:
+- 公開イベント構造
+- スキーマバージョニング戦略
+- 後方/前方互換性ルール
 
-**Cross-Service Data Management**:
-- Distributed transaction patterns (Saga, 2PC)
-- Data synchronization strategies
-- Eventual consistency handling
+**クロスサービスデータ管理**:
+- 分散トランザクションパターン（Saga、2PC）
+- データ同期戦略
+- 結果整合性処理
 
-Skip any section not directly relevant to the feature being designed.
-Focus on aspects that influence implementation decisions.
+設計されている機能に直接関連しないセクションはスキップします。
+実装決定に影響を与える側面に焦点を当てます。
 
-## Error Handling
+## エラー処理
 
-### Error Strategy
-Concrete error handling patterns and recovery mechanisms for each error type.
+### エラー戦略
+各エラータイプの具体的なエラー処理パターンとリカバリメカニズム。
 
-### Error Categories and Responses
-**User Errors** (4xx): Invalid input → field-level validation; Unauthorized → auth guidance; Not found → navigation help
-**System Errors** (5xx): Infrastructure failures → graceful degradation; Timeouts → circuit breakers; Exhaustion → rate limiting  
-**Business Logic Errors** (422): Rule violations → condition explanations; State conflicts → transition guidance
+### エラーカテゴリとレスポンス
+**ユーザーエラー**（4xx）: 無効な入力 → フィールドレベル検証; 未承認 → 認証ガイダンス; 見つからない → ナビゲーションヘルプ
+**システムエラー**（5xx）: インフラストラクチャ障害 → グレースフルデグラデーション; タイムアウト → サーキットブレーカー; リソース枯渇 → レート制限
+**ビジネスロジックエラー**（422）: ルール違反 → 条件説明; 状態競合 → 遷移ガイダンス
 
-**Process Flow Visualization** (when complex business logic exists):
-Include Mermaid flowchart only for complex error scenarios with business workflows.
+**プロセスフロー視覚化**（複雑なビジネスロジックが存在する場合）:
+ビジネスワークフローを持つ複雑なエラーシナリオの場合のみ、Mermaidフローチャートを含める。
 
-### Monitoring
-Error tracking, logging, and health monitoring implementation.
+### モニタリング
+エラートラッキング、ログ記録、ヘルスモニタリング実装。
 
-## Testing Strategy
+## テスト戦略
 
-### Default sections (adapt names/sections to fit the domain)
-- Unit Tests: 3–5 items from core functions/modules (e.g., auth methods, subscription logic)
-- Integration Tests: 3–5 cross-component flows (e.g., webhook handling, notifications)
-- E2E/UI Tests (if applicable): 3–5 critical user paths (e.g., forms, dashboards)
-- Performance/Load (if applicable): 3–4 items (e.g., concurrency, high-volume ops)
+### デフォルトセクション（ドメインに合わせて名前/セクションを適応）
+- ユニットテスト: コア機能/モジュールから3-5項目（例: 認証メソッド、サブスクリプションロジック）
+- 統合テスト: 3-5のクロスコンポーネントフロー（例: Webhook処理、通知）
+- E2E/UIテスト（該当する場合）: 3-5の重要なユーザーパス（例: フォーム、ダッシュボード）
+- パフォーマンス/負荷（該当する場合）: 3-4項目（例: 並行性、大量操作）
 
-## Optional Sections (include when relevant)
+## オプションセクション（関連する場合に含める）
 
-### Security Considerations
-**Include when**: Features handle authentication, sensitive data, external integrations, or user permissions
-- Threat modeling, security controls, compliance requirements
-- Authentication and authorization patterns
-- Data protection and privacy considerations
+### セキュリティ考慮事項
+**含める場合**: 機能が認証、機密データ、外部統合、またはユーザー権限を扱う場合
+- 脅威モデリング、セキュリティ制御、コンプライアンス要件
+- 認証と認可パターン
+- データ保護とプライバシー考慮事項
 
-### Performance & Scalability
-**Include when**: Features have specific performance requirements, high load expectations, or scaling concerns
-- Target metrics and measurement strategies
-- Scaling approaches (horizontal/vertical)
-- Caching strategies and optimization techniques
+### パフォーマンスとスケーラビリティ
+**含める場合**: 機能が特定のパフォーマンス要件、高負荷予想、またはスケーリング懸念を持つ場合
+- ターゲットメトリクスと測定戦略
+- スケーリングアプローチ（水平/垂直）
+- キャッシング戦略と最適化技術
 
-### Migration Strategy
-**REQUIRED**: Include Mermaid flowchart showing migration phases
+### 移行戦略
+**必須**: 移行フェーズを示すMermaidフローチャートを含める
 
-**Process**: Phase breakdown, rollback triggers, validation checkpoints
+**プロセス**: フェーズ分解、ロールバックトリガー、検証チェックポイント
 </structured-document>
 
 ---
 
-## Process Instructions (NOT included in design.md)
+## プロセス指示（design.mdに含めない）
 
-### Visual Design Guidelines
-**Include based on complexity**: 
-- **Simple features**: Basic component diagram or none if trivial
-- **Complex features**: Architecture diagram, data flow diagram, ER diagram (if complex)
-- **When helpful**: State machines, component interactions, decision trees, process flows, auth flows, approval workflows, data pipelines
+### ビジュアル設計ガイドライン
+**複雑性に基づいて含める**:
+- **シンプルな機能**: 基本的なコンポーネント図、または些細な場合は不要
+- **複雑な機能**: アーキテクチャ図、データフロー図、ER図（複雑な場合）
+- **有用な場合**: ステートマシン、コンポーネント相互作用、決定木、プロセスフロー、認証フロー、承認ワークフロー、データパイプライン
 
-**Mermaid Diagram Rules**:
-- Use only basic graph syntax with nodes and relationships
-- Exclude all styling elements (no style definitions, classDef, fill colors)
-- Avoid visual customization (backgrounds, custom CSS)
-- Example: `graph TB` → `A[Login] --> B[Dashboard]` → `B --> C[Settings]`
+**Mermaid図ルール**:
+- ノードと関係を持つ基本的なグラフ構文のみを使用
+- すべてのスタイリング要素を除外（スタイル定義、classDef、塗りつぶし色なし）
+- 視覚的カスタマイズを避ける（背景、カスタムCSSなし）
+- 例: `graph TB` → `A[ログイン] --> B[ダッシュボード]` → `B --> C[設定]`
 
-### Quality Checklist
-- [ ] Requirements covered with traceability
-- [ ] Existing implementation respected
-- [ ] Steering compliant, deviations documented
-- [ ] Architecture visualized with clear diagrams
-- [ ] Components have Purpose, Key Features, Interface Design
-- [ ] Data models individually documented
-- [ ] Integration with existing system explained
+### 品質チェックリスト
+- [ ] トレーサビリティを伴う要件カバー
+- [ ] 既存実装の尊重
+- [ ] Steering準拠、逸脱の文書化
+- [ ] 明確な図によるアーキテクチャ視覚化
+- [ ] コンポーネントに目的、主要機能、インターフェース設計がある
+- [ ] データモデルが個別に文書化されている
+- [ ] 既存システムとの統合が説明されている
 
-### 3. Design Document Generation & Metadata Update
-- Generate complete design document following structure guidelines
-- Update `.kiro/specs/$1/spec.json`:
+### 3. 設計ドキュメント生成とメタデータ更新
+- 構造ガイドラインに従って完全な設計ドキュメントを生成
+- `.kiro/specs/$1/spec.json`を更新:
 ```json
 {
-  "phase": "design-generated", 
+  "phase": "design-generated",
   "approvals": {
     "requirements": { "generated": true, "approved": true },
     "design": { "generated": true, "approved": false }
@@ -445,15 +445,15 @@ Error tracking, logging, and health monitoring implementation.
 }
 ```
 
-### Actionable Messages
-If requirements are not approved and no `-y` flag ($2 != "-y"):
-- **Error Message**: "Requirements must be approved before generating design. Run `/kiro:spec-requirements $1` to review requirements, then run `/kiro:spec-design $1 -y` to proceed."
-- **Alternative**: "Or run `/kiro:spec-design $1 -y` to auto-approve requirements and generate design."
+### 実行可能メッセージ
+要件が承認されておらず、`-y`フラグがない場合（$2 != "-y"）:
+- **エラーメッセージ**: "設計生成前に要件を承認する必要があります。`/kiro:spec-requirements $1`を実行して要件をレビューし、その後`/kiro:spec-design $1 -y`を実行して進めてください。"
+- **代替案**: "または`/kiro:spec-design $1 -y`を実行して要件を自動承認し設計を生成します。"
 
-### Conversation Guidance
-After generation:
-- Guide user to review design narrative and visualizations
-- Suggest specific diagram additions if needed
-- Direct to run `/kiro:spec-tasks $1 -y` when approved
+### 会話ガイダンス
+生成後:
+- ユーザーに設計のナラティブと視覚化をレビューするよう案内
+- 必要に応じて特定の図の追加を提案
+- 承認されたら`/kiro:spec-tasks $1 -y`を実行するよう指示
 
-Create design document that tells complete story through clear narrative, structured components, and effective visualizations. think deeply
+明確なナラティブ、構造化されたコンポーネント、効果的な視覚化を通じて完全なストーリーを伝える設計ドキュメントを作成します。深く考えてください
