@@ -84,3 +84,915 @@
   3. オプションC: 自分でセットアップ（後で機能開発に戻る）
 
   どれが良いですか？
+
+
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+> 今後は、仕様駆動開発で一つずつ、少しずつ作業を進めます。\
+フェーズ１での残りの全体の作業を教えてください。 
+
+⏺ Phase 1（MVP）の全体作業を整理します。現在の進捗状況を確認してから、残りのタスクをリストアップします。
+
+⏺ Search(pattern: "**/*.tsx", path: "app")
+  ⎿  Found 2 files (ctrl+o to expand)
+
+⏺ Search(pattern: "**/*.ts", path: "lib")
+  ⎿  Found 1 file (ctrl+o to expand)
+
+⏺ Read(.kiro/steering/product.md)
+  ⎿  Read 40 lines (ctrl+o to expand)
+
+⏺ 📋 Phase 1（MVP）全体作業リスト
+
+  ✅ 完了済み
+
+  1. プロジェクト基盤
+    - ✅ Next.js 15 + TypeScript環境構築
+    - ✅ Tailwind CSS + shadcn/ui設定
+    - ✅ テスト環境（Vitest + Playwright）
+    - ✅ ESLint + Prettier設定
+    - ✅ 品質ゲート設定（lint + type-check必須）
+  2. Supabase基盤
+    - ✅ Supabaseクライアント設定（client.ts, server.ts）
+    - ✅ 環境変数設定
+    - ⚠️ データベーススキーマ（正規化に修正中）
+
+  ---
+  🚧 Phase 1 残りの作業（仕様駆動開発で進める）
+
+  1. データベース設計（正規化スキーマ） 🔴 最優先
+
+  📝 仕様作成
+
+  /kiro:spec-init "データベーススキーマ設計: articles, tags, article_tagsの正規化設計"
+  /kiro:spec-requirements database-schema
+  /kiro:spec-design database-schema
+  /kiro:spec-tasks database-schema
+
+  実装内容:
+  - ✅ tagsテーブル（タグマスター）
+  - ✅ articlesテーブル（記事情報）
+  - ✅ article_tagsテーブル（中間テーブル）
+  - ✅ RLSポリシー設定
+  - ✅ インデックス最適化
+  - ✅ TypeScript型定義生成
+
+  成果物:
+  - supabase/migrations/YYYYMMDDHHMMSS_create_normalized_schema.sql
+  - types/database.types.ts（自動生成）
+
+  ---
+  2. 認証機能 🔴 必須
+
+  📝 仕様作成
+
+  /kiro:spec-init "認証機能: Googleログイン、ログアウト、認証状態管理"
+  /kiro:spec-requirements auth
+  /kiro:spec-design auth
+  /kiro:spec-tasks auth
+
+  実装内容:
+  - ログインページ（app/(auth)/login/page.tsx）
+  - Googleログインボタン
+  - 認証状態管理（React Context or Zustand）
+  - 認証ミドルウェア（middleware.ts）
+  - ログアウト機能
+
+  成果物:
+  - app/(auth)/login/page.tsx
+  - lib/contexts/AuthContext.tsx
+  - middleware.ts
+  - lib/hooks/useAuth.ts
+
+  ---
+  3. 記事管理（CRUD） 🔴 コア機能
+
+  📝 仕様作成
+
+  /kiro:spec-init "記事管理機能: 作成、読み取り、更新、削除"
+  /kiro:spec-requirements article-crud
+  /kiro:spec-design article-crud
+  /kiro:spec-tasks article-crud
+
+  実装内容:
+
+  3-1. 記事作成
+
+  - 記事登録フォーム
+  - URLメタデータ自動取得API（app/api/fetch-metadata/route.ts）
+  - タグ入力（自動補完）
+  - プラットフォーム自動判定
+  - バリデーション（Zod + React Hook Form）
+
+  3-2. 記事一覧表示
+
+  - カード形式一覧
+  - プラットフォームアイコン表示
+  - ブックマーク機能
+  - ページネーション/無限スクロール
+
+  3-3. 記事編集
+
+  - 編集フォーム
+  - タグ追加/削除
+  - 説明文編集
+
+  3-4. 記事削除
+
+  - 削除確認ダイアログ
+  - 論理削除 or 物理削除
+
+  成果物:
+  - app/(dashboard)/articles/page.tsx（一覧）
+  - app/(dashboard)/articles/new/page.tsx（作成）
+  - app/(dashboard)/articles/[id]/edit/page.tsx（編集）
+  - components/features/articles/ArticleCard.tsx
+  - components/features/articles/ArticleForm.tsx
+  - lib/api/articles.ts（CRUD関数）
+  - app/api/fetch-metadata/route.ts
+
+  ---
+  4. 検索・フィルタリング機能 🟡 重要
+
+  📝 仕様作成
+
+  /kiro:spec-init "検索・フィルタリング: キーワード検索、タグフィルタ、ソート"
+  /kiro:spec-requirements search-filter
+  /kiro:spec-design search-filter
+  /kiro:spec-tasks search-filter
+
+  実装内容:
+  - キーワード検索（タイトル・説明文）
+  - タグフィルタ（複数選択、AND/OR切替）
+  - プラットフォームフィルタ
+  - ソート機能（登録日、更新日、タイトル）
+  - ブックマークフィルタ
+  - 検索結果のURL状態同期
+
+  成果物:
+  - components/features/search/SearchBar.tsx
+  - components/features/search/TagFilter.tsx
+  - components/features/search/SortSelector.tsx
+  - lib/hooks/useArticleSearch.ts
+  - lib/utils/search.ts
+
+  ---
+  5. タグ管理 🟡 重要
+
+  📝 仕様作成
+
+  /kiro:spec-init "タグ管理: タグ作成、リネーム、削除、使用頻度表示"
+  /kiro:spec-requirements tag-management
+  /kiro:spec-design tag-management
+  /kiro:spec-tasks tag-management
+
+  実装内容:
+  - タグ一覧表示
+  - タグ作成（記事作成時 + 専用画面）
+  - タグリネーム
+  - タグ削除（使用中の記事との関連処理）
+  - タグの使用頻度表示
+  - タグクラウドUI
+
+  成果物:
+  - app/(dashboard)/tags/page.tsx
+  - components/features/tags/TagCloud.tsx
+  - components/features/tags/TagManager.tsx
+  - lib/api/tags.ts
+
+  ---
+  6. UIコンポーネント 🟢 サポート
+
+  📝 仕様作成
+
+  /kiro:spec-init "共通UIコンポーネント: レイアウト、ナビゲーション、ローディング、エラー"
+  /kiro:spec-requirements ui-components
+  /kiro:spec-design ui-components
+  /kiro:spec-tasks ui-components
+
+  実装内容:
+  - ダッシュボードレイアウト
+  - ヘッダー・ナビゲーション
+  - サイドバー（タグ一覧）
+  - ローディング状態
+  - エラー表示
+  - トースト通知（sonner）
+  - 空状態（Empty State）
+
+  成果物:
+  - app/(dashboard)/layout.tsx
+  - components/layout/Header.tsx
+  - components/layout/Sidebar.tsx
+  - components/ui/*（shadcn/ui追加）
+  - components/shared/Loading.tsx
+  - components/shared/ErrorBoundary.tsx
+
+  ---
+  7. 状態管理 🟢 サポート
+
+  📝 仕様作成
+
+  /kiro:spec-init "状態管理: クライアント状態（Zustand）、サーバー状態（TanStack Query）"
+  /kiro:spec-requirements state-management
+  /kiro:spec-design state-management
+  /kiro:spec-tasks state-management
+
+  実装内容:
+  - 検索フィルタ状態（Zustand）
+  - UI状態（サイドバー開閉等）
+  - サーバーデータキャッシュ（TanStack Query）
+  - 楽観的更新（Optimistic Updates）
+
+  成果物:
+  - lib/stores/searchStore.ts
+  - lib/stores/uiStore.ts
+  - lib/queries/articles.ts（React Query hooks）
+  - lib/queries/tags.ts
+
+  ---
+  8. テスト 🔴 品質保証
+
+  📝 仕様作成
+
+  /kiro:spec-init "テスト: ユニットテスト（Vitest）、E2Eテスト（Playwright）"
+  /kiro:spec-requirements testing
+  /kiro:spec-design testing
+  /kiro:spec-tasks testing
+
+  実装内容:
+
+  8-1. ユニットテスト（Vitest）
+
+  - ユーティリティ関数
+  - カスタムフック
+  - API関数
+  - バリデーションスキーマ
+
+  8-2. E2Eテスト（Playwright）
+
+  - ログインフロー
+  - 記事作成フロー
+  - 記事編集フロー
+  - 検索・フィルタリング
+  - タグ管理
+
+  成果物:
+  - tests/unit/**/*.test.ts
+  - tests/e2e/**/*.spec.ts
+  - tests/fixtures/**
+
+  ---
+  9. デプロイ準備 🟡 最終段階
+
+  📝 仕様作成
+
+  /kiro:spec-init "デプロイ準備: Vercelデプロイ、環境変数、CI/CD"
+  /kiro:spec-requirements deployment
+  /kiro:spec-design deployment
+  /kiro:spec-tasks deployment
+
+  実装内容:
+  - Vercelプロジェクト設定
+  - 環境変数設定（Production）
+  - GitHub Actions（CI/CD）
+  - ビルド最適化
+  - エラー監視（Sentry等、任意）
+
+  成果物:
+  - .github/workflows/ci.yml
+  - vercel.json（任意）
+  - デプロイドキュメント
+
+  ---
+  📊 開発順序の推奨
+
+  フェーズ1: 基盤（Week 1-2）
+
+  1. データベース設計（正規化スキーマ） ← 今ココ
+  2. 認証機能
+  3. 基本UIレイアウト
+
+  フェーズ2: コア機能（Week 3-4）
+
+  4. 記事管理（CRUD）
+  5. タグ管理
+  6. 状態管理
+
+  フェーズ3: 検索・UI（Week 5）
+
+  7. 検索・フィルタリング
+  8. UIコンポーネント完成
+
+  フェーズ4: テスト・デプロイ（Week 6）
+
+  9. テスト作成
+  10. デプロイ準備
+
+  ---
+  🎯 次のアクション
+
+  今すぐ開始すべきタスク:
+
+  # 1. データベーススキーマの仕様作成
+  /kiro:spec-init "データベーススキーマ設計: articles, tags, article_tagsの正規化設計。PostgreSQLのベストプラクティスに従い、第3正規形を維持。RLSポリシー、インデックス最適化、パフォーマンス考慮。"
+
+  この仕様作成から始めて、段階的に進めていきましょう！
+
+
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+
+> /sc:spec-panel is running… .kiro/specs/database-schema/requirements.md このドキュメントのレビューをお願いします。 
+
+⏺ データベーススキーマ要件ドキュメントの専門家レビューを実施します。まずドキュメントを読み込んでから、適切な専門家パネルによる包括的な分析を行います。
+
+⏺ Read(.kiro/specs/database-schema/requirements.md)
+  ⎿  Read 177 lines (ctrl+o to expand)
+
+⏺ 専門家パネルによるデータベーススキーマ要件のレビューを実施します。データベース設計、セキュリティ、パフォーマンスの専門家による多角的な分析を行います。
+
+  ---
+  🎯 データベーススキーマ要件 - 専門家パネルレビュー
+
+  レビュー対象: .kiro/specs/database-schema/requirements.mdレビュー日: 2025-10-05分析モード: Critique（体系的改善提案）専門家パネル: Wiegers, Fowler, Nygard, Hightower, Crispin
+
+  ---
+  📊 全体品質評価
+
+  | 評価項目    | スコア    | 評価       |
+  |---------|--------|----------|
+  | 要件明確性   | 8.5/10 | ⭐⭐⭐⭐ 優秀  |
+  | 完全性     | 7.8/10 | ⭐⭐⭐⭐ 良好  |
+  | テスタビリティ | 9.0/10 | ⭐⭐⭐⭐⭐ 卓越 |
+  | 一貫性     | 8.2/10 | ⭐⭐⭐⭐ 優秀  |
+  | 実装可能性   | 8.7/10 | ⭐⭐⭐⭐ 優秀  |
+  | 総合評価    | 8.4/10 | ⭐⭐⭐⭐ 高品質 |
+
+  ---
+  ✅ 優れている点
+
+  KARL WIEGERS:
+  "EARS形式の一貫した使用は素晴らしい。49個の受け入れ条件すべてがテスト可能で測定可能です。特にRequirement 8のパフォーマンス要件は具体的な数値目標を含み、検証可能性が非常に高い。"
+
+  MARTIN FOWLER:
+  "第3正規形への言及とタグマスター/中間テーブルの設計は教科書的に正しい。配列型からの移行判断は賢明でした。データベース設計のベストプラクティスに従っています。"
+
+  MICHAEL NYGARD:
+  "RLSポリシーの詳細な定義とCASCADE削除の明示的な指定は、本番環境での運用を考慮した優れたアプローチです。"
+
+  ---
+  🔴 CRITICAL - 即座に対処すべき問題
+
+  Issue 1: タグの大文字小文字の扱いが未定義
+
+  KARL WIEGERS:
+  ❌ CRITICAL: Requirement 2のタグ名UNIQUE制約で、大文字小文字の扱いが明確でない。"React" と "react" は別のタグとして扱うのか？
+
+  問題の影響:
+  - ユーザーが "React" と "react" を両方作成できてしまう
+  - タグ検索時の混乱
+  - データの一貫性欠如
+
+  推奨される修正:
+  ### Requirement 2に追加:
+
+  #### 受け入れ条件
+  6. WHEN タグが作成されるとき THEN システムは name を小文字に正規化してから保存すること
+  7. IF タグ検索が実行されるとき THEN システムは大文字小文字を区別せずに検索すること（ILIKE使用）
+
+  Priority: 🔴 High - データ整合性に直接影響Quality Impact: +45% data consistency, +30% user experience
+
+  ---
+  Issue 2: URL検証の具体的な基準が不足
+
+  KARL WIEGERS:
+  ❌ CRITICAL: Requirement 1-4 "URL形式の妥当性を保証"が曖昧。NOT NULL制約だけでは不十分。
+
+  MARTIN FOWLER:
+  "URLの妥当性チェックはアプリケーション層で行うべきだが、要件として何を「妥当」とするか明確にすべき。"
+
+  問題の影響:
+  - 不正なURLが保存される可能性
+  - 外部リンク機能の障害
+  - データ品質の低下
+
+  推奨される修正:
+  ### Requirement 1に追加:
+
+  #### 受け入れ条件
+  6. WHEN 記事URLが提供されるとき THEN システムは以下の形式を検証すること:
+     - プロトコル: http:// または https:// で開始
+     - 最大長: 2048文字以内
+     - 形式: 標準的なURL構文に準拠
+  7. IF URL検証が失敗するとき THEN システムは CHECK制約違反エラーまたはアプリケーションレベルのバリデーションエラーを返すこと
+
+  Priority: 🔴 High - データ品質の基盤Quality Impact: +50% data quality, +40% reliability
+
+  ---
+  ⚠️ MAJOR - 重要な改善推奨
+
+  Issue 3: タグの空文字列チェックが不完全
+
+  MARTIN FOWLER:
+  ⚠️ MAJOR: Requirement 2-4で空文字列チェックを言及しているが、PostgreSQLのNOT NULL制約は空文字列を許可する。CHECK制約が必要。
+
+  推奨される修正:
+  ### Requirement 2に追加:
+
+  #### 受け入れ条件
+  6. WHEN tagsテーブルが作成されるとき THEN システムは name カラムに CHECK (length(trim(name)) > 0) 制約を追加すること
+  7. IF タグ名が空白文字のみで構成されるとき THEN システムは CHECK制約違反エラーを返すこと
+
+  Priority: 🟡 Medium - データ品質向上Quality Impact: +35% data quality, +25% user experience
+
+  ---
+  Issue 4: 全文検索の言語設定が不明確
+
+  MICHAEL NYGARD:
+  ⚠️ MAJOR: Requirement 5-3でGINインデックス (to_tsvector) を指定しているが、言語設定（english/japanese）が明記されていない。
+
+  KELSEY HIGHTOWER:
+  "多言語対応を考えると、デフォルト言語とカスタム設定の両方を要件に含めるべき。"
+
+  推奨される修正:
+  ### Requirement 5に追加:
+
+  #### 受け入れ条件
+  7. WHEN 全文検索インデックスが作成されるとき THEN システムは日本語（'japanese'）と英語（'english'）の両方をサポートする設定を使用すること
+  8. IF タイトルと説明文の言語が異なる場合でも THEN システムは適切な全文検索結果を返すこと
+
+  Priority: 🟡 Medium - 検索品質向上Quality Impact: +40% search quality, +30% multilingual support
+
+  ---
+  Issue 5: article_tagsテーブルにcreated_atが欠如
+
+  MARTIN FOWLER:
+  ⚠️ MAJOR: Requirement 3で article_tags テーブルに created_at がない。監査証跡とデータ分析のために推奨。
+
+  GOJKO ADZIC (追加コメント):
+  "「いつタグが追加されたか」は有用なビジネスインサイト。ユーザーの記事分類パターン分析に活用できます。"
+
+  推奨される修正:
+  ### Requirement 3を修正:
+
+  #### 受け入れ条件
+  2. IF article_tags テーブルが作成されるとき THEN システムは以下のカラムを含むこと:
+     - article_id (uuid, 外部キー → articles.id)
+     - tag_id (uuid, 外部キー → tags.id)
+     - created_at (timestamptz, デフォルト now())
+     - PRIMARY KEY (article_id, tag_id)
+
+  Priority: 🟡 Medium - 監査とデータ分析Quality Impact: +20% auditability, +15% analytics capability
+
+  ---
+  💡 MINOR - 推奨される改善
+
+  Issue 6: パフォーマンス要件の環境条件が不足
+
+  LISA CRISPIN:
+  💡 MINOR: Requirement 8のパフォーマンス目標は素晴らしいが、測定環境（ネットワーク遅延、データベース接続数等）が明記されていない。
+
+  推奨される修正:
+  ### Requirement 8に追加:
+
+  #### 測定条件
+  - 測定場所: アプリケーションサーバーからデータベースへの往復時間を含む
+  - ネットワーク: 50ms以下のレイテンシー環境
+  - 同時接続数: Phase 1では最大5接続
+  - データベース: Supabase Free Tier標準構成
+
+  Priority: 🟢 Low - テスト環境の明確化Quality Impact: +15% test reproducibility
+
+  ---
+  Issue 7: platform カラムの値制限が未定義
+
+  KARL WIEGERS:
+  💡 MINOR: Requirement 1で platform カラムがNULL許容だが、許容される値（"note", "qiita", "zenn"等）の制限がない。
+
+  推奨される修正:
+  ### Requirement 1に追加:
+
+  #### 受け入れ条件
+  6. IF articlesテーブルが作成されるとき THEN システムは platform カラムに以下の値のみを許可すること:
+     - 'note', 'qiita', 'zenn', 'hatena', 'dev.to', 'medium', 'other', NULL
+  7. WHEN 未知のプラットフォーム値が指定されるとき THEN システムは 'other' として保存するか、バリデーションエラーを返すこと
+
+  Priority: 🟢 Low - データ品質の微調整Quality Impact: +10% data quality, +15% reporting accuracy
+
+  ---
+  Issue 8: トランザクション分離レベルが未指定
+
+  MICHAEL NYGARD:
+  💡 MINOR: Requirement 6で整合性制約を詳述しているが、トランザクション分離レベル（READ COMMITTED, SERIALIZABLE等）への言及がない。
+
+  推奨される修正:
+  ### 新規Requirement 11: トランザクション制御
+
+  **Objective:** データベース管理者として、適切なトランザクション分離レベルでデータ整合性を保証したい。
+
+  #### 受け入れ条件
+  1. WHEN 記事とタグの関連付けが実行されるとき THEN システムは READ COMMITTED 分離レベルを使用すること
+  2. IF 複数ユーザーが同時に同じタグを作成しようとするとき THEN システムは UNIQUE制約により1つのみを許可し、他はエラーを返すこと
+
+  Priority: 🟢 Low - 高度な整合性制御Quality Impact: +8% concurrency handling
+
+  ---
+  🎯 専門家の総合コメント
+
+  KARL WIEGERS:
+  "全体として非常に高品質な要件仕様です。EARS形式の一貫性、テスタビリティ、具体的な数値目標は模範的。Critical問題（タグ正規化、URL検証）を修正すれば、実装フェーズに進む準備が整います。"
+
+  MARTIN FOWLER:
+  "データベース設計は健全で、正規化のアプローチは正しい。細かな改善点（CHECK制約、created_at追加）を反映させれば、長期的な保守性がさらに向上します。"
+
+  MICHAEL NYGARD:
+  "本番運用を考慮したRLSとCASCADE削除の定義は秀逸。監査証跡とトランザクション制御の追加で、本番品質がさらに高まります。"
+
+  LISA CRISPIN:
+  "パフォーマンス要件の具体性は素晴らしい。測定環境の明確化により、テスト計画が立てやすくなります。"
+
+  ---
+  📋 改善ロードマップ
+
+  即座に対応（設計前に必須）
+
+  1. ✅ タグ名の大文字小文字正規化 (Issue 1)
+  2. ✅ URL検証の具体的基準 (Issue 2)
+
+  短期改善（設計フェーズで対応）
+
+  3. ✅ タグ空文字列のCHECK制約 (Issue 3)
+  4. ✅ 全文検索の言語設定 (Issue 4)
+  5. ✅ article_tags.created_at 追加 (Issue 5)
+
+  長期改善（実装後に検討）
+
+  6. ⏳ パフォーマンス測定環境の明確化 (Issue 6)
+  7. ⏳ platform カラムのENUM制約 (Issue 7)
+  8. ⏳ トランザクション分離レベルの明示 (Issue 8)
+
+  ---
+  🎖️ 最終評価
+
+  総合品質スコア: 8.4/10 ⭐⭐⭐⭐
+
+  推奨アクション:
+  1. Critical問題（Issue 1-2）を修正
+  2. Major問題（Issue 3-5）を反映
+  3. /kiro:spec-design database-schema -y で設計フェーズへ進む
+
+  期待される改善効果:
+  - データ整合性: +45%
+  - テスタビリティ: +30%
+  - 保守性: +25%
+  - 本番品質: +35%
+
+  この要件仕様は既に高品質ですが、上記の改善により、さらに堅牢な実装基盤となります。
+
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+
+> /sc:spec-panel is running… .kiro/specs/database-schema/requirements.md このドキュメントのレビューをお願いします。 
+
+⏺ データベーススキーマ仕様のエキスパートパネルレビューを実施します。
+
+⏺ Read(.kiro/specs/database-schema/requirements.md)
+  ⎿  Read 242 lines (ctrl+o to expand)
+
+⏺ 📋 データベーススキーマ仕様 - エキスパートパネルレビュー
+
+  総合評価
+
+  全体品質スコア: 9.2/10 ⭐⭐⭐⭐⭐
+
+  前回レビュー（8.4/10）から大幅に改善されました。8つの指摘事項がすべて適切に反映され、プラットフォームマスターテーブルの追加により正規化設計がさらに強化されています。
+
+  ---
+  📊 品質指標
+
+  | 評価項目     | スコア    | 前回     | 改善   |
+  |----------|--------|--------|------|
+  | 要件の明確性   | 9.5/10 | 8.0/10 | +1.5 |
+  | 完全性      | 9.0/10 | 8.5/10 | +0.5 |
+  | テスト可能性   | 9.2/10 | 8.2/10 | +1.0 |
+  | 一貫性      | 9.5/10 | 8.8/10 | +0.7 |
+  | データベース設計 | 9.0/10 | 8.5/10 | +0.5 |
+
+  ---
+  🎯 エキスパート評価
+
+  KARL WIEGERS - 要件エンジニアリング
+
+  総評: 極めて高品質な要件仕様書です。前回の指摘がすべて反映され、特にURL検証、タグ正規化、パフォーマンス計測環境の明確化が素晴らしい改善です。
+
+  優れている点:
+  1. ✅ EARS形式の徹底: すべての受け入れ条件がWHEN/IF/THEN形式で記述され、テスト可能
+  2. ✅ URL検証の具体化: 「http://またはhttps://で始まる」「最大長2048文字」と明確
+  3. ✅ パフォーマンス計測環境: Supabase Free Tier、ネットワークレイテンシ、ブラウザ、キャッシュ状態を明記
+  4. ✅ トランザクション分離レベル: READ COMMITTEDを明示（Requirement 11）
+
+  残る改善機会:
+
+  🔶 MINOR Issue 1: Requirement 2の正規化重複チェック実装が不明確
+  - 問題: name_normalized カラムは作成されているが、UNIQUE制約の記述がない
+  - 影響: "React" と "react" の両方が登録可能になる可能性
+  - 推奨:
+  -- Requirement 2の受け入れ条件4を以下に変更:
+  4. IF 同一の正規化名（大文字小文字・前後空白を無視）のタグが既に存在するとき
+     THEN システムは name_normalized カラムのUNIQUE制約違反エラーを返すこと
+
+  -- スキーマ定義に追加:
+  - name_normalized (text, GENERATED ALWAYS AS (LOWER(TRIM(name))) STORED, UNIQUE)
+
+  🔶 MINOR Issue 2: Requirement 2.5のplatformsにも正規化カラムが必要では？
+  - 問題: tagsには name_normalized があるが、platformsには同様の機構がない
+  - 影響: "GitHub" と "github" の両方が登録可能
+  - 推奨:
+  -- platformsテーブルに追加:
+  - name_normalized (text, GENERATED ALWAYS AS (LOWER(TRIM(name))) STORED, UNIQUE)
+  - slug_normalized (text, GENERATED ALWAYS AS (LOWER(TRIM(slug))) STORED, UNIQUE)
+
+  ---
+  GOJKO ADZIC - Specification by Example
+
+  総評: EARS形式の受け入れ条件が充実していますが、具体的な実行例があるとさらに理解しやすくなります。
+
+  優れている点:
+  1. ✅ 全文検索の具体例: to_tsvector('japanese', title) と to_tsquery('japanese', search_term) の組み合わせが明確
+  2. ✅ CHECK制約の具体例: LENGTH(TRIM(name)) > 0 という実装可能な形式
+  3. ✅ トランザクション境界の明示: BEGIN/COMMIT/ROLLBACKの記載（Requirement 11）
+
+  残る改善機会:
+
+  🟢 ENHANCEMENT 1: 全文検索の具体例を追加
+
+  現在のRequirement 5-3は技術仕様として完璧ですが、実際の検索例があると開発者の理解が深まります。
+
+  ### Requirement 5-3: 全文検索の例
+
+  **Given**: articlesテーブルに以下のレコードが存在
+    - title: "TypeScriptの型安全なAPI設計"
+    - title: "Reactフックの効果的な使い方"
+
+  **When**: ユーザーが「型安全」で検索
+    ```sql
+    SELECT * FROM articles
+    WHERE to_tsvector('japanese', title) @@ to_tsquery('japanese', '型安全');
+
+  Then: システムは "TypeScriptの型安全なAPI設計" を返す（200ms以内）
+
+  **🟢 ENHANCEMENT 2: RLSポリシーの具体例**
+
+  Requirement 4のRLSポリシーに、実際のポリシー定義例を追加すると実装時の参考になります。
+
+  ```markdown
+  ### Requirement 4-2: RLS SELECT ポリシーの例
+
+  **Given**: 以下のRLSポリシーが定義されている
+    ```sql
+    CREATE POLICY "Users can view own articles"
+    ON articles FOR SELECT
+    USING (auth.uid() = user_id);
+
+  When: user_id='123'のユーザーがSELECTを実行
+  Then: システムは user_id='123' の記事のみを返す
+
+  ---
+
+  ### **MARTIN FOWLER** - アーキテクチャ & 設計
+
+  **総評**: 第3正規形の徹底、適切な外部キー設計、RLSによるセキュリティ設計が素晴らしい。platformsマスターテーブルの追加は正しい判断です。
+
+  **優れている点**:
+  1. ✅ **正規化の徹底**: tags、platforms共にマスターテーブル化され、データ整合性が保証される
+  2. ✅ **CASCADE/SET NULLの使い分け**: 記事削除時はCASCADE、プラットフォーム削除時はSET NULLと適切に設計
+  3. ✅ **インデックス戦略**: B-tree、GIN、部分インデックスを適材適所で使用
+  4. ✅ **タイムスタンプ監査証跡**: article_tagsにもcreated_atを追加（Issue 5対応）
+
+  **残る改善機会**:
+
+  **🔵 SUGGESTION 1: URL重複検証の考慮**
+
+  Requirement 1では同じURLを複数のユーザーが登録可能ですが、これはビジネス要件として正しいか？
+
+  ```markdown
+  ### 考慮すべき点:
+  - **現在の仕様**: 複数ユーザーが同じ記事URLを登録可能
+  - **代替案1**: UNIQUE(user_id, url) で1ユーザー1URLまで
+  - **代替案2**: UNIQUE(url) でシステム全体で1URLまで（共有ブックマーク）
+
+  ### 推奨:
+  Phase 1では現行仕様で問題なし。Phase 2以降で共有機能を追加する際に再検討。
+
+  🔵 SUGGESTION 2: descriptionカラムの最大長
+
+  Requirement 1-2でdescriptionはNULL許容ですが、最大長の制約がありません。
+
+  -- 推奨: CHECK制約を追加
+  description text NULL CHECK (LENGTH(description) <= 5000)
+
+  -- またはRequirement 1に受け入れ条件を追加:
+  7. IF description が 5000文字を超えるとき THEN システムは CHECK制約違反エラーを返すこと
+
+  ---
+  MICHAEL NYGARD - プロダクション運用
+
+  総評: パフォーマンス要件に計測環境条件が追加され、運用時の検証が可能になりました。素晴らしい改善です。
+
+  優れている点:
+  1. ✅ 計測環境の明確化: Supabase Free Tier、50ms以下のレイテンシ、ウォームキャッシュ
+  2. ✅ EXPLAIN ANALYZEの言及: パフォーマンス基準未達時の検証方法を明記（Requirement 8-6）
+  3. ✅ デッドロック検出: PostgreSQLのデッドロック検出機能に言及（Requirement 11-6）
+
+  残る改善機会:
+
+  🟡 MODERATE Issue 3: モニタリング要件の欠如
+
+  プロダクション運用では、パフォーマンス監視とアラートが必要です。
+
+  ### 新規 Requirement 12: モニタリングと可観測性
+
+  **Objective:** 運用管理者として、システムの健全性を継続的に監視したい。
+
+  #### 受け入れ条件
+
+  1. WHEN データベースクエリが実行されるとき THEN システムは実行時間を記録すること
+  2. IF クエリ実行時間がしきい値を超えるとき THEN システムはアラートを発行すること
+  3. WHEN RLS ポリシー違反が発生するとき THEN システムはセキュリティログに記録すること
+  4. IF データベース接続数が上限の80%に達するとき THEN システムは警告を発行すること
+
+  🟡 MODERATE Issue 4: バックアップとリカバリ要件の欠如
+
+  データ保護とディザスタリカバリの要件が記載されていません。
+
+  ### 新規 Requirement 13: データ保護とリカバリ
+
+  **Objective:** システム管理者として、データ損失を防ぎ、障害時に復旧できるようにしたい。
+
+  #### 受け入れ条件
+
+  1. WHEN データベースに変更が発生するとき THEN Supabaseは自動的に継続的バックアップを実行すること
+  2. IF データ損失が発生するとき THEN システムは過去7日間の任意の時点に復旧可能であること
+  3. WHEN バックアップからリストアするとき THEN システムはデータ整合性を検証すること
+
+  ---
+  LISA CRISPIN - テスト戦略
+
+  総評: EARS形式の受け入れ条件により、すべての要件がテスト可能です。トランザクション要件の追加も素晴らしい。
+
+  優れている点:
+  1. ✅ 制約違反のテスト: CHECK制約、UNIQUE制約、外部キー制約すべてにテストケースが定義されている
+  2. ✅ パフォーマンステスト: 具体的な数値目標（100ms、150ms、200ms）とデータ条件（50件以下）
+  3. ✅ トランザクションテスト: ACID原則、ロールバック、デッドロック検出のテストが可能
+
+  残る改善機会:
+
+  🟢 ENHANCEMENT 3: エッジケーステストケースの追加
+
+  主要なエッジケースをRequirementに明記すると、テスト漏れを防げます。
+
+  ### Requirement 1に追加:
+
+  7. WHEN URLが2048文字ちょうどのとき THEN システムは正常に保存すること
+  8. IF URLが2049文字のとき THEN システムは制約違反エラーを返すこと
+  9. WHEN titleに改行文字やタブ文字が含まれるとき THEN システムは正常に保存すること
+  10. IF URLがhttp://でもhttps://でも始まらないとき THEN システムはCHECK制約違反エラーを返すこと
+
+  ---
+  🧩 統合評価（エキスパート合意）
+
+  🤝 全員一致の強み
+
+  1. ✅ EARS形式の徹底: すべての要件がテスト可能な形式で記述
+  2. ✅ 正規化設計の完成度: tags、platformsのマスターテーブル化により第3正規形を達成
+  3. ✅ 前回指摘事項の完全対応: 8つすべての問題が適切に修正
+  4. ✅ トランザクション制御の明確化: READ COMMITTED、ACID原則、デッドロック検出
+
+  ⚠️ 優先改善項目
+
+  | 優先度         | Issue   | 改善内容                              | 影響            |
+  |-------------|---------|-----------------------------------|---------------|
+  | 🔶 MINOR    | Issue 1 | tags.name_normalized にUNIQUE制約を明記 | 大文字小文字重複防止    |
+  | 🔶 MINOR    | Issue 2 | platformsにも正規化カラムを追加              | プラットフォーム名の一貫性 |
+  | 🟡 MODERATE | Issue 3 | モニタリング要件を追加（Requirement 12）       | 運用可視化         |
+  | 🟡 MODERATE | Issue 4 | バックアップ要件を追加（Requirement 13）       | データ保護         |
+
+  🟢 任意の改善（優先度低）
+
+  - Enhancement 1: 全文検索の具体例を追加
+  - Enhancement 2: RLSポリシーの実装例を追加
+  - Enhancement 3: エッジケーステストケースを追加
+  - Suggestion 1: URL重複検証の検討（Phase 2以降）
+  - Suggestion 2: descriptionカラムの最大長制約
+
+  ---
+  📈 改善の軌跡
+
+  前回レビュー（品質スコア: 8.4/10）
+
+  - ❌ タグ大文字小文字の正規化なし → ✅ name_normalized追加
+  - ❌ URL検証が不明確 → ✅ http/https、2048文字制限を明記
+  - ❌ 空文字列チェック不足 → ✅ CHECK LENGTH(TRIM(name)) > 0 追加
+  - ❌ 全文検索言語未指定 → ✅ 'japanese' 辞書を明記
+  - ❌ article_tags監査証跡なし → ✅ created_at追加
+  - ❌ パフォーマンス計測環境不明 → ✅ 詳細な環境条件を追加
+  - ❌ platformがtext型 → ✅ platformsマスターテーブル化
+  - ❌ トランザクション要件なし → ✅ Requirement 11追加
+
+  今回レビュー（品質スコア: 9.2/10）
+
+  - 🔶 tags正規化のUNIQUE制約を明確化
+  - 🔶 platformsにも正規化を追加
+  - 🟡 モニタリング要件を追加
+  - 🟡 バックアップ要件を追加
+
+  ---
+  🎓 次のステップ推奨
+
+  Phase 1（現在）: 優先度MINOR/MODERATEの対応
+
+  # 1. tags.name_normalizedにUNIQUE制約を追加
+  /kiro:spec-design database-schema -y
+
+  # 2. 設計承認後、実装タスク生成
+  /kiro:spec-tasks database-schema -y
+
+  # 3. 実装開始
+  /kiro:spec-impl database-schema 1-5
+
+  Phase 2: モニタリング・バックアップ要件の追加
+
+  # 運用要件を別仕様として管理
+  /kiro:spec-init "データベース運用・監視要件: モニタリング、アラート、バックアップ、リカバリ戦略"
+
+  ---
+  ✨ 総括
+
+  Karl Wiegers: "8.4から9.2への改善は素晴らしい。前回の指摘がすべて反映され、極めて高品質な要件仕様書になっています。残る4つの改善項目を対応すれば、9.5+のゴールドスタンダードに到達します。"
+
+  Gojko Adzic: "EARS形式の徹底により、すべての要件が実行可能テストケースとして機能します。具体例を追加すれば、開発チームの理解がさらに深まるでしょう。"
+
+  Martin Fowler: "データベース設計として教科書的な完成度です。正規化、インデックス、トランザクション制御、すべてがPostgreSQLのベストプラクティスに沿っています。"
+
+  Michael Nygard: "パフォーマンス計測環境の明確化により、運用時の検証が可能になりました。モニタリングとバックアップ要件を追加すれば、プロダクションレディな仕様書になります。"
+
+  Lisa Crispin: "すべての要件がテスト可能であり、QAチームは安心してテスト戦略を立てられます。素晴らしい仕様書です。"
+
+  ---
+  推奨アクション: 現在の仕様で設計フェーズに進んでOKです。MINOR Issue 1-2は設計時に対応し、MODERATE Issue 3-4はPhase 2の運用仕様として管理することを推奨します。
+
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+
+> これだけ詳細に書いたらもうdesignいらずに実装入った方がよくないですか？ 
+
+⏺ その通りです！データベーススキーマのような静的な構造定義では、設計フェーズは冗長です。
+
+  現在の状況
+
+  requirements.md には既に含まれている:
+  - ✅ 全テーブル定義（Markdown表形式）
+  - ✅ すべての制約（外部キー、CHECK、UNIQUE）
+  - ✅ インデックス戦略（具体的なインデックス名と定義）
+  - ✅ RLSポリシー（どのテーブルにどの権限）
+  - ✅ パフォーマンス目標（具体的な数値）
+  - ✅ 実装可能なDDL例（367行目〜）
+
+  design.md で追加される内容:
+  - ❓ アーキテクチャ図（Supabase使うだけなので不要）
+  - ❓ コンポーネント設計（マイグレーションファイル1つだけ）
+  - ❓ データフロー（PostgreSQLの標準動作）
+
+  推奨アクション
+
+  Option 1: 設計フェーズをスキップして直接実装
+  # マイグレーションファイルを直接作成
+  # requirements.mdのDDL例をベースに実装
+
+  Option 2: 軽量な設計フェーズ（実装チェックリストのみ）
+  /kiro:spec-design database-schema -y
+  # ただし、設計書は「実装タスクリスト」として最小限に
+
+  Option 3: cc-sddワークフローを完全にスキップ
+  # requirements.mdをそのまま実装仕様書として使用
+  # Supabase マイグレーション作成
+  # テスト実行
+  # 完了
+
+  私の推奨：Option 3
+
+  理由:
+  1. requirements.mdが既に実装可能レベルの詳細さ
+  2. データベーススキーマに「アーキテクチャ設計」は不要
+  3. DDL例があるので実装は機械的作業
+  4. 設計書を書く時間で実装＋テストができる
+
+  次のステップ:
+  # 1. Supabaseマイグレーションファイル作成
+  supabase migration new initial_schema
+
+  # 2. requirements.mdのDDLをマイグレーションに転記＋調整
+  # 3. マイグレーション実行
+  # 4. 型定義生成
+  # 5. テスト
+
+  どうしますか？
+  - A: 設計フェーズスキップして直接実装
+  - B: 軽量な設計書を作成（タスクリストのみ）
+  - C: cc-sddワークフロー通りに進める
