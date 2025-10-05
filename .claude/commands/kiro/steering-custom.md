@@ -10,10 +10,12 @@ allowed-tools: Bash, Read, Write, Edit, MultiEdit, Glob, Grep, LS
 ## 現在のSteeringステータス
 
 ### 既存のSteeringドキュメント
+
 - コアSteeringファイル: !`ls -la .kiro/steering/*.md 2>/dev/null || echo "Steeringディレクトリが見つかりません"`
 - カスタムSteering数: !`if [ -d ".kiro/steering" ]; then count=0; for f in .kiro/steering/*.md; do if [ -f "$f" ] && [ "$f" != ".kiro/steering/product.md" ] && [ "$f" != ".kiro/steering/tech.md" ] && [ "$f" != ".kiro/steering/structure.md" ]; then count=$((count + 1)); fi; done; echo "$count"; else echo "0"; fi`
 
 ### プロジェクト分析
+
 - 専門領域: !`find . -path ./node_modules -prune -o -path ./.git -prune -o -type d \( -name "test*" -o -name "spec*" -o -name "api" -o -name "auth" -o -name "security" \) -print 2>/dev/null || echo "専門ディレクトリが見つかりません"`
 - 設定パターン: !`find . -path ./node_modules -prune -o \( -name "*.config.*" -o -name "*rc.*" -o -name ".*rc" \) -print 2>/dev/null || echo "設定ファイルが見つかりません"`
 
@@ -76,18 +78,21 @@ allowed-tools: Bash, Read, Write, Edit, MultiEdit, Glob, Grep, LS
 このSteeringドキュメントをどの頻度とコンテキストで参照すべきかに基づいて包含モードを選択します:
 
 ### 1. 常に含まれる（カスタムファイルでは控えめに使用）
+
 - **使用する場合**: すべてのコードに適用される普遍的な基準（セキュリティポリシー、コア規約）
 - **影響**: すべてのインタラクションでコンテキストサイズが増加
 - **例**: 重要なセキュリティ要件のための`security-standards.md`
 - **推奨**: 本当に普遍的なガイドラインにのみ使用
 
 ### 2. 条件付き包含（ほとんどのカスタムファイルに推奨）
+
 - **使用する場合**: 特定のファイルタイプやディレクトリのドメイン固有ガイドライン
 - **ファイルパターン**: `"*.test.js"`, `"src/api/**/*"`, `"**/auth/*"`, `"*.config.*"`
 - **例**: テストファイルを編集する場合のみ読み込まれる`testing-approach.md`
 - **利点**: 一般的なインタラクションを圧倒することなく関連するコンテキスト
 
 ### 3. 手動包含（専門的なコンテキストに最適）
+
 - **使用する場合**: 時々必要とされる専門知識
 - **使用方法**: 特定の会話中に`@filename.md`で参照
 - **例**: デプロイ固有のタスクのための`deployment-runbook.md`
@@ -116,11 +121,13 @@ allowed-tools: Bash, Read, Write, Edit, MultiEdit, Glob, Grep, LS
 ## セキュリティと品質ガイドライン
 
 ### セキュリティ要件
+
 - **機密データを含めない**: APIキー、パスワード、データベースURL、シークレットは不可
 - **機密コンテキストをレビュー**: 内部サーバー名、プライベートAPIエンドポイントを避ける
 - **チームアクセス意識**: すべてのSteeringコンテンツはチームメンバーと共有される
 
 ### コンテンツ品質基準
+
 - **単一責任**: 1つのSteeringファイル = 1つのドメイン（API + データベースガイドラインを混在させない）
 - **具体的な例**: コードスニペットと実際のプロジェクト例を含める
 - **明確な根拠**: 特定のアプローチが好まれる理由を説明
@@ -140,6 +147,7 @@ allowed-tools: Bash, Read, Write, Edit, MultiEdit, Glob, Grep, LS
    - 他のSteeringファイルと一貫したフォーマット
 
 3. **包含モードを文書化** トップにコメントを追加:
+
    ```markdown
    <!-- Inclusion Mode: Always | Conditional: "pattern" | Manual -->
    ```

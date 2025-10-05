@@ -177,6 +177,7 @@ supabase/
 ## コード組織化パターン
 
 ### ファイル命名規則
+
 - **コンポーネント**: PascalCase（例: `ArticleCard.tsx`）
 - **ユーティリティ**: camelCase（例: `formatDate.ts`）
 - **型定義**: PascalCase（例: `Article.ts`）
@@ -184,6 +185,7 @@ supabase/
 - **API Routes**: `route.ts`（Next.js規約）
 
 ### インポート順序
+
 ```typescript
 // 1. 外部ライブラリ
 import { useState } from 'react'
@@ -205,6 +207,7 @@ import './styles.css'
 ```
 
 ### パスエイリアス（`tsconfig.json`）
+
 ```json
 {
   "compilerOptions": {
@@ -223,18 +226,22 @@ import './styles.css'
 ## アーキテクチャ原則
 
 ### 1. Feature-Based Organization
+
 機能ごとにコンポーネントを分割（例: `features/articles/`, `features/auth/`）
 
 ### 2. Separation of Concerns
+
 - **UI層**: `components/` - 見た目とユーザー操作
 - **ロジック層**: `lib/hooks/` - ビジネスロジック
 - **データ層**: `lib/supabase/` - データアクセス
 
 ### 3. Server vs Client Components
+
 - **Server Components**: デフォルト（データフェッチ、SEO）
 - **Client Components**: 'use client'（インタラクション、状態管理）
 
 ### 4. API Route設計
+
 ```typescript
 // RESTful設計
 GET    /api/articles          # 一覧取得
@@ -249,6 +256,7 @@ DELETE /api/articles/[id]     # 削除
 ## 状態管理パターン
 
 ### クライアント状態（Zustand）
+
 ```typescript
 // lib/store/filterStore.ts
 import { create } from 'zustand'
@@ -263,6 +271,7 @@ interface FilterState {
 ```
 
 ### サーバー状態（TanStack Query）
+
 ```typescript
 // lib/hooks/useArticles.ts
 import { useQuery } from '@tanstack/react-query'
@@ -280,6 +289,7 @@ export function useArticles() {
 ## 設定ファイル
 
 ### `next.config.js`
+
 ```javascript
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -292,14 +302,12 @@ module.exports = nextConfig
 ```
 
 ### `tailwind.config.ts`
+
 ```typescript
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
-  content: [
-    './app/**/*.{js,ts,jsx,tsx,mdx}',
-    './components/**/*.{js,ts,jsx,tsx,mdx}',
-  ],
+  content: ['./app/**/*.{js,ts,jsx,tsx,mdx}', './components/**/*.{js,ts,jsx,tsx,mdx}'],
   theme: {
     extend: {},
   },
@@ -308,6 +316,7 @@ const config: Config = {
 ```
 
 ### `tsconfig.json`
+
 ```json
 {
   "compilerOptions": {
@@ -331,6 +340,7 @@ const config: Config = {
 ## Git管理
 
 ### `.gitignore`
+
 ```
 # Dependencies
 node_modules/

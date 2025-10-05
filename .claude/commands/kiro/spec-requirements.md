@@ -11,12 +11,14 @@ argument-hint: <feature-name>
 ## コンテキスト検証
 
 ### Steeringコンテキスト
+
 - アーキテクチャコンテキスト: @.kiro/steering/structure.md
 - 技術的制約: @.kiro/steering/tech.md
 - プロダクトコンテキスト: @.kiro/steering/product.md
 - カスタムSteering: .kiro/steering/からすべての"Always"モードのカスタムSteeringファイルを読み込む
 
 ### 既存仕様コンテキスト
+
 - 現在の仕様ディレクトリ: !`ls -la .kiro/specs/$1/`
 - 現在の要件: `.kiro/specs/$1/requirements.md`
 - 仕様メタデータ: `.kiro/specs/$1/spec.json`
@@ -24,14 +26,17 @@ argument-hint: <feature-name>
 ## タスク: 初期要件の生成
 
 ### 1. 既存要件テンプレートの読み込み
+
 spec-initによって作成された既存のrequirements.mdファイルを読み込み、プロジェクト説明を抽出します。
 
 ### 2. 完全な要件の生成
+
 プロジェクト説明に基づいてEARS形式で初期要件セットを生成し、完全で正確になるまでユーザーと反復して洗練させます。
 
 このフェーズでは実装の詳細に焦点を当てないでください。代わりに、後で設計に変換される要件の作成に集中してください。
 
 ### 要件生成ガイドライン
+
 1. **コア機能に焦点**: ユーザーのアイデアから本質的な機能から始める
 2. **EARS形式を使用**: すべての受け入れ基準は適切なEARS構文を使用する必要がある
 3. **順次質問なし**: 最初にバージョンを生成し、その後ユーザーフィードバックに基づいて反復
@@ -43,30 +48,36 @@ spec-initによって作成された既存のrequirements.mdファイルを読�
 **EARS（Easy Approach to Requirements Syntax）**は受け入れ基準に推奨される形式です:
 
 **主要EARSパターン:**
+
 - WHEN [イベント/条件] THEN [システム/主語] SHALL [応答]
 - IF [事前条件/状態] THEN [システム/主語] SHALL [応答]
 - WHILE [継続的条件] THE [システム/主語] SHALL [継続的振る舞い]
 - WHERE [場所/コンテキスト/トリガー] THE [システム/主語] SHALL [文脈的振る舞い]
 
 **組み合わせパターン:**
+
 - WHEN [イベント] AND [追加条件] THEN [システム/主語] SHALL [応答]
 - IF [条件] AND [追加条件] THEN [システム/主語] SHALL [応答]
 
 ### 4. 要件ドキュメント構造
+
 spec.jsonで指定された言語で完全なコンテンツを含むrequirements.mdを更新（`.kiro/specs/$1/spec.json`の"language"フィールドを確認）:
 
 ```markdown
 # Requirements Document
 
 ## Introduction
+
 [機能とそのビジネス価値を要約する明確な導入]
 
 ## Requirements
 
 ### Requirement 1: [主要目標領域]
+
 **Objective:** [役割/ステークホルダー]として、[機能/能力/成果]を望む。それにより[利益]を得る。
 
 #### 受け入れ条件
+
 このセクションにはEARS要件が必要
 
 1. WHEN [イベント] THEN [システム/主語] SHALL [応答]
@@ -75,17 +86,21 @@ spec.jsonで指定された言語で完全なコンテンツを含むrequirement
 4. WHERE [場所/コンテキスト/トリガー] THE [システム/主語] SHALL [文脈的振る舞い]
 
 ### Requirement 2: [次の主要目標領域]
+
 **Objective:** [役割/ステークホルダー]として、[機能/能力/成果]を望む。それにより[利益]を得る。
 
 1. WHEN [イベント] THEN [システム/主語] SHALL [応答]
 2. WHEN [イベント] AND [条件] THEN [システム/主語] SHALL [応答]
 
 ### Requirement 3: [追加の主要領域]
+
 [すべての主要機能領域のパターンを継続]
 ```
 
 ### 5. メタデータの更新
+
 spec.jsonを以下で更新:
+
 ```json
 {
   "phase": "requirements-generated",
@@ -100,6 +115,7 @@ spec.jsonを以下で更新:
 ```
 
 ### 6. ドキュメント生成のみ
+
 要件ドキュメントのコンテンツのみを生成してください。実際のドキュメントファイルにレビューや承認の指示を含めないでください。
 
 ---

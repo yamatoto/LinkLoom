@@ -10,6 +10,7 @@ allowed-tools: Bash, Read, Write, Edit, MultiEdit, Glob, Grep, LS
 ## 既存ファイルチェック
 
 ### 現在のSteeringドキュメントステータス
+
 - プロダクト概要: !`[ -f ".kiro/steering/product.md" ] && echo "✅ 存在 - カスタムコンテンツを保持して更新" || echo "📝 見つかりません - 作成されます"`
 - 技術スタック: !`[ -f ".kiro/steering/tech.md" ] && echo "✅ 存在 - カスタムコンテンツを保持して更新" || echo "📝 見つかりません - 作成されます"`
 - プロジェクト構造: !`[ -f ".kiro/steering/structure.md" ] && echo "✅ 存在 - カスタムコンテンツを保持して更新" || echo "📝 見つかりません - 作成されます"`
@@ -18,16 +19,19 @@ allowed-tools: Bash, Read, Write, Edit, MultiEdit, Glob, Grep, LS
 ## プロジェクト分析
 
 ### 現在のプロジェクト状態
+
 - プロジェクトファイル: !`find . -path ./node_modules -prune -o -path ./.git -prune -o -path ./dist -prune -o -type f \( -name "*.py" -o -name "*.js" -o -name "*.ts" -o -name "*.jsx" -o -name "*.tsx" -o -name "*.java" -o -name "*.go" -o -name "*.rs" \) -print 2>/dev/null || echo "ソースファイルが見つかりません"`
 - 設定ファイル: !`find . -maxdepth 3 \( -name "package.json" -o -name "requirements.txt" -o -name "pom.xml" -o -name "Cargo.toml" -o -name "go.mod" -o -name "pyproject.toml" -o -name "tsconfig.json" \) 2>/dev/null || echo "設定ファイルが見つかりません"`
 - ドキュメント: !`find . -maxdepth 3 -path ./node_modules -prune -o -path ./.git -prune -o -path ./.kiro -prune -o \( -name "README*" -o -name "CHANGELOG*" -o -name "LICENSE*" -o -name "*.md" \) -print 2>/dev/null || echo "ドキュメントファイルが見つかりません"`
 
 ### 最近の変更（更新時）
+
 - 最後のSteering更新: !`git log -1 --oneline -- .kiro/steering/ 2>/dev/null || echo "前回のSteeringコミットなし"`
 - 最後のSteering更新以降のコミット: !`LAST_COMMIT=$(git log -1 --format=%H -- .kiro/steering/ 2>/dev/null); if [ -n "$LAST_COMMIT" ]; then git log --oneline ${LAST_COMMIT}..HEAD --max-count=20 2>/dev/null || echo "Gitリポジトリではありません"; else echo "前回のSteering更新が見つかりません"; fi`
 - 作業ツリーステータス: !`git status --porcelain 2>/dev/null || echo "Gitリポジトリではありません"`
 
 ### 既存のドキュメント
+
 - メインREADME: @README.md
 - パッケージ設定: @package.json
 - Python要件: @requirements.txt
@@ -40,9 +44,11 @@ allowed-tools: Bash, Read, Write, Edit, MultiEdit, Glob, Grep, LS
 上記の既存ファイルチェックに基づき、このコマンドは以下を実行します:
 
 ### 新規ファイル（"📝 見つかりません"と表示）の場合:
+
 プロジェクトのすべての側面をカバーする包括的な初期コンテンツを生成します。
 
 ### 既存ファイル（"✅ 存在"と表示）の場合:
+
 1. **ユーザーカスタマイズを保持** - 手動編集やカスタムセクション
 2. **事実情報を更新** - 依存関係、ファイル構造、コマンド
 3. **新しいセクションを追加** - 重要な新機能が存在する場合のみ
@@ -54,11 +60,13 @@ allowed-tools: Bash, Read, Write, Edit, MultiEdit, Glob, Grep, LS
 3つのコアSteeringファイル（product.md、tech.md、structure.md）は**常に含まれる**ように設計されています - 一貫したプロジェクトコンテキストを提供するため、すべてのAIインタラクションで読み込まれます。
 
 ### 包含モードの理解
+
 - **常に含まれる（コアファイルのデフォルト）**: すべてのインタラクションで読み込まれる - 一貫したプロジェクト知識を保証
 - **条件付き**: マッチングファイルパターンで作業する場合のみ読み込まれる（主にカスタムSteeringに使用）
 - **手動**: @filename構文でオンデマンドで参照（専門的なコンテキスト用）
 
 ### コアファイル戦略
+
 - `product.md`: 常に - すべての開発決定にビジネスコンテキストが必要
 - `tech.md`: 常に - 技術的制約はすべてのコード生成に影響
 - `structure.md`: 常に - アーキテクチャの決定はすべてのファイル構成に影響
@@ -68,14 +76,18 @@ allowed-tools: Bash, Read, Write, Edit, MultiEdit, Glob, Grep, LS
 ### 1. プロダクト概要（`product.md`）
 
 #### 新規ファイルの場合:
+
 以下を含む包括的なプロダクト概要を生成:
+
 - **プロダクト概要**: プロダクトが何であるかの簡単な説明
 - **コア機能**: 主要機能の箇条書きリスト
 - **ターゲットユースケース**: プロダクトが対処する特定のシナリオ
 - **主要な価値提案**: 独自の利点と差別化要因
 
 #### 既存ファイルの場合:
+
 以下がある場合のみ更新:
+
 - プロダクトに**追加された新機能**
 - **削除された機能**または廃止された機能
 - **変更されたユースケース**またはターゲットオーディエンス
@@ -84,7 +96,9 @@ allowed-tools: Bash, Read, Write, Edit, MultiEdit, Glob, Grep, LS
 ### 2. 技術スタック（`tech.md`）
 
 #### 新規ファイルの場合:
+
 完全な技術ランドスケープを文書化:
+
 - **アーキテクチャ**: 高レベルのシステム設計
 - **フロントエンド**: フレームワーク、ライブラリ、ビルドツール（該当する場合）
 - **バックエンド**: 言語、フレームワーク、サーバー技術（該当する場合）
@@ -94,7 +108,9 @@ allowed-tools: Bash, Read, Write, Edit, MultiEdit, Glob, Grep, LS
 - **ポート設定**: サービスで使用される標準ポート
 
 #### 既存ファイルの場合:
+
 以下の変更を確認:
+
 - パッケージマネージャーを介して**追加された新しい依存関係**
 - **削除されたライブラリ**またはフレームワーク
 - 主要な依存関係の**バージョンアップグレード**
@@ -105,7 +121,9 @@ allowed-tools: Bash, Read, Write, Edit, MultiEdit, Glob, Grep, LS
 ### 3. プロジェクト構造（`structure.md`）
 
 #### 新規ファイルの場合:
+
 コードベース構成の概要:
+
 - **ルートディレクトリ構成**: 説明付きのトップレベル構造
 - **サブディレクトリ構造**: 主要ディレクトリの詳細な分解
 - **コード構成パターン**: コードがどのように構造化されているか
@@ -114,7 +132,9 @@ allowed-tools: Bash, Read, Write, Edit, MultiEdit, Glob, Grep, LS
 - **主要アーキテクチャ原則**: コア設計決定とパターン
 
 #### 既存ファイルの場合:
+
 以下の変更を探す:
+
 - **新しいディレクトリ**または大規模な再編成
 - **変更されたファイル構成**パターン
 - **新しいまたは変更された命名規則**
@@ -122,7 +142,9 @@ allowed-tools: Bash, Read, Write, Edit, MultiEdit, Glob, Grep, LS
 - **リファクタリングされたコード構造**またはモジュール境界
 
 ### 4. カスタムSteeringファイル
+
 カスタムSteeringファイルが存在する場合:
+
 - **保持する** - 特に古くなっていない限り変更しない
 - **関連性をチェック** - 削除された機能を参照している場合は記録
 - **新しいカスタムファイルを提案** - 新しい専門領域が出現した場合
@@ -146,23 +168,27 @@ allowed-tools: Bash, Read, Write, Edit, MultiEdit, Glob, Grep, LS
 ## 重要な原則
 
 ### セキュリティガイドライン
+
 - **機密データを含めない**: APIキー、パスワード、データベース資格情報、個人情報は不可
 - **コミット前にレビュー**: バージョン管理前に常にSteeringコンテンツをレビュー
 - **チーム共有の考慮**: Steeringファイルはすべてのプロジェクト協力者と共有されることを忘れずに
 
 ### コンテンツ品質ガイドライン
+
 - **単一ドメイン焦点**: 各Steeringファイルは1つの特定の領域をカバーすべき
 - **明確で説明的なコンテンツ**: 決定の具体的な例と根拠を提供
 - **定期的なメンテナンス**: 主要なプロジェクト変更後にSteeringファイルをレビューして更新
 - **実行可能なガイダンス**: 抽象的な原則ではなく、具体的で実装可能なガイドラインを書く
 
 ### 保持戦略
+
 - **ユーザーセクション**: 標準テンプレートにないセクションは保持すべき
 - **カスタム例**: ユーザーが追加した例は維持すべき
 - **コメント**: インラインコメントやノートは保持すべき
 - **フォーマット設定**: 既存のMarkdownスタイル選択を尊重
 
 ### 更新哲学
+
 - **デフォルトで追加的**: 置き換えるのではなく新しい情報を追加
 - **廃止をマーク**: 取り消し線または[DEPRECATED]タグを使用
 - **重要な変更に日付**: 主要な変更に更新タイムスタンプを追加
