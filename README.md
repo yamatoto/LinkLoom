@@ -82,17 +82,37 @@ LinkLoom/
 │   ├── specs/         # 機能仕様
 │   └── steering/      # プロジェクト全体コンテキスト
 ├── .claude/           # Claude Code設定
-├── app/               # Next.js App Router
-│   ├── (auth)/       # 認証関連ルート
-│   ├── (dashboard)/  # メインアプリケーション
-│   └── api/          # API Routes
-├── components/        # Reactコンポーネント
+│   └── commands/      # カスタムコマンド
+├── src/               # ソースコード
+│   ├── app/          # Next.js App Router
+│   │   ├── login/    # ログインページ
+│   │   └── signup/   # サインアップページ
+│   ├── components/   # Reactコンポーネント
+│   │   └── auth/     # 認証関連コンポーネント
+│   ├── hooks/        # カスタムフック
+│   ├── lib/          # ライブラリとユーティリティ
+│   └── types/        # TypeScript型定義
+├── components/        # 共有コンポーネント
 │   ├── ui/           # shadcn/ui コンポーネント
-│   └── features/     # 機能別コンポーネント
+│   ├── features/     # 機能別コンポーネント
+│   │   ├── articles/ # 記事関連
+│   │   ├── auth/     # 認証関連
+│   │   └── tags/     # タグ関連
+│   └── layouts/      # レイアウトコンポーネント
 ├── lib/               # ユーティリティとヘルパー
-├── types/             # TypeScript型定義
+│   ├── hooks/        # カスタムフック
+│   ├── supabase/     # Supabase設定
+│   └── utils/        # ユーティリティ関数
+├── types/             # グローバル型定義
 ├── tests/             # テストファイル
-└── supabase/          # Supabaseローカル開発
+│   ├── e2e/          # E2Eテスト
+│   ├── fixtures/     # テストフィクスチャ
+│   └── unit/         # ユニットテスト
+├── docs/              # ドキュメント
+│   ├── development/  # 開発メモ
+│   └── requirements/ # 要件定義
+└── supabase/          # Supabase設定
+    └── migrations/   # データベースマイグレーション
 ```
 
 ## 🚀 セットアップ

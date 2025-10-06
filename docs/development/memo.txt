@@ -1048,3 +1048,43 @@
   supabase db push --seed
 
   その後、アプリケーション実装（API・UI）に進めます。
+
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+
+Googleログイン実装を進めます。まずタスクを整理します。
+
+⏺ Supabase側でGoogle OAuth設定が必要です
+
+  以下の手順でSupabaseダッシュボードで設定してください：
+
+  1. Supabaseダッシュボードにアクセス
+
+  https://supabase.com/dashboard/project/nbcbnuamfpbkfrlyqhpv
+
+  2. Google OAuth設定
+
+  1. Authentication → Providers を開く
+  2. Google を探してクリック
+  3. Enable Sign in with Google をONにする
+  4. Authorized Client IDs を設定：
+
+  開発環境用の設定（簡易版）:
+  - とりあえず有効化するだけでテスト可能
+  - Client IDは後で本格的に設定可能
+
+  本格的な設定（推奨）:
+  Google Cloud Consoleで以下を設定：
+  1. https://console.cloud.google.com/ にアクセス
+  2. 新規プロジェクト作成
+  3. APIs & Services → OAuth consent screen でアプリ情報を入力
+  4. Credentials → Create Credentials → OAuth 2.0 Client ID
+  5. Application type: Web application
+  6. Authorized redirect URIs: https://nbcbnuamfpbkfrlyqhpv.supabase.co/auth/v1/callback
+  7. 取得した Client ID と Client Secret をSupabaseに貼り付け
+
+  3. 設定完了確認
+
+  設定が完了したら教えてください。コード実装を開始します。
+
+  質問: 簡易版（今すぐテスト）と本格版（Google Cloud設定）のどちらで進めますか？
+  

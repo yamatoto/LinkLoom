@@ -285,3 +285,9 @@ SuperClaudeは既に専門知識を持っている。CLAUDE.mdに具体例が書
 # プロジェクト全体のインデックス
 /sc:index
 ```
+
+### 動作確認
+
+Chrome DevTools MCPで 動作確認してください。
+Playwright は使わないでください。
+Chrome DevTools MCPが動かない場合、動くように直してください。
