@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/hooks/useAuth'
 import { toast } from 'sonner'
+import { logger } from '@/lib/logger'
 
 export function GoogleLoginButton() {
   const { signInWithGoogle } = useAuth()
@@ -15,21 +16,54 @@ export function GoogleLoginButton() {
       const { error } = await signInWithGoogle()
 
       if (error) {
-        const errorMessage =
-          process.env.NODE_ENV === 'development'
-            ? `認証エラー: ${error.message} (${error.status || 'unknown'})`
-            : '認証に失敗しました。もう一度お試しください。'
+        // エラーの種類に応じた適切なメッセージを表示
+        let userMessage: string
+        let devDetails: string = ''
 
-        toast.error(errorMessage)
+        // Google認証キャンセル（ユーザーが明示的にキャンセル）
+        if (error.message?.includes('popup_closed') || error.message?.includes('user_cancelled')) {
+          userMessage = '認証がキャンセルされました'
+          devDetails = `[User Cancelled] ${error.message}`
+        }
+        // ネットワークエラー
+        else if (error.message?.includes('network') || error.message?.includes('fetch')) {
+          userMessage = 'ネットワークエラーが発生しました。インターネット接続を確認してください。'
+          devDetails = `[Network Error] ${error.message} (status: ${error.status})`
+        }
+        // Supabase接続エラー
+        else if (error.message?.includes('supabase') || error.status === 503) {
+          userMessage = 'サービスに接続できません。しばらく待ってから再度お試しください。'
+          devDetails = `[Supabase Connection Error] ${error.message} (status: ${error.status})`
+        }
+        // その他の認証エラー
+        else {
+          userMessage = '認証に失敗しました。もう一度お試しください。'
+          devDetails = `[Auth Error] ${error.message} (status: ${error.status || 'unknown'}, name: ${error.name || 'unknown'})`
+        }
+
+        // 開発環境では詳細情報をコンソールに出力
+        if (process.env.NODE_ENV === 'development') {
+          logger.error('[GoogleLoginButton] Auth error details:', {
+            message: error.message,
+            status: error.status,
+            name: error.name,
+          })
+          toast.error(`${userMessage}\n${devDetails}`)
+        } else {
+          toast.error(userMessage)
+        }
         return
       }
 
       // OAuth成功時はリダイレクトされるため、setIsLoading(false)は実行されない
     } catch (err) {
+      // 予期しないエラー（try-catchで捕捉されたもの）
       const errorMessage =
         process.env.NODE_ENV === 'development'
           ? `予期しないエラー: ${err instanceof Error ? err.message : String(err)}`
           : 'エラーが発生しました。もう一度お試しください。'
+
+      logger.error('[GoogleLoginButton] Unexpected error:', err)
 
       toast.error(errorMessage)
     } finally {

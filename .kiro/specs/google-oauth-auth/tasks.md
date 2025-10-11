@@ -74,19 +74,21 @@
   - _Requirements: 4.2（ページ保護）, 5.1（既存Email認証からの移行）_
   - _実装場所: `src/lib/constants.ts:8-19`_
 
-- [ ] 7. エラーハンドリングとトースト通知を実装
-- [ ] 7.1 認証エラーシナリオのハンドリングを追加
-  - Google認証キャンセル時のトースト通知実装
-  - ネットワークエラー時のリトライ可能なエラー表示
-  - Supabase接続エラー時のエラーメッセージ表示
-  - セッション期限切れ時の自動リダイレクト処理
+- [x] 7. エラーハンドリングとトースト通知を実装
+- [x] 7.1 認証エラーシナリオのハンドリングを追加
+  - ✅ Google認証キャンセル時のトースト通知実装
+  - ✅ ネットワークエラー時のリトライ可能なエラー表示
+  - ✅ Supabase接続エラー時のエラーメッセージ表示
+  - ✅ セッション期限切れ時の自動リダイレクト処理 (useAuth.tsのSIGNED_OUTイベント)
   - _Requirements: 6.1（エラーハンドリング）_
+  - _実装場所: `src/components/auth/GoogleLoginButton.tsx:16-57`, `src/hooks/useAuth.ts:82-98`_
 
-- [ ] 7.2 開発環境と本番環境のエラーログ出力を分離
-  - 開発環境: 詳細なエラー情報をコンソールに出力
-  - 本番環境: ユーザーフレンドリーなメッセージのみ表示
-  - `AuthError`のプロパティ（`message`, `status`, `name`）をログ記録
+- [x] 7.2 開発環境と本番環境のエラーログ出力を分離
+  - ✅ 開発環境: 詳細なエラー情報をコンソールに出力 (logger.error with structured objects)
+  - ✅ 本番環境: ユーザーフレンドリーなメッセージのみ表示
+  - ✅ `AuthError`のプロパティ（`message`, `status`, `name`）をログ記録
   - _Requirements: 6.1（エラーハンドリング）_
+  - _実装場所: `src/components/auth/GoogleLoginButton.tsx:43-53`, `src/components/layout/Header.tsx:20-31`, `src/hooks/useAuth.ts:61-72`_
 
 - [ ] 8. ユニットテストを実装（Vitest）
 - [ ] 8.1 useAuthフックのテストを作成

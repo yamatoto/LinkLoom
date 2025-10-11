@@ -1,9 +1,11 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import type { User, AuthError, AuthChangeEvent } from '@supabase/supabase-js'
 import { ENV_KEYS, ROUTES } from '@/lib/constants'
+import { logger } from '@/lib/logger'
 
 interface UseAuthReturn {
   user: User | null
@@ -44,6 +46,7 @@ function createMockUser(): User | null {
 export function useAuth(): UseAuthReturn {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const router = useRouter()
 
   useEffect(() => {
     // 開発環境の認証バイパスチェック
@@ -55,7 +58,20 @@ export function useAuth(): UseAuthReturn {
     }
 
     // 初期sessionチェック
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        // セッション取得エラー時のログ記録
+        if (process.env.NODE_ENV === 'development') {
+          logger.error('[useAuth] Session retrieval error:', {
+            message: error.message,
+            status: error.status,
+            name: error.name,
+          })
+        } else {
+          logger.error('[useAuth] Session retrieval error:', error.message)
+        }
+      }
+
       setUser(session?.user ?? null)
       setLoading(false)
     })
@@ -63,13 +79,30 @@ export function useAuth(): UseAuthReturn {
     // 認証状態の変更を監視
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session) => {
+    } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
+      // セッション期限切れ時の自動リダイレクト処理
+      if (event === 'TOKEN_REFRESHED') {
+        if (process.env.NODE_ENV === 'development') {
+          logger.info('[useAuth] Token refreshed successfully')
+        }
+      } else if (event === 'SIGNED_OUT') {
+        if (process.env.NODE_ENV === 'development') {
+          logger.info('[useAuth] User signed out')
+        }
+        // ログアウト時はログインページへリダイレクト
+        router.push(ROUTES.LOGIN)
+      } else if (event === 'USER_UPDATED') {
+        if (process.env.NODE_ENV === 'development') {
+          logger.info('[useAuth] User data updated')
+        }
+      }
+
       setUser(session?.user ?? null)
       setLoading(false)
     })
 
     return () => subscription.unsubscribe()
-  }, [])
+  }, [router])
 
   const signInWithGoogle = async () => {
     const redirectUrl =

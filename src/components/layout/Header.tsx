@@ -8,6 +8,7 @@ import { ROUTES } from '@/lib/constants'
 import { logger } from '@/lib/logger'
 import Link from 'next/link'
 import Image from 'next/image'
+import { toast } from 'sonner'
 
 export function Header() {
   const { user, signOut } = useAuth()
@@ -16,7 +17,24 @@ export function Header() {
   const handleLogout = useCallback(async () => {
     const { error } = await signOut()
     if (error) {
-      logger.error('[Header] Logout error:', error)
+      // 開発環境では詳細情報をログ出力
+      if (process.env.NODE_ENV === 'development') {
+        logger.error('[Header] Logout error details:', {
+          message: error.message,
+          status: error.status,
+          name: error.name,
+        })
+      } else {
+        logger.error('[Header] Logout error:', error.message)
+      }
+
+      // ユーザーにエラーを通知
+      const userMessage =
+        process.env.NODE_ENV === 'development'
+          ? `ログアウトに失敗しました: ${error.message}`
+          : 'ログアウトに失敗しました。もう一度お試しください。'
+
+      toast.error(userMessage)
       return
     }
     router.push(ROUTES.LOGIN)
