@@ -404,12 +404,13 @@ const publicRoutes = ['/login', '/']  // '/signup'を削除
 
 **ログ記録**:
 ```typescript
-// 開発環境
-if (process.env.NODE_ENV === 'development') {
-  console.error('[Auth Error]', error.name, error.message, error.status)
-}
+// 開発環境と本番環境の両方でloggerを使用
+import { logger } from '@/lib/logger'
 
-// 本番環境
+// エラーログ（本番環境でも出力される）
+logger.error('[Auth Error]', error.name, error.message, error.status)
+
+// 本番環境ではユーザーフレンドリーなメッセージのみ表示
 toast.error('ネットワークエラーが発生しました。もう一度お試しください')
 ```
 

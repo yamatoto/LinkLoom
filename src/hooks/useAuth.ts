@@ -2,13 +2,15 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
-import type { User, AuthError, Session, AuthChangeEvent } from '@supabase/supabase-js'
+import type { User, AuthError, AuthChangeEvent } from '@supabase/supabase-js'
+import { ENV_KEYS, ROUTES } from '@/lib/constants'
 
 interface UseAuthReturn {
   user: User | null
   loading: boolean
   signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>
   signUp: (email: string, password: string) => Promise<{ error: AuthError | null }>
+  signInWithGoogle: () => Promise<{ error: AuthError | null }>
   signOut: () => Promise<{ error: AuthError | null }>
 }
 
@@ -18,17 +20,15 @@ export function useAuth(): UseAuthReturn {
 
   useEffect(() => {
     // 初期sessionチェック
-    supabase.auth
-      .getSession()
-      .then(({ data: { session } }: { data: { session: Session | null } }) => {
-        setUser(session?.user ?? null)
-        setLoading(false)
-      })
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null)
+      setLoading(false)
+    })
 
     // 認証状態の変更を監視
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
+    } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session) => {
       setUser(session?.user ?? null)
       setLoading(false)
     })
@@ -52,10 +52,26 @@ export function useAuth(): UseAuthReturn {
     return { error }
   }
 
+  const signInWithGoogle = async () => {
+    const redirectUrl =
+      process.env.NODE_ENV === 'production'
+        ? `${process.env[ENV_KEYS.SITE_URL]}${ROUTES.HOME}`
+        : `http://localhost:3000${ROUTES.HOME}`
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: redirectUrl,
+      },
+    })
+
+    return { error }
+  }
+
   const signOut = async () => {
     const { error } = await supabase.auth.signOut()
     return { error }
   }
 
-  return { user, loading, signIn, signUp, signOut }
+  return { user, loading, signIn, signUp, signInWithGoogle, signOut }
 }

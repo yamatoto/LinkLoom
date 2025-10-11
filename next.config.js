@@ -3,6 +3,9 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
 
+  // Next.js Dev Toolsを完全に無効化（画面左下のNボタン）
+  devIndicators: false,
+
   images: {
     remotePatterns: [
       {
