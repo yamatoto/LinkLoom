@@ -142,73 +142,29 @@
 
 ### パフォーマンス最適化
 
-- [ ] 11.1 Headerコンポーネントの分割とメモ化
-  - Logo部分を`memo`で分離して静的部分の再レンダリングを防止
-  - UserSection部分を`memo`で分離
-  - 実装例：
-    ```typescript
-    const HeaderLogo = memo(() => (
-      <Link href={ROUTES.HOME} className="flex flex-col">
-        <h1 className="text-2xl font-bold text-gray-900">LinkLoom</h1>
-        <p className="text-sm text-gray-500">技術記事管理システム</p>
-      </Link>
-    ))
-    HeaderLogo.displayName = 'HeaderLogo'
-    ```
+- [x] 11.1 Headerコンポーネントの分割とメモ化
+  - ✅ Logo部分を`memo`で分離して静的部分の再レンダリングを防止
+  - ✅ UserSection部分を`memo`で分離
+  - ✅ handleLoginClickをuseCallbackでメモ化
+  - _実装場所: `src/components/layout/Header.tsx:15-77`_
 
 ### 型安全性向上
 
-- [ ] 11.2 user_metadataの型定義
-  - Supabase `User`型の`user_metadata`は`Record<string, any>`で型安全性が低い
-  - カスタム型定義で型チェックを強化
-  - 実装例：
-
-    ```typescript
-    interface UserMetadata {
-      full_name?: string
-      avatar_url?: string
-    }
-
-    // 使用時
-    const metadata = user.user_metadata as UserMetadata
-    ```
+- [x] 11.2 user_metadataの型定義
+  - ✅ `UserMetadata`インターフェース作成 (`full_name`, `avatar_url`)
+  - ✅ Header.tsxでUserMetadata型を使用
+  - ✅ useAuth.tsでUserMetadata型を使用
+  - ✅ 型安全性を`Record<string, any>`から向上
+  - _実装場所: `src/types/auth.ts:1-14`, `src/components/layout/Header.tsx:13,41`, `src/hooks/useAuth.ts:9`_
 
 ### セキュリティ強化
 
-- [ ] 11.3 Server Action経由の認証バイパス（Next.js 15推奨パターン）
-  - 現状：クライアントサイドに`NEXT_PUBLIC_DEV_AUTH_BYPASS`を公開
-  - 改善：Server Actionでサーバーサイド制御に変更
-  - 利点：
-    - クライアントサイドに環境変数を公開しない
-    - サーバーサイドで完全に制御
-    - 本番ビルドに含まれるリスクゼロ
-  - 実装例：
-
-    ```typescript
-    // app/actions/auth.ts
-    'use server'
-    export async function getDevAuthUser() {
-      if (
-        process.env.NODE_ENV === 'development' &&
-        process.env.DEV_AUTH_BYPASS === 'true'
-      ) {
-        return { id: 'dev-user-mock-id', email: 'dev@example.com', ... }
-      }
-      return null
-    }
-
-    // src/hooks/useAuth.ts
-    useEffect(() => {
-      getDevAuthUser().then(mockUser => {
-        if (mockUser) {
-          setUser(mockUser as User)
-          setLoading(false)
-          return
-        }
-        // 通常のSupabase認証
-      })
-    }, [])
-    ```
+- [x] 11.3 Server Action経由の認証バイパス（Next.js 15推奨パターン）
+  - ✅ `getDevAuthUser` Server Action作成
+  - ✅ `NEXT_PUBLIC_DEV_AUTH_BYPASS`から`DEV_AUTH_BYPASS`に変更（クライアント公開なし）
+  - ✅ useAuth.tsでServer Action経由の認証バイパス実装
+  - ✅ mountedフラグで適切なクリーンアップ処理
+  - _実装場所: `src/app/actions/auth.ts:1-38`, `src/hooks/useAuth.ts:24-96`_
 
 ---
 
