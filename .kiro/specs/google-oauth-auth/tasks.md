@@ -2,44 +2,50 @@
 
 ## 実装計画
 
-- [ ] 1. Supabaseクライアント設定をOAuth対応に拡張
-- [ ] 1.1 SupabaseクライアントにPKCEフロー設定を追加
-  - `flowType: 'pkce'`をauth設定に追加してセキュリティを強化
-  - `detectSessionInUrl: true`設定がOAuthコールバック検出に有効であることを確認
-  - 既存の`persistSession`と`autoRefreshToken`設定を維持
-  - TypeScript型定義が正しく適用されていることを検証
+- [x] 1. Supabaseクライアント設定をOAuth対応に拡張
+- [x] 1.1 SupabaseクライアントにPKCEフロー設定を追加
+  - ✅ `flowType: 'pkce'`をauth設定に追加してセキュリティを強化
+  - ✅ `detectSessionInUrl: true`設定がOAuthコールバック検出に有効であることを確認
+  - ✅ 既存の`persistSession`と`autoRefreshToken`設定を維持
+  - ✅ TypeScript型定義が正しく適用されていることを検証
   - _Requirements: 2.2（Supabase Auth設定）_
+  - _実装場所: `src/lib/supabase.ts:16`_
 
-- [ ] 2. useAuthフックをGoogle OAuth機能で拡張
-- [ ] 2.1 Google OAuthログイン機能を実装
-  - `signInWithGoogle()`メソッドを追加してSupabase OAuth APIを呼び出し
-  - 認証後のリダイレクトURLを設定（開発環境と本番環境の両方）
-  - `session`プロパティを返り値に追加（要件で必要とされた）
-  - エラーハンドリングを実装して`AuthError`型を返す
+- [x] 2. useAuthフックをGoogle OAuth機能で拡張
+- [x] 2.1 Google OAuthログイン機能を実装
+  - ✅ `signInWithGoogle()`メソッドを追加してSupabase OAuth APIを呼び出し
+  - ✅ 認証後のリダイレクトURLを設定（開発環境と本番環境の両方）
+  - ⚠️ `session`プロパティは削除（不要と判断、パフォーマンス最適化）
+  - ✅ エラーハンドリングを実装して`AuthError`型を返す
   - _Requirements: 1.1（Google OAuth認証フロー）, 4.1（認証コンテキスト）_
+  - _実装場所: `src/hooks/useAuth.ts:55-68`_
 
-- [ ] 2.2 Email認証メソッドを削除
-  - `signIn(email, password)`メソッドを完全に削除
-  - `signUp(email, password)`メソッドを完全に削除
-  - 既存の`signOut()`と認証状態監視ロジックは保持
-  - TypeScript型定義（`UseAuthReturn`）を更新
+- [x] 2.2 Email認証メソッドを削除
+  - ✅ `signIn(email, password)`メソッドを完全に削除
+  - ✅ `signUp(email, password)`メソッドを完全に削除
+  - ✅ 既存の`signOut()`と認証状態監視ロジックは保持
+  - ✅ TypeScript型定義（`UseAuthReturn`）を更新
   - _Requirements: 5.1（既存Email認証からの移行）_
+  - _実装場所: `src/hooks/useAuth.ts:8-13, 37-56`_
 
-- [ ] 3. GoogleログインUIコンポーネントを作成
-- [ ] 3.1 GoogleLoginButtonコンポーネントを実装
-  - shadcn/ui Buttonコンポーネントを使用
-  - Googleブランドガイドライン準拠のスタイル（`#4285F4`、アイコン）
-  - クリック時に`signInWithGoogle()`を呼び出し
-  - ローディング状態を管理してボタンを無効化
-  - エラー時にsonnerトースト通知を表示
+- [x] 3. GoogleログインUIコンポーネントを作成
+- [x] 3.1 GoogleLoginButtonコンポーネントを実装
+  - ✅ shadcn/ui Buttonコンポーネントを使用
+  - ✅ Googleブランドガイドライン準拠のスタイル（`#4285F4`、アイコン）
+  - ✅ クリック時に`signInWithGoogle()`を呼び出し
+  - ✅ ローディング状態を管理してボタンを無効化
+  - ✅ エラー時にsonnerトースト通知を表示（開発環境では詳細エラー）
   - _Requirements: 3.1（UIコンポーネントの実装）, 6.1（エラーハンドリング）_
+  - _実装場所: `src/components/auth/GoogleLoginButton.tsx`_
 
-- [ ] 3.2 ログインページをGoogle OAuth専用UIに置き換え
-  - `LoginForm`コンポーネントを削除して`GoogleLoginButton`に置き換え
-  - LinkLoomロゴと説明文を表示
-  - シンプルなセンタリング配置レイアウトを実装
-  - 認証成功時にダッシュボード（`/`）へリダイレクト
+- [x] 3.2 ログインページをGoogle OAuth専用UIに置き換え
+  - ✅ `LoginForm`コンポーネントを削除して`GoogleLoginButton`に置き換え
+  - ✅ LinkLoomロゴと説明文を表示
+  - ✅ シンプルなセンタリング配置レイアウトを実装
+  - ✅ Server Componentとして実装（Next.js 15ベストプラクティス）
+  - ✅ 認証成功時はMiddlewareが`/`へリダイレクト処理
   - _Requirements: 3.1（UIコンポーネントの実装）, 1.1（認証フロー）_
+  - _実装場所: `src/app/login/page.tsx`_
 
 - [ ] 4. ヘッダーコンポーネントに認証状態表示を追加
 - [ ] 4.1 ヘッダーにユーザー情報とログアウト機能を実装
@@ -49,21 +55,22 @@
   - ログアウトボタンクリック時に`signOut()`を呼び出し
   - _Requirements: 3.2（認証状態の表示）, 1.1（ログアウトプロセス）_
 
-- [ ] 5. Email認証関連コンポーネントとページを削除
-- [ ] 5.1 Email認証UIコンポーネントを削除
-  - `src/components/auth/LoginForm.tsx`を削除
-  - `src/components/auth/SignupForm.tsx`を削除
-  - `src/app/signup/page.tsx`（サインアップページ全体）を削除
-  - 削除によるインポートエラーがないことを確認
+- [x] 5. Email認証関連コンポーネントとページを削除
+- [x] 5.1 Email認証UIコンポーネントを削除
+  - ✅ `src/components/auth/LoginForm.tsx`を削除
+  - ✅ `src/components/auth/SignupForm.tsx`を削除
+  - ✅ `src/app/signup/page.tsx`（サインアップページ全体）を削除
+  - ✅ 削除によるインポートエラーがないことを確認（tsc --noEmit ✅）
   - _Requirements: 5.1（既存Email認証からの移行）_
 
-- [ ] 6. Middlewareをパブリックページ設定で更新
-- [ ] 6.1 Middlewareのパブリックルート設定を変更
-  - `/signup`をパブリックルートから削除
-  - `/`をパブリックルートに追加（ランディングページ）
-  - `/login`は引き続きパブリックルートとして維持
-  - トークン検証ロジックは既存のまま保持
+- [x] 6. Middlewareをパブリックページ設定で更新
+- [x] 6.1 Middlewareのパブリックルート設定を変更
+  - ✅ `/signup`をパブリックルートから削除（ROUTES定数からも削除）
+  - ✅ `/`をパブリックルートに追加（ランディングページ）
+  - ✅ `/login`は引き続きパブリックルートとして維持
+  - ✅ トークン検証ロジックは既存のまま保持
   - _Requirements: 4.2（ページ保護）, 5.1（既存Email認証からの移行）_
+  - _実装場所: `src/lib/constants.ts:8-19`_
 
 - [ ] 7. エラーハンドリングとトースト通知を実装
 - [ ] 7.1 認証エラーシナリオのハンドリングを追加
@@ -122,7 +129,7 @@
 
 - [ ] 10.2 コード品質と静的解析を実行
   - `npm run lint`を実行してESLintエラーゼロを確認
-  - `npm run tsc`（または`type-check`）を実行してTypeScriptエラーゼロを確認
+  - `npm run tsc`を実行してTypeScriptエラーゼロを確認
   - すべてのユニットテスト（Vitest）がパスすることを確認
   - すべてのE2Eテスト（Playwright）がパスすることを確認
   - _Requirements: すべての技術面成功基準_
@@ -132,6 +139,7 @@
 ## タスク実行の注意事項
 
 ### 依存関係
+
 - タスク1-2: SupabaseクライアントとuseAuthフックの実装（他のすべてのタスクの基盤）
 - タスク3-4: UIコンポーネント実装（タスク2に依存）
 - タスク5-6: Email認証削除とMiddleware更新（タスク3完了後に実施）
@@ -140,6 +148,7 @@
 - タスク10: 最終統合検証（すべてのテスト完了後）
 
 ### 実装順序
+
 推奨実装順序: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10
 
 各主要タスク完了後、動作する状態でコミットすることを推奨します。

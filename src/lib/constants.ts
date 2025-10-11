@@ -8,7 +8,6 @@
 export const ROUTES = {
   HOME: '/',
   LOGIN: '/login',
-  SIGNUP: '/signup',
 } as const
 
 /**
@@ -16,12 +15,12 @@ export const ROUTES = {
  */
 export const AUTH = {
   DEFAULT_REDIRECT_PATH: '/',
-  PUBLIC_ROUTES: ['/login', '/signup'] as const,
+  PUBLIC_ROUTES: ['/login', '/'] as const,
 } as const
 
 /**
  * PUBLIC_ROUTESの型を導出（型安全性向上のため）
- * '/login' | '/signup'
+ * '/login' | '/'
  */
 export type PublicRoute = (typeof AUTH.PUBLIC_ROUTES)[number]
 

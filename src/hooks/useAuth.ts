@@ -8,8 +8,6 @@ import { ENV_KEYS, ROUTES } from '@/lib/constants'
 interface UseAuthReturn {
   user: User | null
   loading: boolean
-  signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>
-  signUp: (email: string, password: string) => Promise<{ error: AuthError | null }>
   signInWithGoogle: () => Promise<{ error: AuthError | null }>
   signOut: () => Promise<{ error: AuthError | null }>
 }
@@ -36,22 +34,6 @@ export function useAuth(): UseAuthReturn {
     return () => subscription.unsubscribe()
   }, [])
 
-  const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
-    return { error }
-  }
-
-  const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    })
-    return { error }
-  }
-
   const signInWithGoogle = async () => {
     const redirectUrl =
       process.env.NODE_ENV === 'production'
@@ -73,5 +55,5 @@ export function useAuth(): UseAuthReturn {
     return { error }
   }
 
-  return { user, loading, signIn, signUp, signInWithGoogle, signOut }
+  return { user, loading, signInWithGoogle, signOut }
 }

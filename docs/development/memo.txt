@@ -110,7 +110,7 @@
     - ✅ Tailwind CSS + shadcn/ui設定
     - ✅ テスト環境（Vitest + Playwright）
     - ✅ ESLint + Prettier設定
-    - ✅ 品質ゲート設定（lint + type-check必須）
+    - ✅ 品質ゲート設定（lint + typ必須）
   2. Supabase基盤
     - ✅ Supabaseクライアント設定（client.ts, server.ts）
     - ✅ 環境変数設定

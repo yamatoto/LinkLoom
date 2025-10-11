@@ -339,7 +339,7 @@ npm run test
 npm run test:e2e
 
 # 型チェック
-npm run type-check
+npm run tsc
 ```
 
 ### Supabaseコマンド
