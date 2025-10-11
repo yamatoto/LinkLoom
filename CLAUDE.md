@@ -287,6 +287,18 @@ SuperClaudeは既に専門知識を持っている。CLAUDE.mdに具体例が書
 /sc:index
 ```
 
+### 開発サーバーの起動
+
+**重要**: このプロジェクトでは、Chrome DevTools MCPを使用した動作確認のため、以下のコマンドを使用してください：
+
+```bash
+npm run dev:mcp
+```
+
+- **通常の`npm run dev`ではなく、`npm run dev:mcp`を使用する**
+- Chrome DevTools MCPと連携した開発サーバーが起動します
+- ブラウザでの動作確認やテストを行う際は、必ずこのコマンドで起動してください
+
 ### 動作確認
 
 Chrome DevTools MCPで 動作確認してください。

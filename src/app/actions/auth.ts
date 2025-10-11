@@ -17,8 +17,12 @@ import type { UserMetadata } from '@/types/auth'
 export async function getDevAuthUser(): Promise<User | null> {
   // 開発環境かつDEV_AUTH_BYPASSがtrueの場合のみモックユーザーを返す
   if (process.env.NODE_ENV === 'development' && process.env.DEV_AUTH_BYPASS === 'true') {
+    // Environment-based display name
+    const oauthMode = process.env.NEXT_PUBLIC_OAUTH_MODE || 'production'
+    const displayName = oauthMode === 'mcp' ? 'Mock Dev User' : 'Dev User'
+
     const metadata: UserMetadata = {
-      full_name: 'Dev User',
+      full_name: displayName,
       avatar_url: '',
     }
 

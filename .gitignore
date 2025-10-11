@@ -27,6 +27,11 @@ yarn-error.log*
 # local env files
 .env*.local
 .env
+.env.mcp
+
+# Keep example files for documentation
+!.env.example
+!.env.mcp.example
 
 # vercel
 .vercel
