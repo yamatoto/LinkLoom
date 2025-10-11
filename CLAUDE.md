@@ -25,9 +25,9 @@
 
 **アクティブな仕様:**
 
-- **database-schema** - データベーススキーマ設計（articles, tags, article_tags正規化設計）
+- **google-oauth-auth** - Google OAuth認証への移行（Email認証からGoogle Cloud OAuth 2.0への置き換え）
   - 状態: initialized
-  - 進捗確認: `/kiro:spec-status database-schema`
+  - 進捗確認: `/kiro:spec-status google-oauth-auth`
 
 ### 2. SuperClaude
 
@@ -289,5 +289,4 @@ SuperClaudeは既に専門知識を持っている。CLAUDE.mdに具体例が書
 ### 動作確認
 
 Chrome DevTools MCPで 動作確認してください。
-Playwright は使わないでください。
-Chrome DevTools MCPが動かない場合、動くように直してください。
+Chrome DevTools MCPが動かない場合、Playwright の利用に逃げず、Chrome DevTools MCPが動くように直してください。
