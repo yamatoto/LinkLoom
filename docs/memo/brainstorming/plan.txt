@@ -1,0 +1,398 @@
+今package.jsonやlint設定なども全くできていませんが機能開発に進んで良いですか？ 
+
+
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+
+⏺ いい質問です！プロジェクトの初期セットアップを先にやるべきですね。
+
+  🎯 推奨フロー
+
+  現在地: ブレインストーミング完了、Steering作成完了
+      ↓
+  次: プロジェクト初期セットアップ ← ここをやるべき！
+      ↓
+  その後: 機能のspec作成 → 実装
+
+  ---
+  📋 初期セットアップでやるべきこと
+
+  1. Next.js プロジェクト作成
+
+  npx create-next-app@latest LinkLoom --typescript --tailwind --app --src-dir --import-alias "@/*"
+
+  2. 依存関係インストール
+
+  cd LinkLoom
+  npm install react-hook-form @hookform/resolvers zod
+  npm install @supabase/supabase-js
+  npm install @tanstack/react-query zustand
+  npm install dayjs clsx tailwind-merge sonner
+  npm install -D vitest @vitest/ui
+  npm install -D @playwright/test
+  npm install -D prettier eslint-config-prettier
+
+  3. shadcn/ui セットアップ
+
+  npx shadcn-ui@latest init
+
+  4. 設定ファイル整備
+
+  - tsconfig.json
+  - tailwind.config.ts
+  - next.config.js
+  - .env.local.example
+  - .prettierrc
+  - vitest.config.ts
+  - playwright.config.ts
+
+  5. 基本ディレクトリ構造作成
+
+  mkdir -p app/(auth) app/(dashboard) app/api
+  mkdir -p components/ui components/features components/layouts
+  mkdir -p lib/supabase lib/hooks lib/utils
+  mkdir -p types
+  mkdir -p tests/unit tests/e2e
+
+  6. Git初期化
+
+  git init
+  git add .
+  git commit -m "Initial project setup"
+
+  ---
+  💡 提案: セットアップをお手伝いしましょうか？
+
+  オプションA: 自動セットアップスクリプト実行
+
+  SuperClaudeの /sc:task を使って、上記をまとめて実行できます：
+
+  /sc:task "Next.js 15プロジェクトの初期セットアップを実行。create-next-app実行、依存関係インストール、shadcn/ui初期化、設定ファイル作成、ディレクトリ構造作成、Git初期化まで完了。"
+
+  オプションB: 手順を一つずつガイド
+
+  一つずつコマンドを確認しながら進めます。
+
+  オプションC: 自分でセットアップ
+
+  セットアップ完了後に機能開発に戻ってきます。
+
+  ---
+  🤔 どうしますか？
+
+  1. オプションA: /sc:task で自動セットアップ（推奨・最速）
+  2. オプションB: 一つずつガイドしながら進める
+  3. オプションC: 自分でセットアップ（後で機能開発に戻る）
+
+  どれが良いですか？
+
+
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+> 今後は、仕様駆動開発で一つずつ、少しずつ作業を進めます。\
+フェーズ１での残りの全体の作業を教えてください。 
+
+⏺ Phase 1（MVP）の全体作業を整理します。現在の進捗状況を確認してから、残りのタスクをリストアップします。
+
+⏺ Search(pattern: "**/*.tsx", path: "app")
+  ⎿  Found 2 files (ctrl+o to expand)
+
+⏺ Search(pattern: "**/*.ts", path: "lib")
+  ⎿  Found 1 file (ctrl+o to expand)
+
+⏺ Read(.kiro/steering/product.md)
+  ⎿  Read 40 lines (ctrl+o to expand)
+
+⏺ 📋 Phase 1（MVP）全体作業リスト
+
+  ✅ 完了済み
+
+  1. プロジェクト基盤
+    - ✅ Next.js 15 + TypeScript環境構築
+    - ✅ Tailwind CSS + shadcn/ui設定
+    - ✅ テスト環境（Vitest + Playwright）
+    - ✅ ESLint + Prettier設定
+    - ✅ 品質ゲート設定（lint + typ必須）
+  2. Supabase基盤
+    - ✅ Supabaseクライアント設定（client.ts, server.ts）
+    - ✅ 環境変数設定
+    - ⚠️ データベーススキーマ（正規化に修正中）
+
+  ---
+  🚧 Phase 1 残りの作業（仕様駆動開発で進める）
+
+  1. データベース設計（正規化スキーマ） 🔴 最優先
+
+  📝 仕様作成
+
+  /kiro:spec-init "データベーススキーマ設計: articles, tags, article_tagsの正規化設計"
+  /kiro:spec-requirements database-schema
+  /kiro:spec-design database-schema
+  /kiro:spec-tasks database-schema
+
+  実装内容:
+  - ✅ tagsテーブル（タグマスター）
+  - ✅ articlesテーブル（記事情報）
+  - ✅ article_tagsテーブル（中間テーブル）
+  - ✅ RLSポリシー設定
+  - ✅ インデックス最適化
+  - ✅ TypeScript型定義生成
+
+  成果物:
+  - supabase/migrations/YYYYMMDDHHMMSS_create_normalized_schema.sql
+  - types/database.types.ts（自動生成）
+
+  ---
+  2. 認証機能 🔴 必須
+
+  📝 仕様作成
+
+  /kiro:spec-init "認証機能: Googleログイン、ログアウト、認証状態管理"
+  /kiro:spec-requirements auth
+  /kiro:spec-design auth
+  /kiro:spec-tasks auth
+
+  実装内容:
+  - ログインページ（app/(auth)/login/page.tsx）
+  - Googleログインボタン
+  - 認証状態管理（React Context or Zustand）
+  - 認証ミドルウェア（middleware.ts）
+  - ログアウト機能
+
+  成果物:
+  - app/(auth)/login/page.tsx
+  - lib/contexts/AuthContext.tsx
+  - middleware.ts
+  - lib/hooks/useAuth.ts
+
+  ---
+  3. 記事管理（CRUD） 🔴 コア機能
+
+  📝 仕様作成
+
+  /kiro:spec-init "記事管理機能: 作成、読み取り、更新、削除"
+  /kiro:spec-requirements article-crud
+  /kiro:spec-design article-crud
+  /kiro:spec-tasks article-crud
+
+  実装内容:
+
+  3-1. 記事作成
+
+  - 記事登録フォーム
+  - URLメタデータ自動取得API（app/api/fetch-metadata/route.ts）
+  - タグ入力（自動補完）
+  - プラットフォーム自動判定
+  - バリデーション（Zod + React Hook Form）
+
+  3-2. 記事一覧表示
+
+  - カード形式一覧
+  - プラットフォームアイコン表示
+  - ブックマーク機能
+  - ページネーション/無限スクロール
+
+  3-3. 記事編集
+
+  - 編集フォーム
+  - タグ追加/削除
+  - 説明文編集
+
+  3-4. 記事削除
+
+  - 削除確認ダイアログ
+  - 論理削除 or 物理削除
+
+  成果物:
+  - app/(dashboard)/articles/page.tsx（一覧）
+  - app/(dashboard)/articles/new/page.tsx（作成）
+  - app/(dashboard)/articles/[id]/edit/page.tsx（編集）
+  - components/features/articles/ArticleCard.tsx
+  - components/features/articles/ArticleForm.tsx
+  - lib/api/articles.ts（CRUD関数）
+  - app/api/fetch-metadata/route.ts
+
+  ---
+  4. 検索・フィルタリング機能 🟡 重要
+
+  📝 仕様作成
+
+  /kiro:spec-init "検索・フィルタリング: キーワード検索、タグフィルタ、ソート"
+  /kiro:spec-requirements search-filter
+  /kiro:spec-design search-filter
+  /kiro:spec-tasks search-filter
+
+  実装内容:
+  - キーワード検索（タイトル・説明文）
+  - タグフィルタ（複数選択、AND/OR切替）
+  - プラットフォームフィルタ
+  - ソート機能（登録日、更新日、タイトル）
+  - ブックマークフィルタ
+  - 検索結果のURL状態同期
+
+  成果物:
+  - components/features/search/SearchBar.tsx
+  - components/features/search/TagFilter.tsx
+  - components/features/search/SortSelector.tsx
+  - lib/hooks/useArticleSearch.ts
+  - lib/utils/search.ts
+
+  ---
+  5. タグ管理 🟡 重要
+
+  📝 仕様作成
+
+  /kiro:spec-init "タグ管理: タグ作成、リネーム、削除、使用頻度表示"
+  /kiro:spec-requirements tag-management
+  /kiro:spec-design tag-management
+  /kiro:spec-tasks tag-management
+
+  実装内容:
+  - タグ一覧表示
+  - タグ作成（記事作成時 + 専用画面）
+  - タグリネーム
+  - タグ削除（使用中の記事との関連処理）
+  - タグの使用頻度表示
+  - タグクラウドUI
+
+  成果物:
+  - app/(dashboard)/tags/page.tsx
+  - components/features/tags/TagCloud.tsx
+  - components/features/tags/TagManager.tsx
+  - lib/api/tags.ts
+
+  ---
+  6. UIコンポーネント 🟢 サポート
+
+  📝 仕様作成
+
+  /kiro:spec-init "共通UIコンポーネント: レイアウト、ナビゲーション、ローディング、エラー"
+  /kiro:spec-requirements ui-components
+  /kiro:spec-design ui-components
+  /kiro:spec-tasks ui-components
+
+  実装内容:
+  - ダッシュボードレイアウト
+  - ヘッダー・ナビゲーション
+  - サイドバー（タグ一覧）
+  - ローディング状態
+  - エラー表示
+  - トースト通知（sonner）
+  - 空状態（Empty State）
+
+  成果物:
+  - app/(dashboard)/layout.tsx
+  - components/layout/Header.tsx
+  - components/layout/Sidebar.tsx
+  - components/ui/*（shadcn/ui追加）
+  - components/shared/Loading.tsx
+  - components/shared/ErrorBoundary.tsx
+
+  ---
+  7. 状態管理 🟢 サポート
+
+  📝 仕様作成
+
+  /kiro:spec-init "状態管理: クライアント状態（Zustand）、サーバー状態（TanStack Query）"
+  /kiro:spec-requirements state-management
+  /kiro:spec-design state-management
+  /kiro:spec-tasks state-management
+
+  実装内容:
+  - 検索フィルタ状態（Zustand）
+  - UI状態（サイドバー開閉等）
+  - サーバーデータキャッシュ（TanStack Query）
+  - 楽観的更新（Optimistic Updates）
+
+  成果物:
+  - lib/stores/searchStore.ts
+  - lib/stores/uiStore.ts
+  - lib/queries/articles.ts（React Query hooks）
+  - lib/queries/tags.ts
+
+  ---
+  8. テスト 🔴 品質保証
+
+  📝 仕様作成
+
+  /kiro:spec-init "テスト: ユニットテスト（Vitest）、E2Eテスト（Playwright）"
+  /kiro:spec-requirements testing
+  /kiro:spec-design testing
+  /kiro:spec-tasks testing
+
+  実装内容:
+
+  8-1. ユニットテスト（Vitest）
+
+  - ユーティリティ関数
+  - カスタムフック
+  - API関数
+  - バリデーションスキーマ
+
+  8-2. E2Eテスト（Playwright）
+
+  - ログインフロー
+  - 記事作成フロー
+  - 記事編集フロー
+  - 検索・フィルタリング
+  - タグ管理
+
+  成果物:
+  - tests/unit/**/*.test.ts
+  - tests/e2e/**/*.spec.ts
+  - tests/fixtures/**
+
+  ---
+  9. デプロイ準備 🟡 最終段階
+
+  📝 仕様作成
+
+  /kiro:spec-init "デプロイ準備: Vercelデプロイ、環境変数、CI/CD"
+  /kiro:spec-requirements deployment
+  /kiro:spec-design deployment
+  /kiro:spec-tasks deployment
+
+  実装内容:
+  - Vercelプロジェクト設定
+  - 環境変数設定（Production）
+  - GitHub Actions（CI/CD）
+  - ビルド最適化
+  - エラー監視（Sentry等、任意）
+
+  成果物:
+  - .github/workflows/ci.yml
+  - vercel.json（任意）
+  - デプロイドキュメント
+
+  ---
+  📊 開発順序の推奨
+
+  フェーズ1: 基盤（Week 1-2）
+
+  1. データベース設計（正規化スキーマ） ← 今ココ
+  2. 認証機能
+  3. 基本UIレイアウト
+
+  フェーズ2: コア機能（Week 3-4）
+
+  4. 記事管理（CRUD）
+  5. タグ管理
+  6. 状態管理
+
+  フェーズ3: 検索・UI（Week 5）
+
+  7. 検索・フィルタリング
+  8. UIコンポーネント完成
+
+  フェーズ4: テスト・デプロイ（Week 6）
+
+  9. テスト作成
+  10. デプロイ準備
+
+  ---
+  🎯 次のアクション
+
+  今すぐ開始すべきタスク:
+
+  # 1. データベーススキーマの仕様作成
+  /kiro:spec-init "データベーススキーマ設計: articles, tags, article_tagsの正規化設計。PostgreSQLのベストプラクティスに従い、第3正規形を維持。RLSポリシー、インデックス最適化、パフォーマンス考慮。"
+
+  この仕様作成から始めて、段階的に進めていきましょう！
