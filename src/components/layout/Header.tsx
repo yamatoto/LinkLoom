@@ -10,7 +10,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { toast } from 'sonner'
 import type { User } from '@supabase/supabase-js'
-import type { UserMetadata } from '@/types/auth'
+import { extractUserMetadata } from '@/types/auth'
 
 // Logo部分を分離してメモ化 - 静的コンテンツなので再レンダリング不要
 const HeaderLogo = memo(() => (
@@ -37,8 +37,8 @@ const UserSection = memo(({ user, onLogout, onLoginClick }: UserSectionProps) =>
     )
   }
 
-  // 型安全性を向上させるためにuser_metadataをUserMetadata型にキャスト
-  const metadata = user.user_metadata as UserMetadata
+  // 型ガードで安全にUserMetadataを抽出
+  const metadata = extractUserMetadata(user.user_metadata)
 
   return (
     <>

@@ -18,83 +18,106 @@ interface UseAuthReturn {
 export function useAuth(): UseAuthReturn {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const [isDevMode, setIsDevMode] = useState(false)
   const router = useRouter()
 
+  // useEffect 1: 開発環境認証バイパスチェック
   useEffect(() => {
     let mounted = true
-    let subscription: { unsubscribe: () => void } | null = null
 
-    // 開発環境の認証バイパスチェック (Server Action経由)
-    getDevAuthUser()
-      .then((mockUser) => {
-        if (!mounted) return
+    async function checkDevAuth() {
+      const mockUser = await getDevAuthUser()
 
-        if (mockUser) {
-          setUser(mockUser)
-          setLoading(false)
-          return
-        }
+      if (!mounted) return
 
-        // 通常のSupabase認証フロー
-        // 初期sessionチェック
-        return supabase.auth.getSession()
-      })
-      .then((result) => {
-        if (!result || !mounted) return
-
-        const { data: { session }, error } = result
-
-        if (error) {
-          // セッション取得エラー時のログ記録
-          if (process.env.NODE_ENV === 'development') {
-            logger.error('[useAuth] Session retrieval error:', {
-              message: error.message,
-              status: error.status,
-              name: error.name,
-            })
-          } else {
-            logger.error('[useAuth] Session retrieval error:', error.message)
-          }
-        }
-
-        setUser(session?.user ?? null)
+      if (mockUser) {
+        setUser(mockUser)
         setLoading(false)
+        setIsDevMode(true)
+      } else {
+        setIsDevMode(false)
+      }
+    }
 
-        // 認証状態の変更を監視
-        const {
-          data: { subscription: sub },
-        } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
-          if (!mounted) return
-
-          // セッション期限切れ時の自動リダイレクト処理
-          if (event === 'TOKEN_REFRESHED') {
-            if (process.env.NODE_ENV === 'development') {
-              logger.info('[useAuth] Token refreshed successfully')
-            }
-          } else if (event === 'SIGNED_OUT') {
-            if (process.env.NODE_ENV === 'development') {
-              logger.info('[useAuth] User signed out')
-            }
-            // ログアウト時はログインページへリダイレクト
-            router.push(ROUTES.LOGIN)
-          } else if (event === 'USER_UPDATED') {
-            if (process.env.NODE_ENV === 'development') {
-              logger.info('[useAuth] User data updated')
-            }
-          }
-
-          setUser(session?.user ?? null)
-          setLoading(false)
-        })
-
-        subscription = sub
-      })
+    checkDevAuth()
 
     return () => {
       mounted = false
-      subscription?.unsubscribe()
     }
-  }, [router])
+  }, [])
+
+  // useEffect 2: Supabase初期セッション取得（開発モード時はスキップ）
+  useEffect(() => {
+    if (isDevMode) return
+
+    let mounted = true
+
+    async function initSession() {
+      const { data: { session }, error } = await supabase.auth.getSession()
+
+      if (!mounted) return
+
+      if (error) {
+        // セッション取得エラー時のログ記録
+        if (process.env.NODE_ENV === 'development') {
+          logger.error('[useAuth] Session retrieval error:', {
+            message: error.message,
+            status: error.status,
+            name: error.name,
+          })
+        } else {
+          logger.error('[useAuth] Session retrieval error:', error.message)
+        }
+      }
+
+      setUser(session?.user ?? null)
+      setLoading(false)
+    }
+
+    initSession()
+
+    return () => {
+      mounted = false
+    }
+  }, [isDevMode])
+
+  // useEffect 3: 認証状態変更の監視（開発モード時はスキップ）
+  useEffect(() => {
+    if (isDevMode) return
+
+    let mounted = true
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
+      if (!mounted) return
+
+      // セッション期限切れ時の自動リダイレクト処理
+      if (event === 'TOKEN_REFRESHED') {
+        if (process.env.NODE_ENV === 'development') {
+          logger.info('[useAuth] Token refreshed successfully')
+        }
+      } else if (event === 'SIGNED_OUT') {
+        if (process.env.NODE_ENV === 'development') {
+          logger.info('[useAuth] User signed out')
+        }
+        // ログアウト時はログインページへリダイレクト
+        router.push(ROUTES.LOGIN)
+      } else if (event === 'USER_UPDATED') {
+        if (process.env.NODE_ENV === 'development') {
+          logger.info('[useAuth] User data updated')
+        }
+      }
+
+      setUser(session?.user ?? null)
+      setLoading(false)
+    })
+
+    return () => {
+      mounted = false
+      subscription.unsubscribe()
+    }
+  }, [isDevMode, router])
 
   const signInWithGoogle = async () => {
     const redirectUrl =
