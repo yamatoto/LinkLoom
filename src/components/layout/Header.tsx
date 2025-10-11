@@ -1,0 +1,87 @@
+'use client'
+
+import { useCallback } from 'react'
+import { useAuth } from '@/hooks/useAuth'
+import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { ROUTES } from '@/lib/constants'
+import { logger } from '@/lib/logger'
+import Link from 'next/link'
+import Image from 'next/image'
+
+export function Header() {
+  const { user, signOut } = useAuth()
+  const router = useRouter()
+
+  const handleLogout = useCallback(async () => {
+    const { error } = await signOut()
+    if (error) {
+      logger.error('[Header] Logout error:', error)
+      return
+    }
+    router.push(ROUTES.LOGIN)
+  }, [signOut, router])
+
+  return (
+    <header className="border-b border-gray-200 bg-white shadow-sm">
+      <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between">
+          {/* Logo */}
+          <Link href={ROUTES.HOME} className="flex flex-col">
+            <h1 className="text-2xl font-bold text-gray-900">LinkLoom</h1>
+            <p className="text-sm text-gray-500">技術記事管理システム</p>
+          </Link>
+
+          {/* User Section */}
+          <div className="flex items-center gap-4">
+            {user ? (
+              <>
+                {/* User Avatar & Info */}
+                <div className="flex items-center gap-3">
+                  {user.user_metadata?.avatar_url ? (
+                    <Image
+                      src={user.user_metadata.avatar_url}
+                      alt={user.user_metadata?.full_name || user.email || 'User'}
+                      width={40}
+                      height={40}
+                      className="rounded-full"
+                    />
+                  ) : (
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
+                      <span className="text-sm font-medium text-blue-700">
+                        {(user.user_metadata?.full_name?.[0] || user.email?.[0] || 'U').toUpperCase()}
+                      </span>
+                    </div>
+                  )}
+                  <div className="text-right">
+                    <p className="text-sm font-medium text-gray-900">
+                      {user.user_metadata?.full_name || user.email}
+                    </p>
+                    <p className="text-xs text-gray-500">ログイン中</p>
+                  </div>
+                </div>
+
+                {/* Logout Button */}
+                <Button
+                  onClick={handleLogout}
+                  variant="outline"
+                  className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                >
+                  ログアウト
+                </Button>
+              </>
+            ) : (
+              /* Login Button */
+              <Button
+                onClick={() => router.push(ROUTES.LOGIN)}
+                className="bg-blue-600 text-white hover:bg-blue-700"
+              >
+                ログイン
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+    </header>
+  )
+}

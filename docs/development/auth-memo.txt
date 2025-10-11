@@ -140,3 +140,289 @@
   3. 両方試しても合計25分程度
 
   どうしますか？それとも、もっと詳しい説明が必要な部分はありますか？
+
+====================================================================
+
+⏺ 完璧です。レビュー結果を総括します。
+
+  ---
+  🔍 アーキテクチャ・コード品質レビュー
+
+  📊 総合評価
+
+  全体スコア: 8.5/10
+
+  プロダクション品質のコードで、基本的な設計原則に沿った実装です。いくつかの最適化ポイントはありますが、現時
+  点で致命的な問題はありません。
+
+  ---
+  ✅ 優れている点
+
+  1. 責務分離が適切
+
+  - ✅ Header.tsx: 認証状態表示とログアウト処理を独立したコンポーネントに分離
+  - ✅ HomePage.tsx: ビュー表示のみに専念
+  - ✅ useAuth.ts: 認証状態管理とモックユーザー生成を統合
+
+  2. React/Next.js 15仕様への完全準拠
+
+  - ✅ 'use client'ディレクティブの適切な使用
+  - ✅ next/navigationのuseRouterを使用（App Router）
+  - ✅ Next.js 15 Imageコンポーネントの正しい実装
+  - ✅ remotePatterns設定済み（*.supabase.co）
+
+  3. セキュリティ
+
+  - ✅ 開発環境限定の認証バイパス（NODE_ENV === 'development'チェック）
+  - ✅ 環境変数の適切な分離（サーバー/クライアント）
+  - ✅ logger実装: エラーは本番でも出力、デバッグログは開発のみ
+
+  4. 型安全性
+
+  - ✅ Supabase公式型を使用（User, AuthError）
+  - ✅ TypeScript strictモードで動作
+
+  ---
+  ⚠️ 改善提案（優先度順）
+
+  🔴 高優先度
+
+  1. Google Avatar画像のremotePatterns追加
+
+  現状: *.supabase.coのみ設定問題: Googleアバター（lh3.googleusercontent.com等）が表示されない可能性
+
+  修正案:
+  // next.config.js
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '*.supabase.co',
+      },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com', // Google avatars
+      },
+    ],
+  }
+
+  2. handleLogoutのメモ化
+
+  現状: 毎レンダリングで新しい関数インスタンスを作成影響: Buttonコンポーネントの不要な再レンダリング
+
+  修正案:
+  // src/components/layout/Header.tsx
+  import { useCallback } from 'react'
+
+  const handleLogout = useCallback(async () => {
+    const { error } = await signOut()
+    if (error) {
+      logger.error('[Header] Logout error:', error)
+      return
+    }
+    router.push(ROUTES.LOGIN)
+  }, [signOut, router])
+
+  🟡 中優先度
+
+  3. 未使用インポートの削除
+
+  場所: src/app/_components/HomePage.tsx
+
+  修正案:
+  // 削除
+  - import { useRouter } from 'next/navigation'
+
+  // HomePageではuseRouterを使用していない
+
+  4. loading状態の考慮
+
+  現状: useAuthのloadingを取得していない影響: 認証チェック中もコンテンツが即座に表示される
+
+  修正案:
+  // HomePage.tsx
+  const { user, loading } = useAuth()
+
+  if (loading) {
+    return <div className="min-h-screen bg-gray-50">読み込み中...</div>
+  }
+
+  5. モックユーザー設定の定数化
+
+  現状: ハードコードされたマジックストリング
+
+  修正案:
+  // src/hooks/useAuth.ts
+  const DEV_MOCK_USER_CONFIG = {
+    id: 'dev-user-mock-id',
+    email: 'dev@example.com',
+    fullName: 'Dev User',
+    avatarUrl: '',
+  } as const
+
+  function createMockUser(): User | null {
+    if (
+      process.env.NODE_ENV === 'development' &&
+      process.env.NEXT_PUBLIC_DEV_AUTH_BYPASS === 'true'
+    ) {
+      return {
+        id: DEV_MOCK_USER_CONFIG.id,
+        email: DEV_MOCK_USER_CONFIG.email,
+        user_metadata: {
+          full_name: DEV_MOCK_USER_CONFIG.fullName,
+          avatar_url: DEV_MOCK_USER_CONFIG.avatarUrl,
+        },
+        app_metadata: {},
+        aud: 'authenticated',
+        created_at: new Date().toISOString(),
+      } as User
+    }
+    return null
+  }
+
+  🟢 低優先度（最適化）
+
+  6. Headerコンポーネントの分割
+
+  静的部分（Logo）とユーザーセクションを分離してメモ化
+
+  import { memo, useCallback } from 'react'
+
+  const HeaderLogo = memo(() => (
+    <Link href={ROUTES.HOME} className="flex flex-col">
+      <h1 className="text-2xl font-bold text-gray-900">LinkLoom</h1>
+      <p className="text-sm text-gray-500">技術記事管理システム</p>
+    </Link>
+  ))
+
+  HeaderLogo.displayName = 'HeaderLogo'
+
+  7. user_metadataの型定義
+
+  interface UserMetadata {
+    full_name?: string
+    avatar_url?: string
+  }
+
+  // 使用時
+  const metadata = user.user_metadata as UserMetadata
+
+  ---
+  🔒 セキュリティ: Chrome DevTools MCP環境の改善提案
+
+  ✅ 現状の評価
+
+  開発環境限定で実用上問題なし。ただし、より安全な実装も可能です。
+
+  🌟 推奨アプローチ（3つの選択肢）
+
+  Option A: 本番ビルド時検証（最も手軽）
+
+  // next.config.js
+  const nextConfig = {
+    // ... 既存設定
+
+    webpack: (config, { isServer, dev }) => {
+      // 本番ビルド時にチェック
+      if (!dev && !isServer) {
+        if (process.env.NEXT_PUBLIC_DEV_AUTH_BYPASS === 'true') {
+          throw new Error(
+            '🚨 SECURITY: NEXT_PUBLIC_DEV_AUTH_BYPASS is enabled in production build!'
+          )
+        }
+      }
+      return config
+    },
+  }
+
+  利点: 簡単、現状のコードを変更不要欠点: クライアントサイドに環境変数が埋め込まれる（開発ビルドのみ）
+
+  Option B: Server Action経由（Next.js 15推奨）
+
+  // app/actions/auth.ts
+  'use server'
+
+  export async function getDevAuthUser() {
+    if (
+      process.env.NODE_ENV === 'development' &&
+      process.env.DEV_AUTH_BYPASS === 'true'
+    ) {
+      return {
+        id: 'dev-user-mock-id',
+        email: 'dev@example.com',
+        user_metadata: {
+          full_name: 'Dev User',
+          avatar_url: '',
+        },
+        app_metadata: {},
+        aud: 'authenticated',
+        created_at: new Date().toISOString(),
+      }
+    }
+    return null
+  }
+
+  // src/hooks/useAuth.ts
+  useEffect(() => {
+    getDevAuthUser().then(mockUser => {
+      if (mockUser) {
+        setUser(mockUser as User)
+        setLoading(false)
+        return
+      }
+
+      // 通常のSupabase認証
+      supabase.auth.getSession().then(...)
+    })
+  }, [])
+
+  利点:
+  - クライアントサイドに環境変数を公開しない
+  - サーバーサイドで完全に制御
+  - Next.js 15の推奨パターン
+
+  欠点: 実装変更が必要
+
+  Option C: Cookie/Headerベース
+
+  Middlewareで特殊なCookieを設定し、クライアントで読み取る方法。
+
+  評価: Server Actionの方がシンプルでNext.js 15のベストプラクティス
+
+  📌 推奨: Option A（短期）→ Option B（中長期）
+
+  - 今: Option Aを追加（5行のコード追加のみ）
+  - 将来: Option Bに移行（より安全でNext.js 15推奨パターン）
+
+  ---
+  📋 実装チェックリスト
+
+  即座に対応すべき項目
+
+  - next.config.js: Google avatars用のremotePatterns追加
+  - Header.tsx: handleLogoutをuseCallbackでメモ化
+  - HomePage.tsx: useRouterインポート削除
+
+  推奨対応項目
+
+  - next.config.js: 本番ビルド検証を追加（Option A）
+  - HomePage.tsx: loading状態の考慮
+  - useAuth.ts: モックユーザー設定の定数化
+
+  将来の最適化
+
+  - Headerコンポーネントの分割（memo化）
+  - Server Action経由の認証バイパス（Option B）
+  - user_metadataの型定義
+
+  ---
+  🎯 結論
+
+  現状のコードは本番投入可能な品質です。責務分離、型安全性、セキュリティの基本は守られています。
+
+  即座の対応が必要:
+  1. Google avatars用のremotePatterns
+  2. handleLogoutのメモ化
+  3. 未使用インポート削除
+
+  これらを修正すれば、プロダクション品質9/10に到達します。

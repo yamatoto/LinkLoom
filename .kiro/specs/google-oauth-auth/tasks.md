@@ -47,13 +47,15 @@
   - _Requirements: 3.1（UIコンポーネントの実装）, 1.1（認証フロー）_
   - _実装場所: `src/app/login/page.tsx`_
 
-- [ ] 4. ヘッダーコンポーネントに認証状態表示を追加
-- [ ] 4.1 ヘッダーにユーザー情報とログアウト機能を実装
-  - ログイン状態: ユーザーアバター、名前、ログアウトボタンを表示
-  - 未ログイン状態: 「ログイン」ボタンを表示
-  - `user.user_metadata.full_name`、`user.email`、`user.user_metadata.avatar_url`を表示
-  - ログアウトボタンクリック時に`signOut()`を呼び出し
+- [x] 4. ヘッダーコンポーネントに認証状態表示を追加
+- [x] 4.1 ヘッダーにユーザー情報とログアウト機能を実装
+  - ✅ ログイン状態: ユーザーアバター、名前、ログアウトボタンを表示
+  - ✅ 未ログイン状態: 「ログイン」ボタンを表示
+  - ✅ `user.user_metadata.full_name`、`user.email`、`user.user_metadata.avatar_url`を表示
+  - ✅ アバター未設定時はイニシャル表示（フォールバック）
+  - ✅ ログアウトボタンクリック時に`signOut()`を呼び出し
   - _Requirements: 3.2（認証状態の表示）, 1.1（ログアウトプロセス）_
+  - _実装場所: `src/components/layout/Header.tsx`_
 
 - [x] 5. Email認証関連コンポーネントとページを削除
 - [x] 5.1 Email認証UIコンポーネントを削除
@@ -133,6 +135,78 @@
   - すべてのユニットテスト（Vitest）がパスすることを確認
   - すべてのE2Eテスト（Playwright）がパスすることを確認
   - _Requirements: すべての技術面成功基準_
+
+---
+
+### パフォーマンス最適化
+
+- [ ] 11.1 Headerコンポーネントの分割とメモ化
+  - Logo部分を`memo`で分離して静的部分の再レンダリングを防止
+  - UserSection部分を`memo`で分離
+  - 実装例：
+    ```typescript
+    const HeaderLogo = memo(() => (
+      <Link href={ROUTES.HOME} className="flex flex-col">
+        <h1 className="text-2xl font-bold text-gray-900">LinkLoom</h1>
+        <p className="text-sm text-gray-500">技術記事管理システム</p>
+      </Link>
+    ))
+    HeaderLogo.displayName = 'HeaderLogo'
+    ```
+
+### 型安全性向上
+
+- [ ] 11.2 user_metadataの型定義
+  - Supabase `User`型の`user_metadata`は`Record<string, any>`で型安全性が低い
+  - カスタム型定義で型チェックを強化
+  - 実装例：
+
+    ```typescript
+    interface UserMetadata {
+      full_name?: string
+      avatar_url?: string
+    }
+
+    // 使用時
+    const metadata = user.user_metadata as UserMetadata
+    ```
+
+### セキュリティ強化
+
+- [ ] 11.3 Server Action経由の認証バイパス（Next.js 15推奨パターン）
+  - 現状：クライアントサイドに`NEXT_PUBLIC_DEV_AUTH_BYPASS`を公開
+  - 改善：Server Actionでサーバーサイド制御に変更
+  - 利点：
+    - クライアントサイドに環境変数を公開しない
+    - サーバーサイドで完全に制御
+    - 本番ビルドに含まれるリスクゼロ
+  - 実装例：
+
+    ```typescript
+    // app/actions/auth.ts
+    'use server'
+    export async function getDevAuthUser() {
+      if (
+        process.env.NODE_ENV === 'development' &&
+        process.env.DEV_AUTH_BYPASS === 'true'
+      ) {
+        return { id: 'dev-user-mock-id', email: 'dev@example.com', ... }
+      }
+      return null
+    }
+
+    // src/hooks/useAuth.ts
+    useEffect(() => {
+      getDevAuthUser().then(mockUser => {
+        if (mockUser) {
+          setUser(mockUser as User)
+          setLoading(false)
+          return
+        }
+        // 通常のSupabase認証
+      })
+    }, [])
+    ```
 
 ---
 
