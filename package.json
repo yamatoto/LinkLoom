@@ -3,8 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "dev:mcp": "dotenv-cli -e .env.local -- next dev",
+    "dev": "npx dotenv-cli -e .env.local -- next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint && eslint tests/ --ext .ts,.tsx",

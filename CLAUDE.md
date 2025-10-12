@@ -312,9 +312,9 @@ npm run dev:mcp
 
 ### Chrome DevTools MCP の認証設定
 
-**User Data Directory パターンを使用**（Playwright の storageState と同等）
+**公式の自動User Data Directory を使用**
 
-Chrome DevTools MCP は **永続的なユーザーデータディレクトリ** を使用して、ログイン状態を保持します：
+Chrome DevTools MCP は **自動的にUser Data Directoryを管理** し、ログイン状態を永続化します：
 
 ```json
 // Claude Desktop MCP設定例
@@ -324,7 +324,6 @@ Chrome DevTools MCP は **永続的なユーザーデータディレクトリ** 
       "command": "npx",
       "args": [
         "chrome-devtools-mcp@latest",
-        "--userDataDir=.chrome-test-profile",
         "--headless=false"
       ]
     }
@@ -332,15 +331,23 @@ Chrome DevTools MCP は **永続的なユーザーデータディレクトリ** 
 }
 ```
 
+**セッション永続化の仕組み**:
+- Chrome DevTools MCPは自動的に以下の場所にUser Data Directoryを作成:
+  - **macOS/Linux**: `$HOME/.cache/chrome-devtools-mcp/chrome-profile-stable`
+  - **Windows**: `%HOMEPATH%/.cache/chrome-devtools-mcp/chrome-profile-stable`
+- `--isolated`フラグを指定しない限り、ログイン状態は自動的に保持される
+- 初回ログイン後、セッションはブラウザ再起動後も復元される
+
 **初回セットアップ手順**:
-1. Chrome DevTools MCP を起動
+1. Chrome DevTools MCP を起動（上記設定で自動的にUser Data Directory作成）
 2. 開いたブラウザで Google OAuth ログイン
-3. ログイン状態が `.chrome-test-profile/` に保存される
+3. ログイン状態が自動的に永続化される
 4. 以降のセッションで自動的にログイン状態が復元される
 
 **メリット**:
-- ✅ 実際の認証フローをテスト
-- ✅ Playwright E2E テストと同じ認証パターン
+- ✅ 公式実装で安定したセッション管理
+- ✅ 設定がシンプル（余計なパラメータ不要）
+- ✅ 実際の認証フローをテスト可能
 - ✅ 本番環境に近い動作確認
 
 ### 動作確認

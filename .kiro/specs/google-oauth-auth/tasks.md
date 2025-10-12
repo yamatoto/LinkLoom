@@ -197,11 +197,12 @@
 
 ### セキュリティ強化
 
-- [x] 11.3 Chrome DevTools MCP認証設定（User Data Directory方式）
-  - ✅ Chrome DevTools MCPをUser Data Directory方式に移行
-  - ✅ 開発環境の認証状態を実際のブラウザプロファイルで管理
+- [x] 11.3 Chrome DevTools MCP認証設定（公式の自動User Data Directory）
+  - ✅ Chrome DevTools MCPの公式セッション永続化機能を使用
+  - ✅ 自動User Data Directory（`~/.cache/chrome-devtools-mcp/chrome-profile-stable`）でセッション管理
+  - ✅ カスタム`--userDataDir`パラメータは不要（公式実装に存在しない）
   - ✅ 認証バイパス機構を完全に削除
-  - _実装場所: Chrome DevTools MCP設定_
+  - _実装場所: CLAUDE.md:313-351, .gitignore:50-51（`.chrome-test-profile/`エントリ削除）_
 
 ---
 
