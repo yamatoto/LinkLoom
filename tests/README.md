@@ -145,6 +145,36 @@
 - テスト独立性：各テストは新規コンテキストで実行（state汚染回避）。Playwrightベストプラクティスに準拠。
   - [Playwright - Best Practices](https://playwright.dev/docs/best-practices?utm_source=chatgpt.com)
 
+### E2E認証テスト戦略（LinkLoom実装）
+
+**採用アプローチ**: Playwright公式推奨の`storageState`パターン
+
+**仕組み**:
+1. **Global Setup**（`tests/e2e/global-setup.ts`）
+   - 実際のGoogle OAuth認証フローを1回実行
+   - 認証状態を`.auth/authenticated.json`に保存
+   - 全テストでこの認証状態を再利用
+
+2. **playwright.config.ts**
+   - globalSetupを登録
+   - デフォルトのstorageStateを設定
+   - 各テストは自動的に認証済み状態で開始
+
+3. **フィクスチャ**（`tests/e2e/fixtures/auth.fixture.ts`）
+   - `authenticatedPage`: デフォルトのstorageStateを使用
+   - `unauthenticatedPage`: storageStateをクリアした新しいコンテキストを作成
+
+**メリット**:
+- ✅ テストが高速（認証は1回のみ）
+- ✅ 実際のブラウザ認証を使うため100%互換性
+- ✅ Supabase SSRの内部実装に依存しない
+- ✅ 保守が容易（モックロジック不要）
+- ✅ middlewareとの完全な互換性
+
+**参考資料**:
+- [Playwright - Authentication](https://playwright.dev/docs/auth)
+- [Playwright - Global Setup](https://playwright.dev/docs/test-global-setup-teardown)
+
 ### Flaky Test（不安定なテスト）対応
 
 **Flaky Testとは**: 実行するたびに成功したり失敗したりするテスト

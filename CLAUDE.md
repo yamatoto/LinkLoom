@@ -310,6 +310,39 @@ npm run dev:mcp
 - Chrome DevTools MCPと連携した開発サーバーが起動します
 - ブラウザでの動作確認やテストを行う際は、必ずこのコマンドで起動してください
 
+### Chrome DevTools MCP の認証設定
+
+**User Data Directory パターンを使用**（Playwright の storageState と同等）
+
+Chrome DevTools MCP は **永続的なユーザーデータディレクトリ** を使用して、ログイン状態を保持します：
+
+```json
+// Claude Desktop MCP設定例
+{
+  "mcpServers": {
+    "chrome-devtools": {
+      "command": "npx",
+      "args": [
+        "chrome-devtools-mcp@latest",
+        "--userDataDir=.chrome-test-profile",
+        "--headless=false"
+      ]
+    }
+  }
+}
+```
+
+**初回セットアップ手順**:
+1. Chrome DevTools MCP を起動
+2. 開いたブラウザで Google OAuth ログイン
+3. ログイン状態が `.chrome-test-profile/` に保存される
+4. 以降のセッションで自動的にログイン状態が復元される
+
+**メリット**:
+- ✅ 実際の認証フローをテスト
+- ✅ Playwright E2E テストと同じ認証パターン
+- ✅ 本番環境に近い動作確認
+
 ### 動作確認
 
 Chrome DevTools MCPで 動作確認してください。

@@ -4,11 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev:mcp": "dotenv -e .env.mcp next dev",
+    "dev:mcp": "dotenv-cli -e .env.local -- next dev",
     "build": "next build",
-    "build:mcp": "dotenv -e .env.mcp next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "next lint && eslint tests/ --ext .ts,.tsx",
     "test": "vitest --run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",

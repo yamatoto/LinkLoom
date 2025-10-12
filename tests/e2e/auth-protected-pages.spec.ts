@@ -16,7 +16,7 @@ import { test, expect } from './fixtures/auth.fixture'
  * - 認証状態に応じたページアクセス可否の検証
  */
 
-test.describe.skip('保護されたページアクセス', () => {
+test.describe('保護されたページアクセス', () => {
   test('未認証状態で /articles にアクセス時、/login へリダイレクトされる', async ({
     unauthenticatedPage,
   }) => {

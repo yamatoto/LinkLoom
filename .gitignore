@@ -46,3 +46,9 @@ supabase/.branches/
 
 # serena
 .serena
+
+# Chrome DevTools MCP test profile (for manual testing)
+.chrome-test-profile/
+
+# Playwright authentication state (for E2E tests)
+tests/e2e/.auth/

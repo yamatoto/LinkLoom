@@ -17,7 +17,7 @@ import { test, expect } from './fixtures/auth.fixture'
  */
 
 test.describe('ログアウトフロー', () => {
-  test.skip('ヘッダーのログアウトボタンクリック時、セッションが破棄される', async ({
+  test('ヘッダーのログアウトボタンクリック時、セッションが破棄される', async ({
     authenticatedPage,
   }) => {
     // Given: 認証済み状態でダッシュボードにアクセス
@@ -41,7 +41,7 @@ test.describe('ログアウトフロー', () => {
     await expect(googleButton).toBeVisible()
   })
 
-  test.skip('ログアウト後、保護されたページにアクセス時に /login へリダイレクトされる', async ({
+  test('ログアウト後、保護されたページにアクセス時に /login へリダイレクトされる', async ({
     authenticatedPage,
   }) => {
     // Given: 認証済み状態でダッシュボードにアクセス
@@ -65,7 +65,7 @@ test.describe('ログアウトフロー', () => {
     expect(url.searchParams.get('redirectTo')).toBe('/articles')
   })
 
-  test.skip('ログアウト後、再ログインして元のページにアクセスできる', async ({
+  test('ログアウト後、再ログインして元のページにアクセスできる', async ({
     authenticatedPage,
   }) => {
     // Given: 認証済み状態でダッシュボードにアクセス
@@ -91,7 +91,7 @@ test.describe('ログアウトフロー', () => {
     ).toBeVisible()
   })
 
-  test.skip('ログアウトボタンクリック時、ローディング状態が表示される', async ({
+  test('ログアウトボタンクリック時、ローディング状態が表示される', async ({
     authenticatedPage,
   }) => {
     // Given: 認証済み状態でダッシュボードにアクセス
@@ -110,7 +110,7 @@ test.describe('ログアウトフロー', () => {
     await expect(authenticatedPage).toHaveURL('/login')
   })
 
-  test.skip('複数ページでログアウトした場合、すべてのセッションが破棄される', async ({
+  test('複数ページでログアウトした場合、すべてのセッションが破棄される', async ({
     authenticatedPage,
   }) => {
     // Given: 認証済み状態で保護されたページ（/articles）にアクセス
@@ -141,7 +141,7 @@ test.describe('ログアウトフロー', () => {
     }
   })
 
-  test.skip('ログアウトエラー時、適切なエラーメッセージが表示される', async ({
+  test('ログアウトエラー時、適切なエラーメッセージが表示される', async ({
     authenticatedPage,
   }) => {
     // Given: ログアウトAPIエラーをモック化
@@ -171,7 +171,7 @@ test.describe('ログアウトフロー', () => {
     await expect(logoutButton).toBeVisible()
   })
 
-  test.skip('ログアウト後、パブリックページ（/）へアクセスできる', async ({
+  test('ログアウト後、パブリックページ（/）へアクセスできる', async ({
     authenticatedPage,
   }) => {
     // Given: 認証済み状態でダッシュボードにアクセス

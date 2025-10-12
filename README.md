@@ -139,15 +139,7 @@ LinkLoom/
 # Supabase
 NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=xxx
-
-# 開発環境用認証バイパス（Chrome DevTools MCP対応）
-# Claude Codeが自動でログイン後の画面を検証できるようにする設定
-# Server-side only - クライアントには公開されない
-DEV_AUTH_BYPASS=true
-DEV_AUTH_EMAIL=dev@example.com
 ```
-
-**注意**: `DEV_AUTH_BYPASS`は開発環境でのみ動作し、本番環境には影響しません。
 
 ### インストール
 

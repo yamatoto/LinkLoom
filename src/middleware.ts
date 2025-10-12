@@ -2,20 +2,11 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import type { Database } from '@/types/database.types'
-import { isDevAuthBypassEnabled, validateRedirectPath } from '@/lib/auth-helpers'
+import { validateRedirectPath } from '@/lib/auth-helpers'
 import { AUTH, ROUTES } from '@/lib/constants'
-import { logger } from '@/lib/logger'
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
-
-  // 開発環境での認証バイパス（Chrome DevTools MCP用）
-  if (isDevAuthBypassEnabled()) {
-    logger.log('[middleware] DEV_AUTH_BYPASS enabled, skipping auth check for:', pathname)
-    return NextResponse.next({
-      request,
-    })
-  }
 
   // 認証を必要としないPublic routes
   const isPublicRoute = AUTH.PUBLIC_ROUTES.some((route) => pathname.startsWith(route))

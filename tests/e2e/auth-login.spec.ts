@@ -58,7 +58,7 @@ test.describe('Google OAuthログインフロー', () => {
     // auth.fixture.tsで設定されたモックが**/auth/v1/authorize*をハンドリング
   })
 
-  test.skip('モック認証成功後、ダッシュボード（/）へリダイレクトされる', async ({
+  test('モック認証成功後、ダッシュボード（/）へリダイレクトされる', async ({
     unauthenticatedPage,
   }) => {
     // Given: Googleでログインボタンを見つける
@@ -80,7 +80,7 @@ test.describe('Google OAuthログインフロー', () => {
     ).toBeVisible()
   })
 
-  test.skip('ローディング中はボタンが無効化される', async ({ unauthenticatedPage }) => {
+  test('ローディング中はボタンが無効化される', async ({ unauthenticatedPage }) => {
     // Given: Googleでログインボタンを見つける
     const googleButton = unauthenticatedPage.getByRole('button', {
       name: /Googleでログイン/i,
@@ -94,7 +94,7 @@ test.describe('Google OAuthログインフロー', () => {
     await expect(loadingButton).toBeDisabled()
   })
 
-  test.skip('認証エラー時、適切なエラーメッセージが表示される', async ({
+  test('認証エラー時、適切なエラーメッセージが表示される', async ({
     unauthenticatedPage,
   }) => {
     // Given: 認証APIエラーをモック化
@@ -123,7 +123,7 @@ test.describe('Google OAuthログインフロー', () => {
     await expect(errorToast).toContainText(/認証に失敗しました|認証エラー/i)
   })
 
-  test.skip('既に認証済みの場合、ログインページからダッシュボードへリダイレクト', async ({
+  test('既に認証済みの場合、ログインページからダッシュボードへリダイレクト', async ({
     authenticatedPage,
   }) => {
     // Given: 認証済み状態でログインページにアクセス

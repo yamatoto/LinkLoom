@@ -6,7 +6,6 @@ import { supabase } from '@/lib/supabase'
 import type { User, AuthError, AuthChangeEvent } from '@supabase/supabase-js'
 import { ENV_KEYS, ROUTES } from '@/lib/constants'
 import { logger } from '@/lib/logger'
-import { getDevAuthUser } from '@/app/actions/auth'
 
 interface UseAuthReturn {
   user: User | null
@@ -18,38 +17,10 @@ interface UseAuthReturn {
 export function useAuth(): UseAuthReturn {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
-  const [isDevMode, setIsDevMode] = useState(false)
   const router = useRouter()
 
-  // useEffect 1: 開発環境認証バイパスチェック
+  // useEffect 1: Supabase初期セッション取得
   useEffect(() => {
-    let mounted = true
-
-    async function checkDevAuth() {
-      const mockUser = await getDevAuthUser()
-
-      if (!mounted) return
-
-      if (mockUser) {
-        setUser(mockUser)
-        setLoading(false)
-        setIsDevMode(true)
-      } else {
-        setIsDevMode(false)
-      }
-    }
-
-    checkDevAuth()
-
-    return () => {
-      mounted = false
-    }
-  }, [])
-
-  // useEffect 2: Supabase初期セッション取得（開発モード時はスキップ）
-  useEffect(() => {
-    if (isDevMode) return
-
     let mounted = true
 
     async function initSession() {
@@ -79,12 +50,10 @@ export function useAuth(): UseAuthReturn {
     return () => {
       mounted = false
     }
-  }, [isDevMode])
+  }, [])
 
-  // useEffect 3: 認証状態変更の監視（開発モード時はスキップ）
+  // useEffect 2: 認証状態変更の監視
   useEffect(() => {
-    if (isDevMode) return
-
     let mounted = true
 
     const {
@@ -117,7 +86,7 @@ export function useAuth(): UseAuthReturn {
       mounted = false
       subscription.unsubscribe()
     }
-  }, [isDevMode, router])
+  }, [router])
 
   const signInWithGoogle = async () => {
     const redirectUrl =
