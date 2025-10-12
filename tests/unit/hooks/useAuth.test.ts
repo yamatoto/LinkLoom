@@ -1,6 +1,39 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, waitFor } from '@testing-library/react'
-import { mockUser, mockSession, createMockAuthError } from '../../mocks/supabase'
+import type { User, Session, AuthError } from '@supabase/supabase-js'
+
+// モックデータを直接定義（循環依存を回避）
+const mockUser: User = {
+  id: 'test-user-id',
+  email: 'test@example.com',
+  aud: 'authenticated',
+  role: 'authenticated',
+  created_at: '2024-01-01T00:00:00Z',
+  updated_at: '2024-01-01T00:00:00Z',
+  user_metadata: {
+    full_name: 'Test User',
+    avatar_url: 'https://example.com/avatar.jpg',
+  },
+  app_metadata: {},
+}
+
+const mockSession: Session = {
+  access_token: 'mock-access-token',
+  refresh_token: 'mock-refresh-token',
+  expires_in: 3600,
+  expires_at: Date.now() / 1000 + 3600,
+  token_type: 'bearer',
+  user: mockUser,
+}
+
+const createMockAuthError = (message: string, status?: number): AuthError =>
+  ({
+    name: 'AuthError',
+    message,
+    status,
+    code: 'auth_error',
+    __isAuthError: true,
+  }) as unknown as AuthError
 
 // Next.js routerのモック
 const mockPush = vi.fn()
@@ -15,19 +48,14 @@ vi.mock('@/app/actions/auth', () => ({
   getDevAuthUser: vi.fn().mockResolvedValue(null),
 }))
 
-// Supabaseモック
-const mockGetSession = vi.fn()
-const mockSignInWithOAuth = vi.fn()
-const mockSignOut = vi.fn()
-const mockOnAuthStateChange = vi.fn()
-
+// Supabaseモック（vi.mock内で直接vi.fn()を定義）
 vi.mock('@/lib/supabase', () => ({
   supabase: {
     auth: {
-      getSession: mockGetSession,
-      signInWithOAuth: mockSignInWithOAuth,
-      signOut: mockSignOut,
-      onAuthStateChange: mockOnAuthStateChange,
+      getSession: vi.fn(),
+      signInWithOAuth: vi.fn(),
+      signOut: vi.fn(),
+      onAuthStateChange: vi.fn(),
     },
   },
 }))
@@ -40,8 +68,16 @@ vi.mock('@/lib/logger', () => ({
   },
 }))
 
-// テスト対象をインポート（モックの後に）
+// テスト対象とモックされたSupabaseをインポート
 import { useAuth } from '@/hooks/useAuth'
+import { supabase } from '@/lib/supabase'
+
+// モック関数への参照を取得
+const mockGetSession = supabase.auth.getSession as ReturnType<typeof vi.fn>
+const mockSignInWithOAuth = supabase.auth.signInWithOAuth as ReturnType<typeof vi.fn>
+const mockSignOut = supabase.auth.signOut as ReturnType<typeof vi.fn>
+const mockOnAuthStateChange = supabase.auth
+  .onAuthStateChange as ReturnType<typeof vi.fn>
 
 describe('useAuth', () => {
   beforeEach(() => {
