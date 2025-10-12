@@ -17,17 +17,17 @@ LinkLoomは、散在する技術情報を一元管理し、必要な時に素早
 
 ### Phase 1: MVP（最小実装） - 現在開発中
 
-- ✅ **記事管理**
+- 📝（予定） **記事管理**
   - 手動登録（URL, タイトル, 説明, タグ）
   - 編集・削除・アーカイブ
   - プラットフォーム対応: note, Qiita, Zenn, はてぶ, ドクセル, 海外記事等
 
-- ✅ **検索・フィルタリング**
+- 📝（予定） **検索・フィルタリング**
   - キーワード検索（タイトル・説明文）
   - タグフィルタ（複数選択、AND条件）
   - ソート順: 登録順
 
-- ✅ **記事表示**
+- 📝（予定） **記事表示**
   - カード形式一覧表示
   - 表示情報: プラットフォームアイコン、タイトル、説明、タグ、投稿日
   - ブックマーク機能
@@ -87,39 +87,27 @@ LinkLoomは、散在する技術情報を一元管理し、必要な時に素早
 
 ```
 LinkLoom/
-├── .kiro/              # 仕様駆動開発（Kiro）
-│   ├── specs/         # 機能仕様
-│   └── steering/      # プロジェクト全体コンテキスト
+├── specs/              # 軽量仕様駆動開発
+│   └── [feature]/     # 機能ごとの仕様（brief.md, design.md, tasks.md）
 ├── .claude/           # Claude Code設定
 │   └── commands/      # カスタムコマンド
 ├── src/               # ソースコード
 │   ├── app/          # Next.js App Router
 │   │   ├── login/    # ログインページ
-│   │   └── signup/   # サインアップページ
+│   │   └── actions/  # Server Actions
 │   ├── components/   # Reactコンポーネント
-│   │   └── auth/     # 認証関連コンポーネント
+│   │   ├── auth/     # 認証関連コンポーネント
+│   │   ├── layout/   # レイアウトコンポーネント
+│   │   └── ui/       # shadcn/ui コンポーネント
 │   ├── hooks/        # カスタムフック
 │   ├── lib/          # ライブラリとユーティリティ
 │   └── types/        # TypeScript型定義
-├── components/        # 共有コンポーネント
-│   ├── ui/           # shadcn/ui コンポーネント
-│   ├── features/     # 機能別コンポーネント
-│   │   ├── articles/ # 記事関連
-│   │   ├── auth/     # 認証関連
-│   │   └── tags/     # タグ関連
-│   └── layouts/      # レイアウトコンポーネント
-├── lib/               # ユーティリティとヘルパー
-│   ├── hooks/        # カスタムフック
-│   ├── supabase/     # Supabase設定
-│   └── utils/        # ユーティリティ関数
-├── types/             # グローバル型定義
 ├── tests/             # テストファイル
 │   ├── e2e/          # E2Eテスト
-│   ├── fixtures/     # テストフィクスチャ
-│   └── unit/         # ユニットテスト
+│   ├── e2e/fixtures/ # テストフィクスチャ
+│   ├── unit/         # ユニットテスト
+│   └── mocks/        # テストモック
 ├── docs/              # ドキュメント
-│   ├── development/  # 開発メモ
-│   └── requirements/ # 要件定義
 └── supabase/          # Supabase設定
     └── migrations/   # データベースマイグレーション
 ```
@@ -200,19 +188,26 @@ npm run test:e2e:ui
 
 ## 📚 開発ガイド
 
-### 仕様駆動開発（Kiro + SuperClaude）
+### 軽量仕様駆動開発 + SuperClaude
 
-このプロジェクトは **cc-sdd（Kiro）** と **SuperClaude** を使用した仕様駆動開発を採用しています。
+このプロジェクトは **軽量仕様駆動開発** と **SuperClaude** を使用した実践的な開発アプローチを採用しています。
 
 詳細は [CLAUDE.md](./CLAUDE.md) を参照してください。
 
-### Steeringドキュメント
+**開発フロー:**
 
-プロジェクト全体のコンテキストは `.kiro/steering/` に記載されています：
+1. **簡易仕様作成** (`specs/[feature]/`)
+   - brief.md: 概要（5-10行）
+   - design.md: 設計メモ（10-20行）
+   - tasks.md: タスク一覧
 
-- **product.md**: プロダクトビジョンと要件
-- **tech.md**: 技術スタック詳細
-- **structure.md**: プロジェクト構造とコード規約
+2. **実装** (`/sc:implement`)
+   - SuperClaudeのサブエージェントを活用
+   - 継続的品質管理
+
+3. **品質チェック**
+   - `/sc:analyze`: コード品質分析
+   - `/sc:test`: テスト実行
 
 ## 🎯 今後の展望
 
@@ -223,4 +218,4 @@ npm run test:e2e:ui
 ---
 
 **現在フェーズ**: Phase 1（MVP開発中）
-**最終更新**: 2025-10-05
+**最終更新**: 2025-10-13

@@ -1,35 +1,33 @@
 # LinkLoom プロジェクト開発ガイド
 
-このプロジェクトでは、**cc-sdd（Kiro仕様駆動開発）**と**SuperClaude**の2つの強力なツールを組み合わせて開発を進めます。
+このプロジェクトでは、**軽量仕様駆動開発**と**SuperClaude**を組み合わせて開発を進めます。
 
 ## 🎯 プロジェクトの目的
 
 記事を登録して検索・一覧表示できるシステムを構築します。
 
-## 🛠 利用可能なツール
+## 🛠 開発アプローチ
 
-### 1. cc-sdd（Kiro仕様駆動開発）
+### 軽量仕様駆動開発
 
-仕様駆動開発のための体系的なワークフローツール
+過剰なドキュメントを避け、必要最小限の仕様をメモ程度に整理する実践的なアプローチです。
 
-**パス:**
+**基本構成:**
+```
+specs/
+└── [feature-name]/
+    ├── brief.md      # 概要（5-10行）
+    ├── design.md     # 設計メモ（10-20行）
+    └── tasks.md      # タスク一覧（TodoWrite形式）
+```
 
-- Steering: `.kiro/steering/`
-- Specs: `.kiro/specs/`
-- Commands: `.claude/commands/kiro/`
+**メリット:**
+- 📝 簡潔: 人間が素早く読める（5分以内）
+- 🤖 AI理解: AIが全体像を把握しやすい
+- 🔄 柔軟: 実装しながら更新可能
+- ⚡ 高速: ドキュメント作成に時間をかけすぎない
 
-**Steering vs Specification:**
-
-- **Steering** (`.kiro/steering/`) - プロジェクト全体のルールとコンテキストでAIをガイド
-- **Specs** (`.kiro/specs/`) - 個別機能の開発プロセスを形式化
-
-**アクティブな仕様:**
-
-- **google-oauth-auth** - Google OAuth認証への移行（Email認証からGoogle Cloud OAuth 2.0への置き換え）
-  - 状態: initialized
-  - 進捗確認: `/kiro:spec-status google-oauth-auth`
-
-### 2. SuperClaude
+### SuperClaude
 
 専門サブエージェントによる高度な開発支援フレームワーク
 
@@ -92,12 +90,7 @@ SuperClaudeは既に専門知識を持っている。CLAUDE.mdに具体例が書
    - 低品質な設定を発見したら即座に改善提案または自動修正
    - 「なぜこの設定が重要か」を簡潔に説明
 
-4. **詳細な技術仕様は `.kiro/steering/tech.md` を参照**
-   - プロジェクト固有の技術方針
-   - バージョン管理戦略
-   - 推奨ライブラリとその理由
-
-5. **静的解析エラーゼロで作業完了**
+4. **静的解析エラーゼロで作業完了**
    - 作業完了前に必ず `npm run lint` と `npm run tsc` を実行
    - すべてのlintエラー・TypeScriptエラーを修正してから完了報告
    - 「エラーは後で修正してください」という対応は厳禁
@@ -120,30 +113,45 @@ SuperClaudeは既に専門知識を持っている。CLAUDE.mdに具体例が書
 
 ## 🔄 開発ワークフロー
 
-### 統合ワークフロー（cc-sdd + SuperClaude）
+### 実践的ワークフロー（軽量仕様駆動開発 + SuperClaude）
 
 #### Phase 0: プロジェクト準備
 
 1. **セッションロード**: `/sc:load` - 前回のセッションコンテキストを復元
-2. **Steering作成**（大規模開発時）: `/kiro:steering` - プロジェクト全体ルール定義
-3. **要件ブレインストーミング**（必要時）: `/sc:brainstorm` - ソクラティック対話で要件を深掘り
+2. **要件ブレインストーミング**（必要時）: `/sc:brainstorm` - ソクラティック対話で要件を深掘り
 
-#### Phase 1: 仕様作成（cc-sdd）
+#### Phase 1: 簡易仕様作成
 
-1. `/kiro:spec-init [詳細な説明]` - 仕様を初期化
-2. `/kiro:spec-requirements [feature]` - 要件ドキュメント生成
-   - **活用**: `/sc:spec-panel` で仕様の専門家レビュー
-3. `/kiro:spec-design [feature]` - 技術設計ドキュメント生成
-   - **活用**: `/sc:design` でアーキテクチャ設計支援
-   - **活用**: `/kiro:validate-design [feature]` で設計品質レビュー
-4. `/kiro:spec-tasks [feature]` - 実装タスク生成
-   - **活用**: `/sc:estimate` でタスク見積もり
+1. **仕様ディレクトリ作成**
+   ```bash
+   mkdir -p specs/[feature-name]
+   ```
 
-#### Phase 2: 実装（cc-sdd + SuperClaude連携）
+2. **brief.md 作成** (5-10行)
+   - 何を作るか
+   - なぜ必要か
+   - どこに実装するか
 
-1. `/kiro:spec-impl [feature] [task-numbers]` - TDD手法でタスク実装
+3. **design.md 作成** (10-20行)
+   - 主要コンポーネント
+   - データフロー
+   - 技術選択
+
+4. **tasks.md 作成** (TodoWrite形式)
+   - 実装タスクのリスト
+   - 優先順位付き
+
+**活用**:
+- `/sc:brainstorm` で要件を深掘り
+- `/sc:design` で設計支援
+- `/sc:estimate` でタスク見積もり
+
+#### Phase 2: 実装
+
+1. **実装開始**
    - **活用**: `/sc:implement` でペルソナ統合実装
    - **活用**: `/sc:task` で複雑なマルチステップ実装の委譲
+
 2. **継続的品質管理**:
    - `/sc:analyze` - コード品質・セキュリティ分析
    - `/sc:test` - カバレッジ分析とテスト実行
@@ -159,25 +167,9 @@ SuperClaudeは既に専門知識を持っている。CLAUDE.mdに具体例が書
 #### Phase 4: トラブルシューティング
 
 - `/sc:troubleshoot` - 問題の診断と解決
-- `/kiro:validate-gap [feature]` - 実装と要件のギャップ分析
 - `/sc:reflect` - タスクの振り返りと検証
 
-### 進捗管理
-
-- `/kiro:spec-status [feature]` - 現在の仕様進捗確認
-- `/sc:reflect` - 実装の振り返りと品質検証
-
 ## 📋 開発ルール
-
-### cc-sdd ルール
-
-1. **Steeringを考慮**: 大規模開発前に`/kiro:steering`を実行（新機能では任意）
-2. **3フェーズ承認ワークフローに従う**: 要件 → 設計 → タスク → 実装
-3. **承認が必要**: 各フェーズは人間のレビューが必要（インタラクティブプロンプトまたは手動）
-4. **フェーズをスキップしない**: 設計は承認された要件が必要、タスクは承認された設計が必要
-5. **タスクステータスを更新**: タスクに取り組む際は完了としてマーク
-6. **Steeringを最新に保つ**: 大きな変更後に`/kiro:steering`を実行
-7. **仕様準拠を確認**: `/kiro:spec-status`を使用して整合性を検証
 
 ### SuperClaude 活用ガイドライン
 
@@ -198,40 +190,11 @@ SuperClaudeは既に専門知識を持っている。CLAUDE.mdに具体例が書
 
 **包括的なテストガイドラインは @tests/README.md を参照してください。**
 
-**最重要原則** (`.kiro/steering/testing.md` にも記載):
+**最重要原則**:
 
 - 作業完了前に必ず `npm run lint` と `npm run tsc` を実行
 - すべてのlintエラー・TypeScriptエラーを修正してから完了報告
 - テストをスキップ・無効化しない（失敗原因を調査して修正）
-
-## ⚙️ Steering設定（cc-sdd）
-
-### 現在のSteeringファイル
-
-`/kiro:steering`コマンドで管理。ここでの更新はコマンド変更を反映します。
-
-### アクティブなSteeringファイル
-
-- `product.md`: 常に含まれる - 製品コンテキストとビジネス目標
-- `tech.md`: 常に含まれる - 技術スタックとアーキテクチャ決定
-- `structure.md`: 常に含まれる - ファイル構成とコードパターン
-- `workflow.md`: 常に含まれる - 開発ワークフローとタスク管理ルール
-- `testing.md`: 常に含まれる - テストコードガイドラインと品質基準
-
-### カスタムSteeringファイル
-
-<!-- /kiro:steering-customコマンドで追加 -->
-<!-- フォーマット:
-- `filename.md`: モード - パターン - 説明
-  モード: Always|Conditional|Manual
-  パターン: Conditionalモード用のファイルパターン
--->
-
-### 包含モード
-
-- **Always**: すべてのインタラクションで読み込まれる（デフォルト）
-- **Conditional**: 特定のファイルパターンで読み込まれる（例: "\*.test.js"）
-- **Manual**: `@filename.md`構文で参照
 
 ---
 
@@ -246,26 +209,20 @@ SuperClaudeは既に専門知識を持っている。CLAUDE.mdに具体例が書
 # 2. 要件をブレインストーミング（必要時）
 /sc:brainstorm
 
-# 3. 仕様を初期化
-/kiro:spec-init [詳細な説明]
+# 3. 仕様ディレクトリ作成
+mkdir -p specs/[feature-name]
 
-# 4. 要件を生成
-/kiro:spec-requirements [feature-name]
+# 4. 簡易仕様作成（brief.md, design.md, tasks.md）
+# Claude Codeに依頼: 「[feature-name]の簡易仕様を作成してください」
 
-# 5. 設計を生成（要件承認後）
-/kiro:spec-design [feature-name] -y
+# 5. 実装開始
+/sc:implement
 
-# 6. タスクを生成（設計承認後）
-/kiro:spec-tasks [feature-name] -y
-
-# 7. 実装開始
-/kiro:spec-impl [feature-name] [task-numbers]
-
-# 8. 品質チェック
+# 6. 品質チェック
 /sc:analyze
 /sc:test
 
-# 9. セッション保存
+# 7. セッション保存
 /sc:save
 ```
 
@@ -322,16 +279,14 @@ Chrome DevTools MCP は **自動的にUser Data Directoryを管理** し、ロ�
   "mcpServers": {
     "chrome-devtools": {
       "command": "npx",
-      "args": [
-        "chrome-devtools-mcp@latest",
-        "--headless=false"
-      ]
+      "args": ["chrome-devtools-mcp@latest", "--headless=false"]
     }
   }
 }
 ```
 
 **セッション永続化の仕組み**:
+
 - Chrome DevTools MCPは自動的に以下の場所にUser Data Directoryを作成:
   - **macOS/Linux**: `$HOME/.cache/chrome-devtools-mcp/chrome-profile-stable`
   - **Windows**: `%HOMEPATH%/.cache/chrome-devtools-mcp/chrome-profile-stable`
@@ -339,12 +294,14 @@ Chrome DevTools MCP は **自動的にUser Data Directoryを管理** し、ロ�
 - 初回ログイン後、セッションはブラウザ再起動後も復元される
 
 **初回セットアップ手順**:
+
 1. Chrome DevTools MCP を起動（上記設定で自動的にUser Data Directory作成）
 2. 開いたブラウザで Google OAuth ログイン
 3. ログイン状態が自動的に永続化される
 4. 以降のセッションで自動的にログイン状態が復元される
 
 **メリット**:
+
 - ✅ 公式実装で安定したセッション管理
 - ✅ 設定がシンプル（余計なパラメータ不要）
 - ✅ 実際の認証フローをテスト可能
