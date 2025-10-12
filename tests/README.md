@@ -147,11 +147,12 @@
 
 ### E2E認証テスト戦略（LinkLoom実装）
 
-**採用アプローチ**: Playwright公式推奨の`storageState`パターン
+**採用アプローチ**: Playwright公式推奨の`storageState`パターン + **実際のGoogle OAuth認証**
 
 **仕組み**:
 1. **Global Setup**（`tests/e2e/global-setup.ts`）
    - 実際のGoogle OAuth認証フローを1回実行
+   - テスト専用Googleアカウントでログイン
    - 認証状態を`.auth/authenticated.json`に保存
    - 全テストでこの認証状態を再利用
 
@@ -161,8 +162,8 @@
    - 各テストは自動的に認証済み状態で開始
 
 3. **フィクスチャ**（`tests/e2e/fixtures/auth.fixture.ts`）
-   - `authenticatedPage`: デフォルトのstorageStateを使用
-   - `unauthenticatedPage`: storageStateをクリアした新しいコンテキストを作成
+   - `authenticatedPage`: デフォルトのstorageStateを使用（認証済み）
+   - `unauthenticatedPage`: storageStateをクリアした新しいコンテキストを作成（未認証）
 
 **メリット**:
 - ✅ テストが高速（認証は1回のみ）
@@ -170,10 +171,62 @@
 - ✅ Supabase SSRの内部実装に依存しない
 - ✅ 保守が容易（モックロジック不要）
 - ✅ middlewareとの完全な互換性
+- ✅ プロダクションと完全に同じ認証フロー
+
+#### テスト用Googleアカウントのセットアップ
+
+**前提条件**: Supabaseプロジェクトで既にGoogle OAuth認証が設定済みであること
+
+**手順**:
+
+1. **テスト専用Googleアカウントを作成**
+   ```
+   例: linkloom-e2e-test@gmail.com
+   ```
+   - 新しいGoogleアカウントを作成（既存アカウントの使用は非推奨）
+   - セキュリティ: 2段階認証は無効にする（E2Eテスト用）
+   - パスワードは強固なものを使用（推奨: 16文字以上のランダム文字列）
+
+2. **Supabaseにテストユーザーを登録**
+   - 開発環境で一度手動ログインしてSupabaseにユーザーを登録
+   - または、Supabase Dashboard > Authentication > Users から手動で追加
+
+3. **環境変数を設定**（`.env.local`）
+   ```bash
+   # Playwright E2Eテスト用認証情報
+   PLAYWRIGHT_TEST_GOOGLE_EMAIL=linkloom-e2e-test@gmail.com
+   PLAYWRIGHT_TEST_GOOGLE_PASSWORD=your-strong-password-here
+   ```
+
+4. **動作確認**
+   ```bash
+   # E2Eテスト実行（初回は認証フローが実行される）
+   npm run test:e2e
+   ```
+
+5. **認証状態の確認**
+   - `tests/e2e/.auth/authenticated.json` ファイルが作成される
+   - このファイルには認証Cookie情報が保存される
+   - Git管理対象外（`.gitignore`に追加済み）
+
+**トラブルシューティング**:
+
+- **認証失敗（"認証情報が設定されていません"）**: `.env.local`に環境変数を正しく設定してください
+- **Google認証画面でブロック**: Googleアカウントの2段階認証を無効にしてください
+- **セッション期限切れ**: `.auth/authenticated.json`を削除して再度テストを実行してください
+- **CI/CD環境**: GitHub Actions等ではシークレット環境変数に設定してください
+
+**セキュリティ注意事項**:
+
+- ⚠️ テスト用Googleアカウントのパスワードは `.env.local` に記載（Gitにコミットしない）
+- ⚠️ `.env.local` は `.gitignore` に追加されていることを確認
+- ⚠️ テストアカウントは本番データにアクセスできないように設定
+- ⚠️ CI/CD環境ではGitHub Secretsなどセキュアな方法で管理
 
 **参考資料**:
 - [Playwright - Authentication](https://playwright.dev/docs/auth)
 - [Playwright - Global Setup](https://playwright.dev/docs/test-global-setup-teardown)
+- [Playwright - Best Practices](https://playwright.dev/docs/best-practices)
 
 ### Flaky Test（不安定なテスト）対応
 
