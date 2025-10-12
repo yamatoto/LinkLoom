@@ -90,20 +90,23 @@
   - _Requirements: 6.1（エラーハンドリング）_
   - _実装場所: `src/components/auth/GoogleLoginButton.tsx:43-53`, `src/components/layout/Header.tsx:20-31`, `src/hooks/useAuth.ts:61-72`_
 
-- [ ] 8. ユニットテストを実装（Vitest）
-- [ ] 8.1 useAuthフックのテストを作成
-  - `signInWithGoogle()`呼び出しでSupabase APIが正しく実行されることを検証
-  - `signOut()`呼び出しでセッション破棄と`user`が`null`になることを検証
-  - `onAuthStateChange`イベント発火時の`user`状態更新を検証
-  - `loading`状態の初期化と更新を検証
+- [x] 8. ユニットテストを実装（Vitest）
+- [x] 8.1 useAuthフックのテストを作成
+  - ✅ `signInWithGoogle()`呼び出しでSupabase APIが正しく実行されることを検証
+  - ✅ `signOut()`呼び出しでセッション破棄と`user`が`null`になることを検証
+  - ✅ `onAuthStateChange`イベント発火時の`user`状態更新を検証
+  - ✅ `loading`状態の初期化と更新を検証
   - _Requirements: 7.1（ユニットテスト）_
+  - _実装場所: `tests/unit/hooks/useAuth.test.ts`_
 
-- [ ] 8.2 GoogleLoginButtonコンポーネントのテストを作成
-  - クリック時に`signInWithGoogle()`が呼び出されることを検証
-  - ローディング中にボタンが無効化されることを検証
-  - エラー時にトースト通知が表示されることを検証
-  - 認証成功時の`onSuccess`コールバック実行を検証
+- [x] 8.2 GoogleLoginButtonコンポーネントのテストを作成
+  - ✅ クリック時に`signInWithGoogle()`が呼び出されることを検証
+  - ✅ ローディング中にボタンが無効化されることを検証
+  - ✅ エラー時にトースト通知が表示されることを検証
+  - ✅ エラー種別に応じた適切なメッセージ表示を検証（キャンセル/ネットワーク/Supabase接続）
+  - ✅ 予期しないエラーのハンドリングを検証
   - _Requirements: 7.1（ユニットテスト）_
+  - _実装場所: `tests/unit/components/GoogleLoginButton.test.tsx`_
 
 - [ ] 9. E2Eテストを実装（Playwright）
 - [ ] 9.1 Google OAuthログインフローのE2Eテストを作成
@@ -134,8 +137,8 @@
 - [ ] 10.2 コード品質と静的解析を実行
   - `npm run lint`を実行してESLintエラーゼロを確認
   - `npm run tsc`を実行してTypeScriptエラーゼロを確認
-  - すべてのユニットテスト（Vitest）がパスすることを確認
-  - すべてのE2Eテスト（Playwright）がパスすることを確認
+  - `npm run test`を実行してすべてのユニットテスト（Vitest）がパスすることを確認
+  - `npm run test:e2e`を実行してすべてのE2Eテスト（Playwright）がパスすることを確認
   - _Requirements: すべての技術面成功基準_
 
 ---
@@ -184,8 +187,3 @@
 推奨実装順序: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10
 
 各主要タスク完了後、動作する状態でコミットすることを推奨します。
-
----
-
-**最終更新**: 2025-10-07
-**承認待ち**: レビュー後に `/kiro:spec-impl google-oauth-auth` で実装を開始してください

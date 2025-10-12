@@ -194,6 +194,16 @@ SuperClaudeは既に専門知識を持っている。CLAUDE.mdに具体例が書
 4. **継続的品質管理**: 実装後は必ず`/sc:analyze`と`/sc:test`で品質チェック
 5. **振り返り**: 重要なタスク完了後は`/sc:reflect`で振り返りを実施
 
+### テストガイドライン
+
+**包括的なテストガイドラインは @tests/README.md を参照してください。**
+
+**最重要原則** (`.kiro/steering/testing.md` にも記載):
+
+- 作業完了前に必ず `npm run lint` と `npm run tsc` を実行
+- すべてのlintエラー・TypeScriptエラーを修正してから完了報告
+- テストをスキップ・無効化しない（失敗原因を調査して修正）
+
 ## ⚙️ Steering設定（cc-sdd）
 
 ### 現在のSteeringファイル
@@ -206,6 +216,7 @@ SuperClaudeは既に専門知識を持っている。CLAUDE.mdに具体例が書
 - `tech.md`: 常に含まれる - 技術スタックとアーキテクチャ決定
 - `structure.md`: 常に含まれる - ファイル構成とコードパターン
 - `workflow.md`: 常に含まれる - 開発ワークフローとタスク管理ルール
+- `testing.md`: 常に含まれる - テストコードガイドラインと品質基準
 
 ### カスタムSteeringファイル
 
