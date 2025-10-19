@@ -1,13 +1,14 @@
 # LinkLoom 開発計画と進捗
 
-**最終更新**: 2025-10-19 (記事登録機能 - Cookie認証対応・動作確認済み)
+**最終更新**: 2025-10-19 (記事登録機能 - 完全実装完了・テスト実施済み)
 
 > **📝 進捗更新ルール（Claude Code向け）**:
 > タスク完了時は必ずユーザーに確認を取り、許可後にこのファイルを更新してください。
+>
 > - 完了した機能に ✅ マークを追加
 > - 進捗バーを更新
 > - **最終更新日**を更新
-> 詳細は [CLAUDE.md](../CLAUDE.md) の「タスク完了時のワークフロー」を参照。
+>   詳細は [CLAUDE.md](../CLAUDE.md) の「タスク完了時のワークフロー」を参照。
 
 ## 📖 プロジェクト概要
 
@@ -34,7 +35,7 @@
   - Supabase Auth統合
   - E2Eテスト完備
 
-- 🚧 **記事管理（基本機能）** - **開発中（90%完了）**
+- ✅ **記事管理（基本機能）** - **完了** (2025-10-19)
   - ✅ 記事登録フォーム実装（React Hook Form + Zod）
   - ✅ プラットフォーム自動判定（7プラットフォーム対応）
   - ✅ Server Action実装（createArticle）
@@ -42,9 +43,12 @@
   - ✅ セキュリティ強化（エラーメッセージサニタイズ）
   - ✅ Cookie認証対応（@supabase/ssr migration）
   - ✅ 記事登録動作確認（Chrome DevTools MCP）
-  - 💡 TODO: 環境変数エラーメッセージ改善（優先度: 低）
-  - 💡 TODO: Server Actions統合テスト追加（優先度: 中）
-  - 📝 TODO: ユニットテスト実装（platform-detector, ArticleForm）
+  - ✅ 環境変数エラーメッセージ改善
+  - ✅ Server Actions統合テスト（10テスト実装）
+  - ✅ ユニットテスト実装（platform-detector 32テスト、ArticleForm 21テスト）
+  - ✅ E2Eテスト実装（6スモークテスト）
+  - ✅ 静的解析クリア（lint, tsc）
+  - ✅ Multi-Expert Code Review実施
   - 📝 TODO: 編集・削除・アーカイブ機能
 
 - 📝 **検索・フィルタリング** - **未実装**
@@ -79,37 +83,46 @@
 ### Google OAuth認証（2025-10-13完了）
 
 **実装内容**:
+
 - Supabase Authを使用したGoogle OAuth認証
 - @supabase/ssrによるセッション管理
 - Next.js middlewareでの認証チェック
 - ログイン/ログアウト機能
 
 **テスト**:
+
 - ✅ 26ユニットテスト（Vitest）
 - ✅ 3 E2Eテスト（Playwright）
 - ✅ Lint/TypeScriptエラーゼロ
 
 **仕様ドキュメント**:
+
 - specs/google-oauth/ （brief.md, design.md, tasks.md）
 
 ---
 
 ## 📝 次にやるべきこと（Phase 1 MVP完成まで）
 
-### 🚧 **記事登録機能（進行中 - 90%完了）**
+### ✅ **記事登録機能（完了 - 100%）** (2025-10-19)
 
-**完了済み**:
+**完了タスク**:
+
+- ✅ 記事登録フォーム実装（React Hook Form + Zod）
+- ✅ プラットフォーム自動判定（7プラットフォーム対応）
+- ✅ Server Action実装（createArticle）
 - ✅ Cookie認証対応（localStorage → Cookie migration）
+- ✅ 環境変数エラーメッセージ改善
+- ✅ Server Actions統合テスト（10テスト実装）
+- ✅ ユニットテスト実装（platform-detector 32テスト、ArticleForm 21テスト）
+- ✅ E2Eテスト実装（6スモークテスト）
 - ✅ 記事登録動作確認（Chrome DevTools MCP）
 - ✅ 静的解析クリア（lint, tsc）
 - ✅ Multi-Expert Code Review完了（Critical Issues: 0）
 
-**残タスク**:
-- 💡 環境変数エラーメッセージ改善（優先度: 低）
-  - `src/lib/supabase.ts`の非nullアサーション演算子を明示的チェックに
-- 💡 Server Actions統合テスト追加（優先度: 中）
-  - `tests/integration/actions/articles.test.ts`の作成
-- 📝 ユニットテスト実装（platform-detector, ArticleForm）
+**テスト結果**:
+- 総テスト数: 69テスト（統合10 + platform-detector 32 + ArticleForm 21 + E2E 6）
+- 静的解析: Lint/TypeScriptエラー 0件
+- コードレビュー: 5人中4人がEXCELLENT評価
 
 **次の機能**: 記事一覧表示機能の実装
 
@@ -122,30 +135,30 @@
 - ✅ 型定義完了（Article, Tag, ArticleTag）
 - ✅ Zodスキーマ完了
 
-### 優先順位2: 記事登録機能 🚧 **90%完了**（2025-10-19）
+### 優先順位2: 記事登録機能 ✅ **完了**（2025-10-19）
 
-**完了済み**:
+**完了タスク**:
+
 - ✅ 記事登録フォーム（React Hook Form + Zod）
 - ✅ プラットフォーム自動判定（7プラットフォーム対応）
 - ✅ Server Action実装（createArticle）
 - ✅ パフォーマンス最適化（useMemo、Promise.all並列化）
 - ✅ セキュリティ強化（エラーメッセージサニタイズ）
 - ✅ Cookie認証対応（localStorage → Cookie migration）
+- ✅ 環境変数エラーメッセージ改善
+- ✅ Server Actions統合テスト（10テスト実装）
+- ✅ ユニットテスト実装（platform-detector 32テスト、ArticleForm 21テスト）
+- ✅ E2Eテスト実装（6スモークテスト）
 - ✅ 記事登録動作確認（Chrome DevTools MCP）
 - ✅ 静的解析クリア（lint, tsc）
-- ✅ Multi-Expert Code Review
-
-**残タスク（将来実装）**:
-- 💡 環境変数エラーメッセージ改善（優先度: 低）
-- 💡 Server Actions統合テスト追加（優先度: 中）
-- 📝 ユニットテスト実装（platform-detector.test.ts, ArticleForm.test.tsx）
-- 📝 E2Eテスト実装
+- ✅ Multi-Expert Code Review（Critical Issues: 0）
 
 ### 優先順位3: 記事一覧表示
 
 **目的**: 登録した記事を一覧表示できるようにする
 
 **タスク**:
+
 1. **記事一覧ページ**
    - Server Componentでデータフェッチ
    - カード形式表示
@@ -164,6 +177,7 @@
 **目的**: 記事を検索・絞り込みできるようにする
 
 **タスク**:
+
 1. **検索UI**
    - キーワード検索フォーム
    - タグフィルタ（複数選択）
@@ -183,6 +197,7 @@
 **目的**: 登録した記事を編集・削除できるようにする
 
 **タスク**:
+
 1. **編集・削除UI**
    - 記事詳細ページ
    - 編集フォーム
@@ -210,28 +225,32 @@
 
 ```
 認証・同期   ████████████████████ 100% ✅
-記事登録     ██████████████████░░  90% 🚧
+記事登録     ████████████████████ 100% ✅
 記事表示     ░░░░░░░░░░░░░░░░░░░░   0% 📝
 検索機能     ░░░░░░░░░░░░░░░░░░░░   0% 📝
 編集・削除   ░░░░░░░░░░░░░░░░░░░░   0% 📝
 
-全体進捗:    ███████░░░░░░░░░░░░░  38%
+全体進捗:    ████████░░░░░░░░░░░░  40%
 ```
 
 ### 完了タスク数
 
 - ✅ 認証機能: 26タスク（すべて完了）
-- 🚧 記事登録: 9/10タスク（90%完了）
+- ✅ 記事登録: 14/14タスク（100%完了）
   - ✅ フォーム実装
   - ✅ プラットフォーム自動判定
   - ✅ Server Action実装
   - ✅ パフォーマンス最適化
   - ✅ セキュリティ強化
   - ✅ Cookie認証対応
-  - ✅ 静的解析クリア
+  - ✅ 環境変数エラーメッセージ改善
+  - ✅ Server Actions統合テスト（10テスト）
+  - ✅ ユニットテスト実装（53テスト）
+  - ✅ E2Eテスト実装（6テスト）
   - ✅ Chrome DevTools MCP動作確認
+  - ✅ 静的解析クリア
   - ✅ Multi-Expert Code Review
-  - 📝 統合テスト・ユニットテスト（残タスク）
+  - ✅ 総テスト数: 69テスト
 - 📝 記事表示: 0タスク
 - 📝 検索機能: 0タスク
 - 📝 編集・削除: 0タスク
@@ -291,6 +310,7 @@
 ### 2025-10-19セッション作業内容
 
 **セッション1: 記事登録機能実装**
+
 1. ✅ 記事登録フォーム実装（React Hook Form + Zod）
    - `src/schemas/article.schema.ts`
    - `src/components/articles/ArticleForm.tsx`
@@ -312,14 +332,17 @@
 **セッション2: 記事登録バグ修正（Cookie認証対応）**
 
 **問題発見**:
+
 - Server Actionsで`AuthSessionMissingError`発生
 - `@supabase/supabase-js`のlocalStorage認証がServer Actionsで利用不可
 
 **根本原因**:
+
 - `src/lib/supabase.ts`が`createClient`（localStorage）を使用
 - Next.js App Router + Server ActionsではCookie認証が必須
 
 **解決策実装**:
+
 1. ✅ `src/lib/supabase.ts`を`@supabase/ssr`の`createBrowserClient`に変更
    - localStorage → Cookie認証に移行
    - 不要な`auth`オプション削除（デフォルト設定で十分）
@@ -346,15 +369,54 @@
    - **Warnings: 0**
    - **Suggestions: 2**（優先度: 低〜中）
 
-**今後のタスク（将来実装）**:
-- 💡 環境変数エラーメッセージ改善（優先度: 低）
-- 💡 Server Actions統合テスト追加（優先度: 中）
-- 📝 ユニットテスト（platform-detector, ArticleForm）
+**セッション3: 記事登録機能完全実装（テスト実装完了）**
+
+1. ✅ 環境変数エラーメッセージ改善
+   - `src/lib/supabase.ts`の非nullアサーション削除
+   - 不足している環境変数を明確に表示
+
+2. ✅ Server Actions統合テスト実装
+   - `tests/integration/actions/articles.test.ts`作成
+   - 10テスト実装（成功ケース、認証エラー、バリデーション、DBエラー、並列処理、セキュリティ）
+
+3. ✅ platform-detectorユニットテスト実装
+   - `tests/unit/lib/platform-detector.test.ts`作成
+   - 32テスト実装（7プラットフォーム + エッジケース）
+
+4. ✅ ArticleFormユニットテスト実装
+   - `tests/unit/components/ArticleForm.test.tsx`作成
+   - 21テスト実装（レンダリング、フォーム操作、バリデーション、プラットフォーム判定、送信中状態、アクセシビリティ）
+
+5. ✅ E2Eテスト実装
+   - `tests/e2e/article-registration.spec.ts`作成
+   - 6スモークテスト実装（認証チェック、フォーム送信、プラットフォーム判定、バリデーション、ボタン無効化）
+
+6. ✅ Chrome DevTools MCPで動作確認
+   - 実際のブラウザで記事登録フローをエンドツーエンドで検証成功
+
+7. ✅ 静的解析クリア
+   - `npm run lint` ✅
+   - `npm run tsc` ✅
+
+8. ✅ Multi-Expert Code Review実施
+   - 5人の専門家による並列レビュー完了
+   - Architecture Expert: GOOD
+   - Security Expert: EXCELLENT
+   - Performance Expert: EXCELLENT
+   - Testing Expert: EXCELLENT
+   - Modern TS/React Expert: EXCELLENT
+   - **Critical Issues: 0**
+
+**総テスト数**: 69テスト（統合10 + platform-detector 32 + ArticleForm 21 + E2E 6）
 
 **変更ファイル**:
-- `src/lib/supabase.ts` (修正: localStorage → Cookie認証)
-- `src/app/actions/articles.ts` (デバッグログ削除)
-- `docs/plan.md` (更新)
+
+- `src/lib/supabase.ts` (環境変数エラーメッセージ改善)
+- `tests/integration/actions/articles.test.ts` (新規作成)
+- `tests/unit/lib/platform-detector.test.ts` (新規作成)
+- `tests/unit/components/ArticleForm.test.tsx` (新規作成)
+- `tests/e2e/article-registration.spec.ts` (新規作成)
+- `docs/plan.md` (進捗更新)
 
 ### 将来的な検討事項
 
