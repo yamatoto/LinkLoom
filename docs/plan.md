@@ -1,6 +1,6 @@
 # LinkLoom 開発計画と進捗
 
-**最終更新**: 2025-10-19
+**最終更新**: 2025-10-19 (記事登録機能 - Cookie認証対応・動作確認済み)
 
 > **📝 進捗更新ルール（Claude Code向け）**:
 > タスク完了時は必ずユーザーに確認を取り、許可後にこのファイルを更新してください。
@@ -34,10 +34,18 @@
   - Supabase Auth統合
   - E2Eテスト完備
 
-- 📝 **記事管理** - **未実装**
-  - 手動登録（URL, タイトル, 説明, タグ）
-  - 編集・削除・アーカイブ
-  - プラットフォーム対応: note, Qiita, Zenn, はてぶ, ドクセル, 海外記事等
+- 🚧 **記事管理（基本機能）** - **開発中（90%完了）**
+  - ✅ 記事登録フォーム実装（React Hook Form + Zod）
+  - ✅ プラットフォーム自動判定（7プラットフォーム対応）
+  - ✅ Server Action実装（createArticle）
+  - ✅ パフォーマンス最適化（useMemo、Promise.all並列化）
+  - ✅ セキュリティ強化（エラーメッセージサニタイズ）
+  - ✅ Cookie認証対応（@supabase/ssr migration）
+  - ✅ 記事登録動作確認（Chrome DevTools MCP）
+  - 💡 TODO: 環境変数エラーメッセージ改善（優先度: 低）
+  - 💡 TODO: Server Actions統合テスト追加（優先度: 中）
+  - 📝 TODO: ユニットテスト実装（platform-detector, ArticleForm）
+  - 📝 TODO: 編集・削除・アーカイブ機能
 
 - 📝 **検索・フィルタリング** - **未実装**
   - キーワード検索（タイトル・説明文）
@@ -88,47 +96,50 @@
 
 ## 📝 次にやるべきこと（Phase 1 MVP完成まで）
 
-### 優先順位1: データベース設計と記事管理基盤
+### 🚧 **記事登録機能（進行中 - 90%完了）**
 
-**目的**: 記事データを保存・取得できる基盤を構築
+**完了済み**:
+- ✅ Cookie認証対応（localStorage → Cookie migration）
+- ✅ 記事登録動作確認（Chrome DevTools MCP）
+- ✅ 静的解析クリア（lint, tsc）
+- ✅ Multi-Expert Code Review完了（Critical Issues: 0）
 
-**タスク**:
-1. **データベーススキーマ設計**
-   - articles テーブル設計（id, user_id, url, title, description, platform, created_at等）
-   - tags テーブル設計
-   - article_tags 中間テーブル設計
-   - Row Level Security (RLS) 設定
+**残タスク**:
+- 💡 環境変数エラーメッセージ改善（優先度: 低）
+  - `src/lib/supabase.ts`の非nullアサーション演算子を明示的チェックに
+- 💡 Server Actions統合テスト追加（優先度: 中）
+  - `tests/integration/actions/articles.test.ts`の作成
+- 📝 ユニットテスト実装（platform-detector, ArticleForm）
 
-2. **Supabaseマイグレーション**
-   - マイグレーションファイル作成
-   - 初期データ投入（テスト用）
+**次の機能**: 記事一覧表示機能の実装
 
-3. **型定義**
-   - TypeScript型定義（Article, Tag, ArticleTag）
-   - Zodスキーマ（バリデーション）
+---
 
-**参考ドキュメント**:
-- docs/database-schema-implementation.md
-- docs/manual-migration-guide.md
+### 優先順位1: データベース設計と記事管理基盤 ✅ **完了**
 
-### 優先順位2: 記事登録機能
+- ✅ データベーススキーマ設計完了
+- ✅ Supabaseマイグレーション完了
+- ✅ 型定義完了（Article, Tag, ArticleTag）
+- ✅ Zodスキーマ完了
 
-**目的**: ユーザーが記事を登録できるようにする
+### 優先順位2: 記事登録機能 🚧 **90%完了**（2025-10-19）
 
-**タスク**:
-1. **記事登録フォーム**
-   - React Hook Form + Zod
-   - URL、タイトル、説明、タグ入力
-   - プラットフォーム自動判定（URL解析）
+**完了済み**:
+- ✅ 記事登録フォーム（React Hook Form + Zod）
+- ✅ プラットフォーム自動判定（7プラットフォーム対応）
+- ✅ Server Action実装（createArticle）
+- ✅ パフォーマンス最適化（useMemo、Promise.all並列化）
+- ✅ セキュリティ強化（エラーメッセージサニタイズ）
+- ✅ Cookie認証対応（localStorage → Cookie migration）
+- ✅ 記事登録動作確認（Chrome DevTools MCP）
+- ✅ 静的解析クリア（lint, tsc）
+- ✅ Multi-Expert Code Review
 
-2. **記事登録API**
-   - Server ActionsまたはAPI Routes
-   - Supabaseへのデータ保存
-   - バリデーション
-
-3. **テスト**
-   - ユニットテスト（フォームバリデーション）
-   - E2Eテスト（記事登録フロー）
+**残タスク（将来実装）**:
+- 💡 環境変数エラーメッセージ改善（優先度: 低）
+- 💡 Server Actions統合テスト追加（優先度: 中）
+- 📝 ユニットテスト実装（platform-detector.test.ts, ArticleForm.test.tsx）
+- 📝 E2Eテスト実装
 
 ### 優先順位3: 記事一覧表示
 
@@ -199,20 +210,30 @@
 
 ```
 認証・同期   ████████████████████ 100% ✅
-記事管理     ░░░░░░░░░░░░░░░░░░░░   0% 📝
-検索機能     ░░░░░░░░░░░░░░░░░░░░   0% 📝
+記事登録     ██████████████████░░  90% 🚧
 記事表示     ░░░░░░░░░░░░░░░░░░░░   0% 📝
+検索機能     ░░░░░░░░░░░░░░░░░░░░   0% 📝
 編集・削除   ░░░░░░░░░░░░░░░░░░░░   0% 📝
 
-全体進捗:    ████░░░░░░░░░░░░░░░░  20%
+全体進捗:    ███████░░░░░░░░░░░░░  38%
 ```
 
 ### 完了タスク数
 
 - ✅ 認証機能: 26タスク（すべて完了）
-- 📝 記事管理: 0タスク
-- 📝 検索機能: 0タスク
+- 🚧 記事登録: 9/10タスク（90%完了）
+  - ✅ フォーム実装
+  - ✅ プラットフォーム自動判定
+  - ✅ Server Action実装
+  - ✅ パフォーマンス最適化
+  - ✅ セキュリティ強化
+  - ✅ Cookie認証対応
+  - ✅ 静的解析クリア
+  - ✅ Chrome DevTools MCP動作確認
+  - ✅ Multi-Expert Code Review
+  - 📝 統合テスト・ユニットテスト（残タスク）
 - 📝 記事表示: 0タスク
+- 📝 検索機能: 0タスク
 - 📝 編集・削除: 0タスク
 
 ---
@@ -232,26 +253,29 @@
 
 ## 🚀 次回セッション開始時のチェックリスト
 
-再開時に以下を確認して、スムーズに開発を再開しましょう：
+**次セッションの最優先タスク**: 📝 **記事一覧表示機能の実装**
 
-1. **進捗確認**
-   - [ ] このplan.mdを読んで全体像を把握
-   - [ ] 「次にやるべきこと」セクションで優先順位を確認
+再開時に以下を確認してから開発を開始しましょう：
 
-2. **環境確認**
-   - [ ] `npm run dev:mcp` でローカル開発サーバーを起動
+1. **環境確認**
+   - [ ] `npm run dev` でローカル開発サーバーを起動
    - [ ] `npm run lint` と `npm run tsc` でエラーがないか確認
-   - [ ] `npm run test` でテストが通るか確認
+   - [ ] Chrome DevTools MCP接続確認
 
-3. **前回の作業確認**
-   - [ ] `git log -5 --format='%s'` で最近のコミットを確認
-   - [ ] 未完了のブランチがないか確認（`git branch`）
+2. **前回の作業確認**
+   - [ ] このplan.mdの「次にやるべきこと」を読む
+   - [ ] `git status` で変更ファイルを確認（コミット前の状態）
+   - [ ] 前回のセッション作業内容を確認
 
-4. **次のタスク開始**
-   - [ ] 「次にやるべきこと」から1つ選ぶ
-   - [ ] `/my:brainstorm` で要件を深掘り（必要時）
-   - [ ] `specs/[feature-name]/` に簡易仕様を作成
-   - [ ] 実装開始
+3. **記事一覧表示機能の実装**
+   - [ ] Server Componentでデータフェッチ実装
+   - [ ] カード形式UIコンポーネント作成
+   - [ ] プラットフォームアイコン表示
+   - [ ] ローディング・エラー状態ハンドリング
+   - [ ] Chrome DevTools MCPで動作確認
+   - [ ] 静的解析（lint, tsc）
+   - [ ] コードレビュー
+   - [ ] **実装完了後にコミット・プッシュ**
 
 ---
 
@@ -263,6 +287,74 @@
 - **データベース**: Supabase PostgreSQL + Row Level Security
 - **キャッシュ**: React Query (TanStack Query) で5分間キャッシュ
 - **テスト戦略**: ユニットテスト（Vitest）+ スモークE2E（Playwright）
+
+### 2025-10-19セッション作業内容
+
+**セッション1: 記事登録機能実装**
+1. ✅ 記事登録フォーム実装（React Hook Form + Zod）
+   - `src/schemas/article.schema.ts`
+   - `src/components/articles/ArticleForm.tsx`
+   - `src/app/articles/new/page.tsx`
+
+2. ✅ プラットフォーム自動判定機能
+   - `src/lib/platform-detector.ts`
+   - 7プラットフォーム対応（Zenn, Qiita, note, GitHub, Medium, はてなブログ, Dev.to）
+
+3. ✅ Server Action実装
+   - `src/app/actions/articles.ts` (createArticle)
+   - `src/lib/supabase/server.ts`
+
+4. ✅ コードレビュー対応
+   - セキュリティ: エラーメッセージサニタイズ（本番環境で機密情報非表示）
+   - パフォーマンス: useMemoでプラットフォーム判定最適化
+   - パフォーマンス: Promise.allで認証チェックとDB取得を並列化
+
+**セッション2: 記事登録バグ修正（Cookie認証対応）**
+
+**問題発見**:
+- Server Actionsで`AuthSessionMissingError`発生
+- `@supabase/supabase-js`のlocalStorage認証がServer Actionsで利用不可
+
+**根本原因**:
+- `src/lib/supabase.ts`が`createClient`（localStorage）を使用
+- Next.js App Router + Server ActionsではCookie認証が必須
+
+**解決策実装**:
+1. ✅ `src/lib/supabase.ts`を`@supabase/ssr`の`createBrowserClient`に変更
+   - localStorage → Cookie認証に移行
+   - 不要な`auth`オプション削除（デフォルト設定で十分）
+
+2. ✅ デバッグログ削除
+   - `src/app/actions/articles.ts`のconsole.log削除
+
+3. ✅ 動作確認
+   - Chrome DevTools MCPで記事登録成功
+   - サーバーログにエラーなし（`POST /articles/new 200`）
+   - Qiitaプラットフォーム自動判定確認
+
+4. ✅ 静的解析クリア
+   - `npm run lint` ✅
+   - `npm run tsc` ✅
+
+5. ✅ Multi-Expert Code Review実施
+   - Architecture Expert: EXCELLENT
+   - Security Expert: EXCELLENT
+   - Performance Expert: EXCELLENT
+   - Testing Expert: GOOD
+   - Modern TS/React Expert: EXCELLENT
+   - **Critical Issues: 0**
+   - **Warnings: 0**
+   - **Suggestions: 2**（優先度: 低〜中）
+
+**今後のタスク（将来実装）**:
+- 💡 環境変数エラーメッセージ改善（優先度: 低）
+- 💡 Server Actions統合テスト追加（優先度: 中）
+- 📝 ユニットテスト（platform-detector, ArticleForm）
+
+**変更ファイル**:
+- `src/lib/supabase.ts` (修正: localStorage → Cookie認証)
+- `src/app/actions/articles.ts` (デバッグログ削除)
+- `docs/plan.md` (更新)
 
 ### 将来的な検討事項
 

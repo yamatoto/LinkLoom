@@ -25,12 +25,15 @@ export async function middleware(request: NextRequest) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
+          // リクエストCookieを更新（Server Actionsで読み取れるように）
           cookiesToSet.forEach(({ name, value }) => {
             request.cookies.set(name, value)
           })
+          // レスポンスを再作成
           supabaseResponse = NextResponse.next({
             request,
           })
+          // レスポンスCookieを設定（ブラウザに返すため）
           cookiesToSet.forEach(({ name, value, options }) => {
             supabaseResponse.cookies.set(name, value, options)
           })
@@ -39,13 +42,15 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // セッションを取得
+  // IMPORTANT: ユーザー情報を取得してセッションを再検証
+  // この呼び出しにより、期限切れトークンが自動的にリフレッシュされる
+  // setAllコールバックが呼ばれ、リクエストとレスポンスのCookieが更新される
   const {
-    data: { session },
-  } = await supabase.auth.getSession()
+    data: { user },
+  } = await supabase.auth.getUser()
 
-  // 認証が必要なルートにアクセスしているがセッションがない場合、ログインページにリダイレクト
-  if (!isPublicRoute && !session) {
+  // 認証が必要なルートにアクセスしているがユーザーがいない場合、ログインページにリダイレクト
+  if (!isPublicRoute && !user) {
     const url = request.nextUrl.clone()
     url.pathname = ROUTES.LOGIN
     url.searchParams.set('redirect', pathname)
@@ -53,7 +58,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // 認証済みのユーザーがログインページにアクセスした場合、ホームにリダイレクト
-  if (session && pathname === ROUTES.LOGIN) {
+  if (user && pathname === ROUTES.LOGIN) {
     const redirectParam = request.nextUrl.searchParams.get('redirect')
     const safeRedirect = validateRedirectPath(redirectParam)
     const url = request.nextUrl.clone()

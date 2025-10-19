@@ -46,6 +46,7 @@ specs/
 **ペルソナ設定**: タスク内容に応じて、適切な専門家ペルソナ（TypeScript Expert、Frontend Architect、Security Engineerなど）が自動的に適用されます。
 
 **Agent Skills**: 複雑なタスクを自動化する専門スキル：
+
 - **git-auto-commit**: Conventional Commits形式でのコミット・プッシュ
 - **multi-expert-code-review**: 5人の専門家による並列コードレビュー
 - **spec-brainstorm-doc**: Socratic対話による仕様ブレインストーミングと自動ドキュメント化
@@ -148,6 +149,37 @@ CLAUDE.mdに具体例が書かれていなくても、**常に専門家レベル
    - `/my:test` - テスト実行
    - `/my:improve` - リファクタリングと最適化
 
+3. **実装完了前の必須チェック**（この順序を厳守）:
+
+   a. **静的解析チェック**
+      - `npm run lint` を実行してESLintエラーをゼロに
+      - `npm run tsc` を実行してTypeScriptエラーをゼロに
+
+   b. **Chrome DevTools MCPで動作確認**
+      - `npm run dev` で開発サーバー起動
+      - Chrome DevTools MCPでブラウザ操作
+      - 実装した機能が正常に動作することを確認
+      - エラーがあれば修正してから次へ
+
+   c. **multi-expert-code-reviewでレビュー**
+      - Agent Skillの`multi-expert-code-review`を実行
+      - 5人の専門家による並列レビューを実施
+      - レビュー結果を分析
+
+   d. **レビュー指摘への対応判断**
+      - **小規模な修正**: その場で即座に対応
+      - **大規模な修正**:
+        1. `docs/review-feedback/[date]_[feature-name].md` にドキュメント化
+        2. 対応内容を整理してユーザーに確認
+        3. ユーザーの判断を待つ
+      - 対応後、再度Chrome DevTools MCPで動作確認
+
+   e. **ユーザーへ完了確認**
+      - 実装内容の簡潔なサマリーを提示
+      - 「このタスクを完了として良いですか？」と明示的に確認
+
+**重要**: この手順を飛ばして完了確認を求めることは厳禁
+
 #### Phase 3: デプロイと保守
 
 1. **ビルド**: `npm run build`
@@ -177,6 +209,7 @@ CLAUDE.mdに具体例が書かれていなくても、**常に専門家レベル
    - コミットメッセージに完了したタスクを明記
 
 **例**:
+
 ```
 ✅ タスク完了しました：記事登録フォームの実装
 
@@ -190,6 +223,48 @@ CLAUDE.mdに具体例が書かれていなくても、**常に専門家レベル
 ```
 
 ## 📋 開発ルール
+
+### MCP（Model Context Protocol）ツール利用の原則
+
+**重要**: MCPツールが動作しない場合、**必ず根本原因を調査してから対処する**こと。
+
+#### 動作しないMCPツールへの対応手順
+
+1. **エラーメッセージを正確に読む**
+   - パラメータの型エラー、必須フィールドの不足、APIの変更などを確認
+   - エラーの根本原因を特定する
+
+2. **ツール定義を確認する**
+   - ツールのスキーマ定義を読み、正しいパラメータ名・型を使用しているか確認
+   - 例: Chrome DevTools MCPの`click`ツールは`uid`パラメータを要求（`ref`ではない）
+
+3. **問題を修正する**
+   - 正しいパラメータ名・型で再試行
+   - 必要に応じてツール定義を参照し、正しい使い方を理解する
+
+4. **回避策は最終手段**
+   - **禁止**: エラーを無視して別の方法を試す（JavaScriptでの手動操作など）
+   - **許可**: 根本原因を調査し、MCPツール自体のバグや制約が確認された場合のみ回避策を使用
+
+**例（Chrome DevTools MCP）**:
+
+```typescript
+// ❌ 誤り: refパラメータを使用
+<invoke name="mcp__chrome-devtools__click">
+<parameter name="element">ボタン</parameter>
+<parameter name="ref">4_23</parameter>  // 間違い！
+</invoke>
+
+// ✅ 正しい: uidパラメータを使用
+<invoke name="mcp__chrome-devtools__click">
+<parameter name="element">ボタン</parameter>
+<parameter name="uid">4_23</parameter>  // 正しい
+</invoke>
+```
+
+**理由**: この原則により、Claude Codeは継続的にMCPツールの正しい使い方を学習し、将来のセッションで同じエラーを繰り返さなくなる。回避策に逃げると、根本問題が放置され、品質が低下する。
+
+---
 
 ### テストガイドライン
 
@@ -221,15 +296,11 @@ CLAUDE.mdに具体例が書かれていなくても、**常に専門家レベル
 
 ### 開発サーバーの起動
 
-**重要**: このプロジェクトでは、Chrome DevTools MCPを使用した動作確認のため、以下のコマンドを使用してください：
-
 ```bash
-npm run dev:mcp
+npm run dev
 ```
 
-- **通常の`npm run dev`ではなく、`npm run dev:mcp`を使用する**
-- Chrome DevTools MCPと連携した開発サーバーが起動します
-- ブラウザでの動作確認やテストを行う際は、必ずこのコマンドで起動してください
+Chrome DevTools MCPを使った動作確認を行う際は、このコマンドで開発サーバーを起動してください。
 
 ### Chrome DevTools MCP の認証設定
 
@@ -275,3 +346,32 @@ Chrome DevTools MCP は **自動的にUser Data Directoryを管理** し、ロ�
 
 コードを修正したら、Chrome DevTools MCPで動作確認してください。
 Chrome DevTools MCPが動かない場合、Playwrightの利用に逃げず、Chrome DevTools MCPが動くように直してください。
+
+---
+
+## 🗄 Supabase MCP運用規約
+
+### Read-Only設定
+
+このプロジェクトのSupabase MCPは**読み取り専用**（`--read-only`）で設定されています。
+
+#### 利用可能な操作
+
+- ✅ SELECT（データ取得）
+- ✅ テーブル一覧・スキーマ情報の取得
+- ✅ RLS・インデックス情報の取得
+- ✅ マイグレーション履歴の取得
+- ✅ ログの取得
+- ✅ アドバイザー情報の取得
+
+#### 利用不可能な操作
+
+- ❌ INSERT（データ追加）
+- ❌ UPDATE（データ更新）
+- ❌ DELETE（データ削除）
+- ❌ マイグレーションの実行
+- ❌ DDL操作（CREATE TABLE等）
+
+**理由**: データの安全性を確保し、誤った操作によるデータ破損を防ぐため。
+
+---
