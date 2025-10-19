@@ -1,6 +1,6 @@
 # LinkLoom プロジェクト開発ガイド
 
-このプロジェクトでは、**軽量仕様駆動開発**と**SuperClaude**を組み合わせて開発を進めます。
+このプロジェクトでは、**軽量仕様駆動開発**アプローチで開発を進めます。
 
 ## 🎯 プロジェクトの目的
 
@@ -13,6 +13,7 @@
 過剰なドキュメントを避け、必要最小限の仕様をメモ程度に整理する実践的なアプローチです。
 
 **基本構成:**
+
 ```
 specs/
 └── [feature-name]/
@@ -22,55 +23,47 @@ specs/
 ```
 
 **メリット:**
+
 - 📝 簡潔: 人間が素早く読める（5分以内）
 - 🤖 AI理解: AIが全体像を把握しやすい
 - 🔄 柔軟: 実装しながら更新可能
 - ⚡ 高速: ドキュメント作成に時間をかけすぎない
 
-### SuperClaude
+### カスタムコマンドとペルソナ
 
-専門サブエージェントによる高度な開発支援フレームワーク
+**カスタムコマンド**（`/my:` プレフィックス）：
 
-**利用可能なサブエージェント:** (`/sc:` プレフィックス)
+- **analyze** - コード品質分析
+- **brainstorm** - 要件の深掘り
+- **design** - 設計支援
+- **git** - Gitコミット支援
+- **implement** - 実装支援
+- **improve** - コード改善
+- **load** / **save** - セッション管理
+- **research** - 調査支援
+- **spec-panel** - 仕様レビュー
+- **test** - テスト支援
+- **troubleshoot** - 問題診断
 
-- **analyze** - コード品質、セキュリティ、パフォーマンス、アーキテクチャの包括的分析
-- **brainstorm** - ソクラティックな対話による要件発見と創造的問題解決
-- **build** - ビルド、コンパイル、パッケージングの自動化とエラーハンドリング
-- **business-panel** - ビジネス専門家パネルによる戦略分析
-- **cleanup** - デッドコード削除とプロジェクト構造の最適化
-- **design** - システムアーキテクチャ、API、コンポーネント設計
-- **document** - コンポーネント、関数、API、機能のドキュメント生成
-- **estimate** - タスク、機能、プロジェクトの開発見積もり
-- **explain** - コード、概念、システム動作の明確な説明
-- **git** - インテリジェントなコミットメッセージとGitワークフロー最適化
-- **implement** - ペルソナ統合による機能・コード実装
-- **improve** - コード品質、パフォーマンス、保守性の体系的改善
-- **index** - プロジェクトドキュメントと知識ベースの包括的生成
-- **load** - Serena MCP統合によるセッションコンテキストのロード
-- **reflect** - Serena MCP分析によるタスクの振り返りと検証
-- **research** - 適応型プランニングとインテリジェント検索による深い調査
-- **save** - Serena MCP統合によるセッションコンテキストの永続化
-- **select-tool** - 複雑性スコアリングによる最適なMCPツール選択
-- **spec-panel** - 著名な仕様エンジニアリング専門家によるマルチレビュー
-- **task** - インテリジェントなワークフロー管理と委譲
-- **test** - カバレッジ分析と自動品質レポート
-- **troubleshoot** - コード、ビルド、デプロイメント、システム動作の問題診断と解決
-- **workflow** - PRDと機能要件から構造化実装ワークフローの生成
+**ペルソナ設定**: タスク内容に応じて、適切な専門家ペルソナ（TypeScript Expert、Frontend Architect、Security Engineerなど）が自動的に適用されます。
+
+**Agent Skills**: 複雑なタスクを自動化する専門スキル：
+- **git-auto-commit**: Conventional Commits形式でのコミット・プッシュ
+- **multi-expert-code-review**: 5人の専門家による並列コードレビュー
+- **spec-brainstorm-doc**: Socratic対話による仕様ブレインストーミングと自動ドキュメント化
 
 ## 開発ガイドライン
 
 ### 基本原則
 
 - 思考は英語、回答の生成は日本語で行うように
-- 適切な場面でSuperClaudeのサブエージェントを積極的に活用する
-- 複雑な分析には `/sc:analyze`、設計には `/sc:design`、実装には `/sc:implement` を使用
-- セッション管理には `/sc:load` と `/sc:save` を活用
+- 必要に応じてカスタムコマンド（`/my:` プレフィックス）を活用する
 - **簡潔さを優先**: 形式や記法に固執せず、読みやすさと実用性を重視する
 
 ### 品質原則：専門家基準の徹底
 
 **コア原則:**
-SuperClaudeは既に専門知識を持っている。CLAUDE.mdに具体例が書かれていなくても、**常に専門家レベルの品質**を提供すること。
+CLAUDE.mdに具体例が書かれていなくても、**常に専門家レベルの品質**を提供すること。
 
 #### プロアクティブな品質管理
 
@@ -98,7 +91,7 @@ SuperClaudeは既に専門知識を持っている。CLAUDE.mdに具体例が書
 
 #### 自動化の原則
 
-- CLAUDE.mdに具体例を書く必要はない（SuperClaudeが既に知識を持っている）
+- CLAUDE.mdに具体例を書く必要はない（Claude Codeが既に知識を持っている）
 - 設定ファイル作成 → 自動的にベストプラクティス適用
 - 既存ファイルの問題発見 → 即座に改善提案
 - スケールする品質管理（個別ルールの羅列ではなく、原則で動く）
@@ -113,16 +106,17 @@ SuperClaudeは既に専門知識を持っている。CLAUDE.mdに具体例が書
 
 ## 🔄 開発ワークフロー
 
-### 実践的ワークフロー（軽量仕様駆動開発 + SuperClaude）
+### 実践的ワークフロー（軽量仕様駆動開発）
 
 #### Phase 0: プロジェクト準備
 
-1. **セッションロード**: `/sc:load` - 前回のセッションコンテキストを復元
-2. **要件ブレインストーミング**（必要時）: `/sc:brainstorm` - ソクラティック対話で要件を深掘り
+1. **セッションロード**（必要時）: `/my:load` - 前回のセッションコンテキストを復元
+2. **要件ブレインストーミング**（必要時）: `/my:brainstorm` - 要件を深掘り
 
 #### Phase 1: 簡易仕様作成
 
 1. **仕様ディレクトリ作成**
+
    ```bash
    mkdir -p specs/[feature-name]
    ```
@@ -142,49 +136,31 @@ SuperClaudeは既に専門知識を持っている。CLAUDE.mdに具体例が書
    - 優先順位付き
 
 **活用**:
-- `/sc:brainstorm` で要件を深掘り
-- `/sc:design` で設計支援
-- `/sc:estimate` でタスク見積もり
+
+- `/my:brainstorm` で要件を深掘り
+- `/my:design` で設計支援
 
 #### Phase 2: 実装
 
 1. **実装開始**
-   - **活用**: `/sc:implement` でペルソナ統合実装
-   - **活用**: `/sc:task` で複雑なマルチステップ実装の委譲
+   - **活用**: `/my:implement` で実装支援
 
 2. **継続的品質管理**:
-   - `/sc:analyze` - コード品質・セキュリティ分析
-   - `/sc:test` - カバレッジ分析とテスト実行
-   - `/sc:improve` - リファクタリングと最適化
+   - `/my:analyze` - コード品質・セキュリティ分析
+   - `/my:test` - テスト実行
+   - `/my:improve` - リファクタリングと最適化
 
 #### Phase 3: デプロイと保守
 
-1. `/sc:build` - ビルドとパッケージング
-2. `/sc:git` - インテリジェントなGitコミット
-3. `/sc:document` - ドキュメント生成
-4. `/sc:save` - セッションコンテキストを保存
+1. **ビルド**: `npm run build`
+2. **Git操作**（必要時）: `/my:git` でコミット支援
+3. **セッション保存**（必要時）: `/my:save`
 
 #### Phase 4: トラブルシューティング
 
-- `/sc:troubleshoot` - 問題の診断と解決
-- `/sc:reflect` - タスクの振り返りと検証
+- `/my:troubleshoot` - 問題の診断と解決
 
 ## 📋 開発ルール
-
-### SuperClaude 活用ガイドライン
-
-1. **適切なエージェント選択**: タスクの性質に応じて最適なサブエージェントを選択
-   - 分析・診断 → `/sc:analyze`, `/sc:troubleshoot`
-   - 設計・アーキテクチャ → `/sc:design`, `/sc:workflow`
-   - 実装 → `/sc:implement`, `/sc:task`
-   - 品質改善 → `/sc:improve`, `/sc:cleanup`, `/sc:test`
-   - 調査・学習 → `/sc:research`, `/sc:explain`
-   - ドキュメント → `/sc:document`, `/sc:index`
-
-2. **セッション管理**: 作業開始時に`/sc:load`、終了時に`/sc:save`を実行
-3. **複雑タスクの委譲**: 3ステップ以上の複雑な作業は`/sc:task`や`/sc:spawn`に委譲
-4. **継続的品質管理**: 実装後は必ず`/sc:analyze`と`/sc:test`で品質チェック
-5. **振り返り**: 重要なタスク完了後は`/sc:reflect`で振り返りを実施
 
 ### テストガイドライン
 
@@ -202,58 +178,17 @@ SuperClaudeは既に専門知識を持っている。CLAUDE.mdに具体例が書
 
 ### 新機能を開発する場合
 
-```bash
-# 1. セッションロード（初回以降）
-/sc:load
-
-# 2. 要件をブレインストーミング（必要時）
-/sc:brainstorm
-
-# 3. 仕様ディレクトリ作成
-mkdir -p specs/[feature-name]
-
-# 4. 簡易仕様作成（brief.md, design.md, tasks.md）
-# Claude Codeに依頼: 「[feature-name]の簡易仕様を作成してください」
-
-# 5. 実装開始
-/sc:implement
-
-# 6. 品質チェック
-/sc:analyze
-/sc:test
-
-# 7. セッション保存
-/sc:save
-```
+1. **仕様作成**: `specs/[feature-name]/` ディレクトリに `brief.md`、`design.md`、`tasks.md` を作成
+2. **実装**: Claude Codeと対話しながら実装
+3. **品質チェック**: `npm run lint` と `npm run tsc` を実行
+4. **テスト**: `npm run test` でユニットテスト、`npm run test:e2e` でE2Eテスト
 
 ### 既存コードを改善する場合
 
-```bash
-# 1. 分析
-/sc:analyze
-
-# 2. 問題診断（エラーがある場合）
-/sc:troubleshoot
-
-# 3. 改善実行
-/sc:improve
-
-# 4. テスト
-/sc:test
-
-# 5. リファクタリング
-/sc:cleanup
-```
-
-### ドキュメントを作成する場合
-
-```bash
-# コンポーネント/関数ドキュメント
-/sc:document
-
-# プロジェクト全体のインデックス
-/sc:index
-```
+1. **分析**: `/my:analyze` で問題を特定
+2. **問題診断**: `/my:troubleshoot` でエラーを診断
+3. **改善実行**: `/my:improve` で改善
+4. **テスト**: `npm run test` で検証
 
 ### 開発サーバーの起動
 
@@ -309,5 +244,5 @@ Chrome DevTools MCP は **自動的にUser Data Directoryを管理** し、ロ�
 
 ### 動作確認
 
-Chrome DevTools MCPで 動作確認してください。
-Chrome DevTools MCPが動かない場合、Playwright の利用に逃げず、Chrome DevTools MCPが動くように直してください。
+コードを修正したら、Chrome DevTools MCPで動作確認してください。
+Chrome DevTools MCPが動かない場合、Playwrightの利用に逃げず、Chrome DevTools MCPが動くように直してください。
