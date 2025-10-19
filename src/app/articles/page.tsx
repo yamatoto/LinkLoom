@@ -1,24 +1,51 @@
 import { redirect } from 'next/navigation'
-import { getArticles } from '@/app/actions/articles'
+import { searchArticles, getAllTags } from '@/app/actions/articles'
 import { ArticleList } from '@/components/articles/ArticleList'
+import { SearchFilters } from '@/components/articles/SearchFilters'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import type { SearchParams } from '@/types/article'
 
 /**
  * 記事一覧ページ
  *
- * Server Componentでデータフェッチし、記事一覧を表示
+ * Server Componentでデータフェッチ・検索を実行し、記事一覧を表示
  */
-export default async function ArticlesPage() {
-  const result = await getArticles()
+export default async function ArticlesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  const params = await searchParams
+
+  // 検索パラメータの解析
+  const keyword = typeof params.keyword === 'string' ? params.keyword : undefined
+  const tagIdsParam = params.tagIds
+  const tagIds = typeof tagIdsParam === 'string' ? tagIdsParam.split(',').filter(Boolean) : undefined
+  const sortBy =
+    params.sortBy === 'updated_at' ? 'updated_at' : 'created_at'
+  const sortOrder = params.sortOrder === 'asc' ? 'asc' : 'desc'
+
+  const searchParamsObj: SearchParams = {
+    keyword,
+    tagIds,
+    sortBy,
+    sortOrder,
+  }
+
+  // 記事検索とタグ一覧を並列取得
+  const [articlesResult, tagsResult] = await Promise.all([
+    searchArticles(searchParamsObj),
+    getAllTags(),
+  ])
 
   // 認証エラーの場合はログインページへリダイレクト
-  if (!result.success && result.error?.includes('認証エラー')) {
+  if (!articlesResult.success && articlesResult.error?.includes('認証エラー')) {
     redirect('/login')
   }
 
   // その他のエラーの場合はエラーメッセージを表示
-  if (!result.success) {
+  if (!articlesResult.success) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col items-center justify-center py-12">
@@ -37,7 +64,7 @@ export default async function ArticlesPage() {
             />
           </svg>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">エラーが発生しました</h3>
-          <p className="text-sm text-gray-500 mb-4">{result.error}</p>
+          <p className="text-sm text-gray-500 mb-4">{articlesResult.error}</p>
           <Button asChild variant="outline">
             <Link href="/">ホームに戻る</Link>
           </Button>
@@ -46,25 +73,29 @@ export default async function ArticlesPage() {
     )
   }
 
-  const articles = result.articles || []
+  const articles = articlesResult.articles || []
+  const tags = tagsResult.success ? tagsResult.tags || [] : []
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">記事一覧</h1>
-          <p className="text-sm text-gray-500 mt-2">
-            {articles.length > 0
-              ? `${articles.length}件の記事が見つかりました`
-              : '記事を登録してください'}
-          </p>
-        </div>
+        <h1 className="text-3xl font-bold text-gray-900">記事一覧</h1>
         <Button asChild>
           <Link href="/articles/new">記事を登録</Link>
         </Button>
       </div>
 
-      <ArticleList articles={articles} />
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {/* 検索・フィルタサイドバー */}
+        <aside className="md:col-span-1">
+          <SearchFilters tags={tags} resultCount={articles.length} />
+        </aside>
+
+        {/* 記事一覧メインコンテンツ */}
+        <main className="md:col-span-3">
+          <ArticleList articles={articles} />
+        </main>
+      </div>
     </div>
   )
 }

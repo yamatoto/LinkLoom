@@ -27,3 +27,13 @@ export interface ArticleWithPlatform extends Article {
   platform: Platform | null
   tags: Tag[]
 }
+
+/**
+ * 記事検索パラメータ型
+ */
+export interface SearchParams {
+  keyword?: string // キーワード検索（タイトル・説明文）
+  tagIds?: string[] // タグID配列（AND条件）
+  sortBy?: 'created_at' | 'updated_at' // ソート対象カラム
+  sortOrder?: 'asc' | 'desc' // ソート順
+}
