@@ -28,83 +28,70 @@ export function HomePage() {
 
       {/* Main Content */}
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        {user ? (
-          <div className="rounded-lg border border-gray-200 bg-white p-8 shadow-sm">
-            <div className="text-center">
-              <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-                <svg
-                  className="h-8 w-8 text-green-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              </div>
-              <h2 className="text-3xl font-bold text-gray-900">ログイン成功！</h2>
-              <p className="mt-4 text-lg text-gray-600">
-                Google OAuth認証が正常に完了しました
-              </p>
-              <div className="mt-6 rounded-md bg-blue-50 p-4">
-                <p className="text-sm text-blue-800">
-                  <strong>認証済みユーザー:</strong> {user.email}
-                </p>
-                <p className="mt-2 text-xs text-blue-600">
-                  セッションID: {user.id.substring(0, 8)}...
-                </p>
-              </div>
-              <div className="mt-8">
-                <p className="text-sm text-gray-500">
-                  これから記事管理機能の実装を進めていきます
-                </p>
-              </div>
-            </div>
+        <div className="rounded-lg border border-gray-200 bg-white p-8 shadow-sm">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-gray-900">LinkLoomへようこそ</h2>
+            <p className="mt-4 text-lg text-gray-600">
+              技術記事を効率的に管理するためのアプリケーション
+            </p>
           </div>
-        ) : (
-          <div className="rounded-lg border border-gray-200 bg-white p-8 shadow-sm">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold text-gray-900">LinkLoomへようこそ</h2>
-              <p className="mt-4 text-lg text-gray-600">
-                技術記事を効率的に管理するためのアプリケーション
-              </p>
-            </div>
-          </div>
-        )}
+        </div>
 
         {/* Feature Cards */}
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {user ? (
             <>
-              {/* 記事登録 - 実装済み */}
+              {/* 記事登録 */}
               <a
                 href="/articles/new"
                 className="group rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all hover:border-blue-500 hover:shadow-md"
               >
-                <h3 className="font-semibold text-gray-900 group-hover:text-blue-600">
-                  記事登録
-                </h3>
+                <h3 className="font-semibold text-gray-900 group-hover:text-blue-600">記事登録</h3>
                 <p className="mt-2 text-sm text-gray-600">URLから記事を登録</p>
                 <p className="mt-2 flex items-center text-xs font-medium text-blue-600">
                   <span>今すぐ登録</span>
-                  <svg className="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  <svg
+                    className="ml-1 h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
                   </svg>
                 </p>
               </a>
 
-              {/* 記事一覧 - Coming Soon */}
-              <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                <h3 className="font-semibold text-gray-900">記事一覧</h3>
+              {/* 記事一覧 */}
+              <a
+                href="/articles"
+                className="group rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all hover:border-blue-500 hover:shadow-md"
+              >
+                <h3 className="font-semibold text-gray-900 group-hover:text-blue-600">記事一覧</h3>
                 <p className="mt-2 text-sm text-gray-600">保存した記事を一覧表示</p>
-                <p className="mt-2 text-xs text-gray-400">Coming soon...</p>
-              </div>
+                <p className="mt-2 flex items-center text-xs font-medium text-blue-600">
+                  <span>一覧を見る</span>
+                  <svg
+                    className="ml-1 h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </p>
+              </a>
 
-              {/* 記事検索 - Coming Soon */}
+              {/* 記事検索 */}
               <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
                 <h3 className="font-semibold text-gray-900">記事検索</h3>
                 <p className="mt-2 text-sm text-gray-600">保存した記事を検索</p>

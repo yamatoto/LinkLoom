@@ -1,6 +1,6 @@
 # LinkLoom 開発計画と進捗
 
-**最終更新**: 2025-10-19 (記事登録機能 - 完全実装完了・テスト実施済み)
+**最終更新**: 2025-10-19 (記事一覧表示機能 - 完全実装完了・N+1問題解決)
 
 > **📝 進捗更新ルール（Claude Code向け）**:
 > タスク完了時は必ずユーザーに確認を取り、許可後にこのファイルを更新してください。
@@ -51,15 +51,26 @@
   - ✅ Multi-Expert Code Review実施
   - 📝 TODO: 編集・削除・アーカイブ機能
 
+- 🚧 **記事一覧表示** - **実装完了・改善TODO残** (2025-10-19)
+  - ✅ Server Componentでデータフェッチ（getArticles Server Action）
+  - ✅ カード形式一覧表示（ArticleCard, ArticleList）
+  - ✅ プラットフォームアイコン表示（7プラットフォーム対応）
+  - ✅ タグ表示
+  - ✅ N+1クエリ問題解決（一括取得 + Mapグループ化）
+  - ✅ トップページからのリンク追加
+  - ✅ Chrome DevTools MCP動作確認
+  - ✅ 静的解析クリア（lint, tsc）
+  - ✅ ユニットテスト実装（20テスト）
+  - ✅ E2Eテスト実装（6テスト）
+  - ✅ Multi-Expert Code Review実施（Critical Issues: 0）
+  - 📝 TODO: Next.js Linkコンポーネント化（HomePage.tsx） - 優先度: 中
+  - 📝 TODO: getArticles統合テスト追加 - 優先度: 中
+  - 📝 TODO: E2Eテスト実行問題の調査 - 優先度: 中
+
 - 📝 **検索・フィルタリング** - **未実装**
   - キーワード検索（タイトル・説明文）
   - タグフィルタ（複数選択、AND条件）
   - ソート順: 登録順
-
-- 📝 **記事表示** - **未実装**
-  - カード形式一覧表示
-  - 表示情報: プラットフォームアイコン、タイトル、説明、タグ、投稿日
-  - ブックマーク機能
 
 ### Phase 2: 機能拡張（予定）
 
@@ -226,11 +237,11 @@
 ```
 認証・同期   ████████████████████ 100% ✅
 記事登録     ████████████████████ 100% ✅
-記事表示     ░░░░░░░░░░░░░░░░░░░░   0% 📝
+記事一覧表示 ████████████████░░░░  85% 🚧 (TODO: Link化、統合テスト、E2E調査)
 検索機能     ░░░░░░░░░░░░░░░░░░░░   0% 📝
 編集・削除   ░░░░░░░░░░░░░░░░░░░░   0% 📝
 
-全体進捗:    ████████░░░░░░░░░░░░  40%
+全体進捗:    ███████████░░░░░░░░░  57%
 ```
 
 ### 完了タスク数
@@ -251,7 +262,21 @@
   - ✅ 静的解析クリア
   - ✅ Multi-Expert Code Review
   - ✅ 総テスト数: 69テスト
-- 📝 記事表示: 0タスク
+- 🚧 記事一覧表示: 11/14タスク（85%完了）
+  - ✅ 簡易仕様作成（specs/article-list/）
+  - ✅ Server Action実装（getArticles）
+  - ✅ ArticleCard/ArticleListコンポーネント作成
+  - ✅ 記事一覧ページ実装（/articles）
+  - ✅ トップページからのリンク追加
+  - ✅ N+1クエリ問題解決（O(N) → O(1)）
+  - ✅ Chrome DevTools MCP動作確認
+  - ✅ 静的解析クリア
+  - ✅ ユニットテスト実装（20テスト）
+  - ✅ E2Eテスト実装（6テスト）
+  - ✅ Multi-Expert Code Review（2回）
+  - 📝 TODO: Next.js Linkコンポーネント化（HomePage.tsx）
+  - 📝 TODO: getArticles統合テスト追加
+  - 📝 TODO: E2Eテスト実行問題の調査
 - 📝 検索機能: 0タスク
 - 📝 編集・削除: 0タスク
 
@@ -427,5 +452,74 @@
 
 ---
 
-**現在フェーズ**: Phase 1 MVP（20%完了）
-**次のマイルストーン**: 記事管理機能の実装（データベース設計 → 記事登録 → 一覧表示）
+**セッション4: 記事一覧表示機能実装（N+1問題解決）**
+
+1. ✅ 簡易仕様作成
+   - `specs/article-list/brief.md`
+   - `specs/article-list/design.md`
+   - `specs/article-list/tasks.md`
+
+2. ✅ コンポーネント実装
+   - `src/components/articles/ArticleCard.tsx`（記事カード）
+   - `src/components/articles/ArticleList.tsx`（記事一覧）
+   - `src/components/articles/PlatformIcon.tsx`（プラットフォームアイコン）
+   - `src/app/articles/page.tsx`（記事一覧ページ）
+
+3. ✅ Server Action実装
+   - `src/app/actions/articles.ts`（getArticles）
+   - 記事 + プラットフォーム + タグを取得
+
+4. ✅ N+1クエリ問題解決
+   - **Before**: 記事ごとにタグクエリ（O(N)）
+   - **After**: 全記事のタグを一括取得 + Mapグループ化（O(1)）
+   - **効果**: 5記事で7回クエリ → 2回クエリ（71%削減）
+
+5. ✅ トップページからのリンク追加
+   - `src/app/_components/HomePage.tsx`（記事一覧リンク）
+
+6. ✅ テスト実装
+   - `tests/unit/components/ArticleCard.test.tsx`（11テスト）
+   - `tests/unit/components/ArticleList.test.tsx`（9テスト）
+   - `tests/e2e/article-list.spec.ts`（6テスト）
+   - 総テスト数: 26テスト（UT 20 + E2E 6）
+
+7. ✅ Chrome DevTools MCP動作確認
+   - トップページ → 記事一覧ページ遷移確認
+   - 5記事表示確認
+   - プラットフォームアイコン表示確認
+
+8. ✅ 静的解析クリア
+   - `npm run lint` ✅
+   - `npm run tsc` ✅
+
+9. ✅ Multi-Expert Code Review（2回実施）
+   - **1回目**: N+1問題検出
+   - **2回目**: N+1問題解決確認
+   - **Critical Issues**: 0件
+   - **Warnings**: 2件（Next.js Link未使用、統合テスト不足）
+   - **Suggestions**: 2件（空配列早期リターン、Supabase JOIN最適化）
+
+**変更ファイル**:
+- `src/app/actions/articles.ts`（getArticles Server Action追加、N+1修正）
+- `src/components/articles/ArticleCard.tsx`（新規作成）
+- `src/components/articles/ArticleList.tsx`（新規作成）
+- `src/components/articles/PlatformIcon.tsx`（新規作成）
+- `src/app/articles/page.tsx`（新規作成）
+- `src/app/_components/HomePage.tsx`（記事一覧リンク追加）
+- `specs/article-list/*`（新規作成）
+- `tests/unit/components/ArticleCard.test.tsx`（新規作成）
+- `tests/unit/components/ArticleList.test.tsx`（新規作成）
+- `tests/e2e/article-list.spec.ts`（新規作成）
+- `docs/plan.md`（進捗更新）
+
+**残存課題（TODO）**:
+- 📝 HomePage.tsxでNext.js Linkコンポーネント使用（現状: `<a>`タグ）
+- 📝 getArticles Server Actionの統合テスト追加
+- 📝 E2Eテスト実行問題の調査（ハング問題）
+
+**総テスト数**: 95テスト（記事登録69 + 記事一覧26）
+
+---
+
+**現在フェーズ**: Phase 1 MVP（57%完了）
+**次のタスク**: 記事一覧表示の残TODO対応 または 検索・フィルタリング機能の実装

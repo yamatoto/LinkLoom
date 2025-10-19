@@ -20,7 +20,7 @@ export default function NewArticlePage() {
 
       if (result.success) {
         toast.success('記事を保存しました')
-        router.push('/') // TODO: 実装が完了したらrouter.push('/articles')
+        router.push('/articles')
       } else {
         toast.error(result.error || '記事の保存に失敗しました')
       }
