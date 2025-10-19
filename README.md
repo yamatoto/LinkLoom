@@ -188,11 +188,26 @@ npm run test:e2e:ui
 
 ## 📚 開発ガイド
 
-### 軽量仕様駆動開発 + SuperClaude
+### 軽量仕様駆動開発 + Claude Code
 
-このプロジェクトは **軽量仕様駆動開発** と **SuperClaude** を使用した実践的な開発アプローチを採用しています。
+このプロジェクトは **軽量仕様駆動開発** と **カスタムコマンド/Agent Skills** を使用した実践的な開発アプローチを採用しています。
 
 詳細は [CLAUDE.md](./CLAUDE.md) を参照してください。
+
+**カスタムコマンド** (`/my:` プレフィックス):
+- `/my:analyze` - コード品質分析
+- `/my:brainstorm` - 要件の深掘り
+- `/my:design` - 設計支援
+- `/my:implement` - 実装支援
+- `/my:test` - テスト実行
+- `/my:improve` - コード改善
+- `/my:git` - Gitコミット支援
+- その他: load, save, research, spec-panel, troubleshoot
+
+**Agent Skills**（複雑タスクの自動化）:
+- `multi-expert-code-review` - 5人の専門家による並列コードレビュー
+- `git-auto-commit` - Conventional Commits形式でのコミット・プッシュ
+- `spec-brainstorm-doc` - Socratic対話による仕様ブレインストーミング
 
 **開発フロー:**
 
@@ -200,14 +215,16 @@ npm run test:e2e:ui
    - brief.md: 概要（5-10行）
    - design.md: 設計メモ（10-20行）
    - tasks.md: タスク一覧
+   - **活用**: `/my:brainstorm` で要件を深掘り、`/my:design` で設計支援
 
-2. **実装** (`/sc:implement`)
-   - SuperClaudeのサブエージェントを活用
-   - 継続的品質管理
+2. **実装**
+   - `/my:implement` で実装支援
+   - 継続的品質管理（`/my:analyze`、`/my:test`）
 
 3. **品質チェック**
-   - `/sc:analyze`: コード品質分析
-   - `/sc:test`: テスト実行
+   - `/my:analyze` - コード品質・セキュリティ分析
+   - `multi-expert-code-review` - 5人の専門家による包括的レビュー
+   - `/my:test` - テスト実行
 
 ## 🎯 今後の展望
 
