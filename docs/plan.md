@@ -51,21 +51,19 @@
   - ✅ Multi-Expert Code Review実施
   - 📝 TODO: 編集・削除・アーカイブ機能
 
-- 🚧 **記事一覧表示** - **実装完了・改善TODO残** (2025-10-19)
+- ✅ **記事一覧表示** - **完了** (2025-10-19)
   - ✅ Server Componentでデータフェッチ（getArticles Server Action）
   - ✅ カード形式一覧表示（ArticleCard, ArticleList）
   - ✅ プラットフォームアイコン表示（7プラットフォーム対応）
   - ✅ タグ表示
   - ✅ N+1クエリ問題解決（一括取得 + Mapグループ化）
-  - ✅ トップページからのリンク追加
-  - ✅ Chrome DevTools MCP動作確認
+  - ✅ トップページからのリンク追加（Next.js Link使用）
+  - ✅ Chrome DevTools MCP動作確認（実ブラウザテスト）
   - ✅ 静的解析クリア（lint, tsc）
   - ✅ ユニットテスト実装（20テスト）
+  - ✅ 統合テスト実装（getArticles 8テスト）
   - ✅ E2Eテスト実装（6テスト）
-  - ✅ Multi-Expert Code Review実施（Critical Issues: 0）
-  - 📝 TODO: Next.js Linkコンポーネント化（HomePage.tsx） - 優先度: 中
-  - 📝 TODO: getArticles統合テスト追加 - 優先度: 中
-  - 📝 TODO: E2Eテスト実行問題の調査 - 優先度: 中
+  - ✅ Multi-Expert Code Review（2回実施・指摘0件）
 
 - 📝 **検索・フィルタリング** - **未実装**
   - キーワード検索（タイトル・説明文）
@@ -237,11 +235,11 @@
 ```
 認証・同期   ████████████████████ 100% ✅
 記事登録     ████████████████████ 100% ✅
-記事一覧表示 ████████████████░░░░  85% 🚧 (TODO: Link化、統合テスト、E2E調査)
+記事一覧表示 ████████████████████ 100% ✅
 検索機能     ░░░░░░░░░░░░░░░░░░░░   0% 📝
 編集・削除   ░░░░░░░░░░░░░░░░░░░░   0% 📝
 
-全体進捗:    ███████████░░░░░░░░░  57%
+全体進捗:    ████████████░░░░░░░░  60%
 ```
 
 ### 完了タスク数
@@ -262,21 +260,21 @@
   - ✅ 静的解析クリア
   - ✅ Multi-Expert Code Review
   - ✅ 総テスト数: 69テスト
-- 🚧 記事一覧表示: 11/14タスク（85%完了）
+- ✅ 記事一覧表示: 14/14タスク（100%完了）
   - ✅ 簡易仕様作成（specs/article-list/）
   - ✅ Server Action実装（getArticles）
   - ✅ ArticleCard/ArticleListコンポーネント作成
   - ✅ 記事一覧ページ実装（/articles）
-  - ✅ トップページからのリンク追加
+  - ✅ トップページからのリンク追加（Next.js Link化）
   - ✅ N+1クエリ問題解決（O(N) → O(1)）
   - ✅ Chrome DevTools MCP動作確認
   - ✅ 静的解析クリア
   - ✅ ユニットテスト実装（20テスト）
+  - ✅ 統合テスト実装（getArticles 8テスト）
   - ✅ E2Eテスト実装（6テスト）
-  - ✅ Multi-Expert Code Review（2回）
-  - 📝 TODO: Next.js Linkコンポーネント化（HomePage.tsx）
-  - 📝 TODO: getArticles統合テスト追加
-  - 📝 TODO: E2Eテスト実行問題の調査
+  - ✅ Multi-Expert Code Review（2回・指摘0件）
+  - ✅ CLAUDE.md整理（465行→179行に簡潔化）
+  - ✅ 総テスト数: 95テスト（記事登録69 + 記事一覧26）
 - 📝 検索機能: 0タスク
 - 📝 編集・削除: 0タスク
 
