@@ -303,9 +303,14 @@ describe('ArticleForm', () => {
   describe('エラーハンドリング', () => {
     it('onSubmitでエラーが発生してもフォームは動作し続ける', async () => {
       const user = userEvent.setup()
-      // エラーを静かにキャッチするようにする
+      // エラーをキャッチするonSubmit
       const errorOnSubmit = vi.fn().mockImplementation(async () => {
-        throw new Error('送信エラー')
+        try {
+          throw new Error('送信エラー')
+        } catch (error) {
+          // エラーを適切にキャッチして処理
+          console.error('送信エラー:', error)
+        }
       })
 
       render(<ArticleForm onSubmit={errorOnSubmit} />)

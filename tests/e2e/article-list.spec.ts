@@ -5,7 +5,7 @@ test.describe('記事一覧ページ', () => {
 
   test('ログイン状態で記事一覧が表示される', async ({ page }) => {
     // 記事一覧ページへ移動
-    await page.goto('/articles')
+    await page.goto('/articles', { waitUntil: 'networkidle' })
 
     // タイトルが表示されることを確認
     await expect(page.getByRole('heading', { name: '記事一覧' })).toBeVisible()
@@ -16,7 +16,7 @@ test.describe('記事一覧ページ', () => {
   })
 
   test('記事カードに必要な情報が表示される', async ({ page }) => {
-    await page.goto('/articles')
+    await page.goto('/articles', { waitUntil: 'networkidle' })
 
     // 最初の記事カードを取得
     const firstCard = page.locator('a[href*="http"]').first()
@@ -31,7 +31,7 @@ test.describe('記事一覧ページ', () => {
   })
 
   test('記事カードをクリックすると外部リンクで開く', async ({ page }) => {
-    await page.goto('/articles')
+    await page.goto('/articles', { waitUntil: 'networkidle' })
 
     // 最初の記事カードのリンク属性を確認
     const firstCard = page.locator('a[href*="http"]').first()
@@ -40,7 +40,7 @@ test.describe('記事一覧ページ', () => {
   })
 
   test('「記事を登録」ボタンが表示され、クリックで登録ページに遷移する', async ({ page }) => {
-    await page.goto('/articles')
+    await page.goto('/articles', { waitUntil: 'networkidle' })
 
     // 「記事を登録」ボタンをクリック
     await page.getByRole('link', { name: '記事を登録' }).click()
@@ -51,7 +51,7 @@ test.describe('記事一覧ページ', () => {
   })
 
   test('記事数が表示される', async ({ page }) => {
-    await page.goto('/articles')
+    await page.goto('/articles', { waitUntil: 'networkidle' })
 
     // 「○件の記事が見つかりました」または「記事を登録してください」が表示される
     const countText = page.getByText(/件の記事が見つかりました|記事を登録してください/)
@@ -64,7 +64,7 @@ test.describe('記事一覧ページ', () => {
     const page = await context.newPage()
 
     // 記事一覧ページへ移動
-    await page.goto('/articles')
+    await page.goto('/articles', { waitUntil: 'networkidle' })
 
     // ログインページにリダイレクトされることを確認
     await expect(page).toHaveURL('/login')

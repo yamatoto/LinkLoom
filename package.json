@@ -5,13 +5,13 @@
   "scripts": {
     "dev": "npx dotenv-cli -e .env.local -- next dev",
     "build": "next build",
-    "start": "next start",
     "lint": "next lint && eslint tests/ --ext .ts,.tsx",
+    "e2e": "playwright test",
+    "e2e:ci": "playwright test --reporter=list",
+    "start": "next start",
     "test": "vitest --run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui",
     "tsc": "tsc --noEmit"
   },
   "dependencies": {

@@ -22,7 +22,7 @@ test.describe('記事登録スモークテスト', () => {
     authenticatedPage,
   }) => {
     // Given: 認証済み状態で記事登録ページにアクセス
-    await authenticatedPage.goto('/articles/new')
+    await authenticatedPage.goto('/articles/new', { waitUntil: 'networkidle' })
 
     // Then: ページタイトルが表示される
     await expect(authenticatedPage).toHaveTitle(/LinkLoom/)
@@ -35,7 +35,7 @@ test.describe('記事登録スモークテスト', () => {
 
   test('未認証ユーザーは記事登録ページにアクセスできない', async ({ page }) => {
     // Given: 未認証状態で記事登録ページにアクセスを試みる
-    await page.goto('/articles/new')
+    await page.goto('/articles/new', { waitUntil: 'networkidle' })
 
     // Then: ログインページにリダイレクトされる
     await expect(page).toHaveURL(/\/login/)
@@ -43,7 +43,7 @@ test.describe('記事登録スモークテスト', () => {
 
   test('ユーザーが記事を登録できる', async ({ authenticatedPage }) => {
     // Given: 記事登録ページにアクセス
-    await authenticatedPage.goto('/articles/new')
+    await authenticatedPage.goto('/articles/new', { waitUntil: 'networkidle' })
 
     // When: フォームに入力
     const testArticleUrl = `https://qiita.com/test/items/e2e-test-${Date.now()}`
@@ -77,7 +77,7 @@ test.describe('記事登録スモークテスト', () => {
     authenticatedPage,
   }) => {
     // Given: 記事登録ページにアクセス
-    await authenticatedPage.goto('/articles/new')
+    await authenticatedPage.goto('/articles/new', { waitUntil: 'networkidle' })
 
     // Test 1: Zennの判定
     await authenticatedPage
@@ -101,7 +101,7 @@ test.describe('記事登録スモークテスト', () => {
 
   test('バリデーションエラーが表示される', async ({ authenticatedPage }) => {
     // Given: 記事登録ページにアクセス
-    await authenticatedPage.goto('/articles/new')
+    await authenticatedPage.goto('/articles/new', { waitUntil: 'networkidle' })
 
     // When: URLを入力せずに送信
     await authenticatedPage
@@ -122,7 +122,7 @@ test.describe('記事登録スモークテスト', () => {
     authenticatedPage,
   }) => {
     // Given: 記事登録ページにアクセス
-    await authenticatedPage.goto('/articles/new')
+    await authenticatedPage.goto('/articles/new', { waitUntil: 'networkidle' })
 
     // When: フォームに入力
     await authenticatedPage

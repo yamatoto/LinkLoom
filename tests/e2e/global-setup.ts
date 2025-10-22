@@ -38,21 +38,55 @@ async function globalSetup(_config: FullConfig) {
   if (fs.existsSync(authFile)) {
     try {
       const authData = JSON.parse(fs.readFileSync(authFile, 'utf-8'))
-      // Cookieが存在し、有効期限内かチェック
+
+      const now = Date.now() / 1000 // Unix timestamp in seconds
+
+      // 1. Cookieの有効期限をチェック
+      let hasValidCookie = false
       if (authData.cookies && authData.cookies.length > 0) {
-        const now = Date.now() / 1000 // Unix timestamp in seconds
-        const hasValidCookie = authData.cookies.some((cookie: { expires?: number }) => {
+        hasValidCookie = authData.cookies.some((cookie: { expires?: number }) => {
           // expiresが-1の場合はセッションCookie（ブラウザ終了まで有効）
           // expiresが未来の場合は有効
           return !cookie.expires || cookie.expires === -1 || cookie.expires > now
         })
+      }
 
-        if (hasValidCookie) {
-          console.log('✅ 既存の認証セッションを再利用します')
-          console.log(`📁 認証ファイル: ${authFile}`)
-          return // 認証をスキップ
-        } else {
-          console.log('⚠️  既存の認証セッションが期限切れです。再認証します。')
+      // 2. Supabase認証トークンの有効期限をチェック
+      let hasValidSupabaseToken = false
+      if (authData.origins && authData.origins.length > 0) {
+        const localhostOrigin = authData.origins.find(
+          (origin: { origin: string }) => origin.origin === 'http://localhost:3000'
+        )
+
+        if (localhostOrigin && localhostOrigin.localStorage) {
+          const authTokenItem = localhostOrigin.localStorage.find(
+            (item: { name: string }) => item.name.includes('auth-token')
+          )
+
+          if (authTokenItem && authTokenItem.value) {
+            try {
+              const tokenData = JSON.parse(authTokenItem.value)
+              // expires_atはUnixタイムスタンプ（秒）
+              if (tokenData.expires_at && tokenData.expires_at > now) {
+                hasValidSupabaseToken = true
+              }
+            } catch {
+              // トークンのパースに失敗した場合は無効扱い
+            }
+          }
+        }
+      }
+
+      if (hasValidCookie && hasValidSupabaseToken) {
+        console.log('✅ 既存の認証セッションを再利用します')
+        console.log(`📁 認証ファイル: ${authFile}`)
+        return // 認証をスキップ
+      } else {
+        if (!hasValidCookie) {
+          console.log('⚠️  既存の認証Cookie が期限切れです。再認証します。')
+        }
+        if (!hasValidSupabaseToken) {
+          console.log('⚠️  既存のSupabase認証トークンが期限切れです。再認証します。')
         }
       }
     } catch (error) {
