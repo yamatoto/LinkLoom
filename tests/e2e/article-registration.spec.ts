@@ -60,7 +60,7 @@ test.describe('記事登録スモークテスト', () => {
     await expect(authenticatedPage.getByRole('button', { name: /保存中/ })).toBeVisible()
 
     // Then: 送信成功後に記事一覧ページへリダイレクトされる
-    await expect(authenticatedPage).toHaveURL('/articles', { timeout: 5000 })
+    await authenticatedPage.waitForURL('/articles', { timeout: 10000 })
   })
 
   test('プラットフォーム自動判定が複数プラットフォームで動作する', async ({

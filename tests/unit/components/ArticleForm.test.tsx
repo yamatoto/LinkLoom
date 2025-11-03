@@ -120,6 +120,57 @@ describe('ArticleForm', () => {
     })
   })
 
+  describe('初期値とラベル', () => {
+    it('initialValuesがフィールドに適用される', () => {
+      const initialValues: ArticleFormData = {
+        url: 'https://zenn.dev/example/articles/initial',
+        title: '初期タイトル',
+        description: '初期説明',
+        tags: [],
+        platform: '',
+      }
+
+      render(<ArticleForm onSubmit={mockOnSubmit} initialValues={initialValues} />)
+
+      expect(screen.getByDisplayValue('https://zenn.dev/example/articles/initial')).toBeDefined()
+      expect(screen.getByDisplayValue('初期タイトル')).toBeDefined()
+      expect(screen.getByDisplayValue('初期説明')).toBeDefined()
+    })
+
+    it('submitLabelとsubmittingLabelを表示できる', () => {
+      const initialValues: ArticleFormData = {
+        url: 'https://qiita.com/example/items/initial',
+        title: 'Qiita初期タイトル',
+        description: '',
+        tags: [],
+        platform: '',
+      }
+
+      const { rerender } = render(
+        <ArticleForm
+          onSubmit={mockOnSubmit}
+          initialValues={initialValues}
+          submitLabel="記事を更新"
+          submittingLabel="更新中..."
+        />
+      )
+
+      expect(screen.getByRole('button', { name: '記事を更新' })).toBeDefined()
+
+      rerender(
+        <ArticleForm
+          onSubmit={mockOnSubmit}
+          initialValues={initialValues}
+          submitLabel="記事を更新"
+          submittingLabel="更新中..."
+          isSubmitting
+        />
+      )
+
+      expect(screen.getByRole('button', { name: '更新中...' })).toBeDefined()
+    })
+  })
+
   describe('バリデーション', () => {
     it('URLが空の場合、エラーメッセージが表示される', async () => {
       const user = userEvent.setup()

@@ -109,10 +109,12 @@ describe('useAuth', () => {
 
   describe('初期化', () => {
     it('初期状態ではloadingがtrueでuserがnull', async () => {
-      const { result } = renderHook(() => useAuth())
+      const { result, unmount } = renderHook(() => useAuth())
 
       expect(result.current.loading).toBe(true)
       expect(result.current.user).toBeNull()
+
+      unmount()
     })
 
     it('セッション取得後、loadingがfalseになる', async () => {
@@ -263,9 +265,11 @@ describe('useAuth', () => {
 
   describe('loading状態', () => {
     it('初期化中はloadingがtrue', () => {
-      const { result } = renderHook(() => useAuth())
+      const { result, unmount } = renderHook(() => useAuth())
 
       expect(result.current.loading).toBe(true)
+
+      unmount()
     })
 
     it('セッション取得完了後、loadingがfalse', async () => {

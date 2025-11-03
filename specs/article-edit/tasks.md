@@ -1,0 +1,5 @@
+- [x] [高] Server Action `getArticleById` `updateArticle` `deleteArticle` を追加し、RLSエラーとバリデーションをハンドリング
+- [x] [高] `src/app/articles/[id]/page.tsx` を実装し、記事詳細・フォーム・削除確認を表示
+- [x] [中] `ArticleForm` を初期値対応／ボタンラベル差し替え可能にリファクタリング
+- [x] [中] `EditArticleForm` クライアントコンポーネントを実装し、トースト・ルーティングを制御
+- [x] [低] ユニット／統合／E2Eテストを追加し、`npm run test` と `npm run e2e:ci` のスモークを実行

@@ -86,22 +86,22 @@ describe('ArticleCard', () => {
       expect(container.textContent).not.toContain('TypeScript')
     })
 
-    it('リンクが正しく設定されている', () => {
-      const { container } = render(<ArticleCard article={mockArticle} />)
-      const link = container.querySelector('a')
-      expect(link?.href).toBe('https://zenn.dev/example/articles/test')
-      expect(link?.target).toBe('_blank')
-      expect(link?.rel).toBe('noopener noreferrer')
+    it('外部リンクボタンが正しく設定されている', () => {
+      render(<ArticleCard article={mockArticle} />)
+      const openLink = screen.getByRole('link', { name: '記事を開く' })
+      expect(openLink).toHaveAttribute('href', 'https://zenn.dev/example/articles/test')
+      expect(openLink).toHaveAttribute('target', '_blank')
+      expect(openLink).toHaveAttribute('rel', 'noopener noreferrer')
+    })
+
+    it('編集ページへのリンクが表示される', () => {
+      render(<ArticleCard article={mockArticle} />)
+      const editLink = screen.getByRole('link', { name: '編集' })
+      expect(editLink.getAttribute('href')).toBe('/articles/1')
     })
   })
 
   describe('アクセシビリティ', () => {
-    it('カードがリンクとして機能する', () => {
-      const { container } = render(<ArticleCard article={mockArticle} />)
-      const link = container.querySelector('a')
-      expect(link).not.toBeNull()
-    })
-
     it('プラットフォームアイコンにaria-labelが設定されている', () => {
       render(<ArticleCard article={mockArticle} />)
       const platformIcon = screen.getByLabelText('Zenn platform')
