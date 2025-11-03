@@ -33,7 +33,7 @@ export function HomePage() {
             LinkLoom メインナビゲーション
           </h1>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-2">
             {user ? (
               <>
                 {/* 記事登録 */}
@@ -85,13 +85,6 @@ export function HomePage() {
                     </svg>
                   </p>
                 </Link>
-
-                {/* 記事検索 */}
-                <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                  <h2 className="font-semibold text-gray-900">記事検索</h2>
-                  <p className="mt-2 text-sm text-gray-600">保存した記事を検索</p>
-                  <p className="mt-2 text-xs text-gray-400">Coming soon...</p>
-                </div>
               </>
             ) : (
               <>
@@ -104,11 +97,6 @@ export function HomePage() {
                 <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
                   <h2 className="font-semibold text-gray-900">記事一覧</h2>
                   <p className="mt-2 text-sm text-gray-600">保存した記事を一覧表示</p>
-                  <p className="mt-2 text-xs text-gray-400">ログインが必要です</p>
-                </div>
-                <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                  <h2 className="font-semibold text-gray-900">記事検索</h2>
-                  <p className="mt-2 text-sm text-gray-600">保存した記事を検索</p>
                   <p className="mt-2 text-xs text-gray-400">ログインが必要です</p>
                 </div>
               </>
