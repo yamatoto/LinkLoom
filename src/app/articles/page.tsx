@@ -21,9 +21,9 @@ export default async function ArticlesPage({
   // 検索パラメータの解析
   const keyword = typeof params.keyword === 'string' ? params.keyword : undefined
   const tagIdsParam = params.tagIds
-  const tagIds = typeof tagIdsParam === 'string' ? tagIdsParam.split(',').filter(Boolean) : undefined
-  const sortBy =
-    params.sortBy === 'updated_at' ? 'updated_at' : 'created_at'
+  const tagIds =
+    typeof tagIdsParam === 'string' ? tagIdsParam.split(',').filter(Boolean) : undefined
+  const sortBy = params.sortBy === 'updated_at' ? 'updated_at' : 'created_at'
   const sortOrder = params.sortOrder === 'asc' ? 'asc' : 'desc'
 
   const searchParamsObj: SearchParams = {
@@ -85,10 +85,15 @@ export default async function ArticlesPage({
         </Button>
       </div>
 
+      {/* 検索結果件数 */}
+      <div className="text-sm text-muted-foreground mb-6">
+        {articles.length}件の記事が見つかりました
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {/* 検索・フィルタサイドバー */}
         <aside className="md:col-span-1">
-          <SearchFilters tags={tags} resultCount={articles.length} />
+          <SearchFilters tags={tags} />
         </aside>
 
         {/* 記事一覧メインコンテンツ */}

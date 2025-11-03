@@ -11,10 +11,9 @@ import type { Tag } from '@/types/article'
 
 interface SearchFiltersProps {
   tags: Tag[]
-  resultCount: number
 }
 
-export function SearchFilters({ tags, resultCount }: SearchFiltersProps) {
+export function SearchFilters({ tags }: SearchFiltersProps) {
   const router = useRouter()
   const pathname = usePathname()
 
@@ -46,22 +45,12 @@ export function SearchFilters({ tags, resultCount }: SearchFiltersProps) {
           )}
 
           {/* クリアボタン */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleClearAll}
-            className="w-full"
-          >
+          <Button variant="outline" size="sm" onClick={handleClearAll} className="w-full">
             <FilterX className="mr-2 h-4 w-4" />
             すべてクリア
           </Button>
         </CardContent>
       </Card>
-
-      {/* 検索結果件数 */}
-      <div className="text-sm text-muted-foreground">
-        {resultCount}件の記事が見つかりました
-      </div>
     </div>
   )
 }
