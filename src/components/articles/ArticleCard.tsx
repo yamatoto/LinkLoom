@@ -10,6 +10,7 @@ import {
 import { PlatformIcon } from './PlatformIcon'
 import type { ArticleWithPlatform } from '@/types/article'
 import { Button } from '@/components/ui/button'
+import { ExternalLink } from 'lucide-react'
 
 interface ArticleCardProps {
   article: ArticleWithPlatform
@@ -46,9 +47,10 @@ export function ArticleCard({ article }: ArticleCardProps) {
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="block text-gray-900 hover:underline"
+          className="group flex items-start gap-1 text-gray-900 hover:text-blue-600 transition-colors"
         >
-          <CardTitle className="line-clamp-2">{title}</CardTitle>
+          <CardTitle className="line-clamp-2 flex-1">{title}</CardTitle>
+          <ExternalLink className="h-4 w-4 flex-shrink-0 mt-1 opacity-60 group-hover:opacity-100 transition-opacity" />
         </a>
         {description && (
           <CardDescription className="mt-2 line-clamp-3">{description}</CardDescription>
@@ -68,12 +70,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
           </div>
         </CardContent>
       )}
-      <CardFooter className="mt-auto flex gap-2">
-        <Button asChild size="sm">
-          <a href={url} target="_blank" rel="noopener noreferrer">
-            記事を開く
-          </a>
-        </Button>
+      <CardFooter className="mt-auto">
         <Button asChild size="sm" variant="outline">
           <Link href={`/articles/${article.id}`}>編集</Link>
         </Button>

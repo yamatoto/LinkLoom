@@ -16,6 +16,7 @@ interface ArticleFormProps {
   submitLabel?: string
   submittingLabel?: string
   initialValues?: ArticleFormData
+  additionalActions?: React.ReactNode
 }
 
 export function ArticleForm({
@@ -24,6 +25,7 @@ export function ArticleForm({
   submitLabel = '記事を保存',
   submittingLabel = '保存中...',
   initialValues,
+  additionalActions,
 }: ArticleFormProps) {
   const defaultValues: ArticleFormData = {
     url: '',
@@ -150,8 +152,8 @@ export function ArticleForm({
         <p className="mt-1 text-xs text-gray-500">※ タグ機能は現在開発中です</p>
       </div>
 
-      {/* 送信ボタン */}
-      <div className="flex justify-end">
+      {/* ボタンエリア */}
+      <div className="flex items-center gap-3">
         <button
           type="submit"
           disabled={isSubmitting}
@@ -184,6 +186,7 @@ export function ArticleForm({
             submitLabel
           )}
         </button>
+        {additionalActions}
       </div>
     </form>
   )
