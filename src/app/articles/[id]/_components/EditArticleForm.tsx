@@ -26,11 +26,7 @@ interface EditArticleFormProps {
   articleTitle: string
 }
 
-export function EditArticleForm({
-  articleId,
-  initialValues,
-  articleTitle,
-}: EditArticleFormProps) {
+export function EditArticleForm({ articleId, initialValues, articleTitle }: EditArticleFormProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -46,7 +42,7 @@ export function EditArticleForm({
       }
 
       toast.success('記事を更新しました')
-      router.refresh()
+      router.push('/articles')
     } catch (error) {
       if (process.env.NODE_ENV !== 'production') {
         console.error('記事更新処理で予期しないエラー:', error)
@@ -90,11 +86,7 @@ export function EditArticleForm({
       additionalActions={
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button
-              type="button"
-              variant="destructive"
-              disabled={isSubmitting || isDeleting}
-            >
+            <Button type="button" variant="destructive" disabled={isSubmitting || isDeleting}>
               {isDeleting ? '削除中...' : '記事を削除'}
             </Button>
           </AlertDialogTrigger>
@@ -102,7 +94,8 @@ export function EditArticleForm({
             <AlertDialogHeader>
               <AlertDialogTitle>この記事を削除しますか？</AlertDialogTitle>
               <AlertDialogDescription>
-                「{articleTitle}」を削除すると元に戻せません。この記事に紐づくタグ情報も削除されます。
+                「{articleTitle}
+                」を削除すると元に戻せません。この記事に紐づくタグ情報も削除されます。
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

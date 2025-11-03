@@ -46,7 +46,7 @@ describe('EditArticleForm', () => {
     mockDeleteArticle.mockResolvedValue({ success: true })
   })
 
-  it('記事を更新するとupdateArticleが呼ばれ、トーストとrefreshが実行される', async () => {
+  it('記事を更新するとupdateArticleが呼ばれ、トーストと一覧画面への遷移が実行される', async () => {
     const user = userEvent.setup()
 
     render(
@@ -64,7 +64,7 @@ describe('EditArticleForm', () => {
     })
 
     expect(mockToastSuccess).toHaveBeenCalledWith('記事を更新しました')
-    expect(mockRefresh).toHaveBeenCalled()
+    expect(mockPush).toHaveBeenCalledWith('/articles')
   })
 
   it('更新に失敗した場合、エラートーストが表示される', async () => {
@@ -85,7 +85,7 @@ describe('EditArticleForm', () => {
       expect(mockToastError).toHaveBeenCalledWith('更新に失敗しました')
     })
 
-    expect(mockRefresh).not.toHaveBeenCalled()
+    expect(mockPush).not.toHaveBeenCalled()
   })
 
   it('削除を確定するとdeleteArticleが呼ばれ、トーストと遷移が実行される', async () => {
