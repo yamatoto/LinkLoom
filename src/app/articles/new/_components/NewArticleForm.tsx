@@ -24,22 +24,22 @@ export function NewArticleForm() {
     try {
       const result = await createArticle(data)
 
-      if (result.success) {
-        toast.success('記事を保存しました')
-        router.push('/articles')
-      } else {
+      if (!result.success) {
         toast.error(result.error || '記事の保存に失敗しました')
+        setIsSubmitting(false)
+        return
       }
+
+      toast.success('記事を保存しました')
+      router.push('/articles')
     } catch (error) {
       if (process.env.NODE_ENV !== 'production') {
         console.error('送信エラー:', error)
       }
       toast.error('予期しないエラーが発生しました')
-    } finally {
       setIsSubmitting(false)
     }
   }
 
   return <ArticleForm onSubmit={handleSubmit} isSubmitting={isSubmitting} />
 }
-

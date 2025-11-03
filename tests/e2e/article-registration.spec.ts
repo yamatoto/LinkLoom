@@ -18,9 +18,7 @@ import { test, expect } from './fixtures/auth.fixture'
  */
 
 test.describe('記事登録スモークテスト', () => {
-  test('認証済みユーザーが記事登録ページにアクセスできる', async ({
-    authenticatedPage,
-  }) => {
+  test('認証済みユーザーが記事登録ページにアクセスできる', async ({ authenticatedPage }) => {
     // Given: 認証済み状態で記事登録ページにアクセス
     await authenticatedPage.goto('/articles/new', { waitUntil: 'networkidle' })
 
@@ -33,9 +31,7 @@ test.describe('記事登録スモークテスト', () => {
     await expect(authenticatedPage.getByLabel(/説明/)).toBeVisible()
   })
 
-  test('未認証ユーザーは記事登録ページにアクセスできない', async ({
-    unauthenticatedPage,
-  }) => {
+  test('未認証ユーザーは記事登録ページにアクセスできない', async ({ unauthenticatedPage }) => {
     // Given: 未認証状態で記事登録ページにアクセスを試みる
     await unauthenticatedPage.goto('/articles/new', { waitUntil: 'networkidle' })
 
@@ -50,12 +46,8 @@ test.describe('記事登録スモークテスト', () => {
     // When: フォームに入力
     const testArticleUrl = `https://qiita.com/test/items/e2e-test-${Date.now()}`
     await authenticatedPage.getByLabel(/記事URL/).fill(testArticleUrl)
-    await authenticatedPage
-      .getByLabel(/記事タイトル/)
-      .fill('E2Eテスト記事タイトル')
-    await authenticatedPage
-      .getByLabel(/説明/)
-      .fill('E2Eテスト用の記事説明文です')
+    await authenticatedPage.getByLabel(/記事タイトル/).fill('E2Eテスト記事タイトル')
+    await authenticatedPage.getByLabel(/説明/).fill('E2Eテスト用の記事説明文です')
 
     // Then: プラットフォーム自動判定が表示される
     await expect(authenticatedPage.getByText(/プラットフォーム:/)).toBeVisible()
@@ -65,9 +57,7 @@ test.describe('記事登録スモークテスト', () => {
     await authenticatedPage.getByRole('button', { name: /記事を保存/ }).click()
 
     // Then: 送信中の状態が表示される
-    await expect(
-      authenticatedPage.getByRole('button', { name: /保存中/ })
-    ).toBeVisible()
+    await expect(authenticatedPage.getByRole('button', { name: /保存中/ })).toBeVisible()
 
     // Then: 送信成功後に記事一覧ページへリダイレクトされる
     await expect(authenticatedPage).toHaveURL('/articles', { timeout: 5000 })
@@ -80,9 +70,7 @@ test.describe('記事登録スモークテスト', () => {
     await authenticatedPage.goto('/articles/new', { waitUntil: 'networkidle' })
 
     // Test 1: Zennの判定
-    await authenticatedPage
-      .getByLabel(/記事URL/)
-      .fill('https://zenn.dev/user/articles/test')
+    await authenticatedPage.getByLabel(/記事URL/).fill('https://zenn.dev/user/articles/test')
     await authenticatedPage.getByLabel(/記事タイトル/).fill('Zenn記事')
 
     // Then: Zennが判定される
@@ -90,9 +78,7 @@ test.describe('記事登録スモークテスト', () => {
 
     // Test 2: URLをクリアしてnoteを判定
     await authenticatedPage.getByLabel(/記事URL/).clear()
-    await authenticatedPage
-      .getByLabel(/記事URL/)
-      .fill('https://note.com/user/n/n123')
+    await authenticatedPage.getByLabel(/記事URL/).fill('https://note.com/user/n/n123')
     await authenticatedPage.getByLabel(/記事タイトル/).fill('note記事')
 
     // Then: noteが判定される
@@ -104,15 +90,11 @@ test.describe('記事登録スモークテスト', () => {
     await authenticatedPage.goto('/articles/new', { waitUntil: 'networkidle' })
 
     // When: URLを入力せずに送信
-    await authenticatedPage
-      .getByLabel(/記事タイトル/)
-      .fill('タイトルのみ入力')
+    await authenticatedPage.getByLabel(/記事タイトル/).fill('タイトルのみ入力')
     await authenticatedPage.getByRole('button', { name: /記事を保存/ }).click()
 
     // Then: バリデーションエラーが表示される
-    await expect(
-      authenticatedPage.getByText(/URLを入力してください/)
-    ).toBeVisible()
+    await expect(authenticatedPage.getByText(/URLを入力してください/)).toBeVisible()
 
     // Then: ページ遷移しない
     await expect(authenticatedPage).toHaveURL(/\/articles\/new/)
@@ -125,14 +107,12 @@ test.describe('記事登録スモークテスト', () => {
     await authenticatedPage.goto('/articles/new', { waitUntil: 'networkidle' })
 
     // When: フォームに入力
-    await authenticatedPage
-      .getByLabel(/記事URL/)
-      .fill('https://zenn.dev/test/articles/test')
+    await authenticatedPage.getByLabel(/記事URL/).fill('https://zenn.dev/test/articles/test')
     await authenticatedPage.getByLabel(/記事タイトル/).fill('テスト記事')
 
     // When: フォームを送信
     const submitButton = authenticatedPage.getByRole('button', {
-      name: /記事を保存/,
+      name: /記事を保存|保存中/, // 送信中はラベルが「保存中...」になる
     })
     await submitButton.click()
 
