@@ -17,15 +17,15 @@ import { test, expect } from './fixtures/auth.fixture'
  */
 
 test.describe('認証スモークテスト', () => {
-  test('ログインページが正しく表示される', async ({ page }) => {
-    // Given: ログインページにアクセス
-    await page.goto('/login')
+  test('ログインページが正しく表示される', async ({ unauthenticatedPage }) => {
+    // Given: 未認証状態でログインページにアクセス
+    await unauthenticatedPage.goto('/login')
 
     // Then: ページタイトルが表示される
-    await expect(page).toHaveTitle(/LinkLoom/i)
+    await expect(unauthenticatedPage).toHaveTitle(/LinkLoom/i)
 
     // Then: Googleでログインボタンが表示される
-    const googleButton = page.getByRole('button', {
+    const googleButton = unauthenticatedPage.getByRole('button', {
       name: /Googleでログイン/i,
     })
     await expect(googleButton).toBeVisible()
