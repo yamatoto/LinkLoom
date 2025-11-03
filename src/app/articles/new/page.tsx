@@ -1,38 +1,24 @@
-'use client'
-
-import { ArticleForm } from '@/components/articles/ArticleForm'
+import { redirect } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
+import { NewArticleForm } from './_components/NewArticleForm'
 import { Header } from '@/components/layout/Header'
-import { createArticle } from '@/app/actions/articles'
-import type { ArticleFormData } from '@/schemas/article.schema'
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { toast } from 'sonner'
 
-export default function NewArticlePage() {
-  const router = useRouter()
-  const [isSubmitting, setIsSubmitting] = useState(false)
+/**
+ * 記事登録ページ（サーバーコンポーネント）
+ *
+ * サーバーサイドで認証チェックを行い、未認証の場合はログインページにリダイレクト。
+ * これにより、middlewareだけでなくページレベルでも保護する二重の防御を実現。
+ */
+export default async function NewArticlePage() {
+  const supabase = await createClient()
 
-  const handleSubmit = async (data: ArticleFormData) => {
-    setIsSubmitting(true)
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
-    try {
-      const result = await createArticle(data)
-
-      if (result.success) {
-        toast.success('記事を保存しました')
-        router.push('/articles')
-      } else {
-        toast.error(result.error || '記事の保存に失敗しました')
-      }
-    } catch (error) {
-      // ログは本番環境で機密情報を出力しないように注意
-      if (process.env.NODE_ENV !== 'production') {
-        console.error('送信エラー:', error)
-      }
-      toast.error('予期しないエラーが発生しました')
-    } finally {
-      setIsSubmitting(false)
-    }
+  // 未認証の場合はログインページへリダイレクト
+  if (!user) {
+    redirect('/login?redirect=/articles/new')
   }
 
   return (
@@ -48,7 +34,7 @@ export default function NewArticlePage() {
         </div>
 
         <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-          <ArticleForm onSubmit={handleSubmit} isSubmitting={isSubmitting} />
+          <NewArticleForm />
         </div>
       </main>
     </div>

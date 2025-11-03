@@ -33,12 +33,14 @@ test.describe('記事登録スモークテスト', () => {
     await expect(authenticatedPage.getByLabel(/説明/)).toBeVisible()
   })
 
-  test('未認証ユーザーは記事登録ページにアクセスできない', async ({ page }) => {
+  test('未認証ユーザーは記事登録ページにアクセスできない', async ({
+    unauthenticatedPage,
+  }) => {
     // Given: 未認証状態で記事登録ページにアクセスを試みる
-    await page.goto('/articles/new', { waitUntil: 'networkidle' })
+    await unauthenticatedPage.goto('/articles/new', { waitUntil: 'networkidle' })
 
     // Then: ログインページにリダイレクトされる
-    await expect(page).toHaveURL(/\/login/)
+    await expect(unauthenticatedPage).toHaveURL(/\/login/)
   })
 
   test('ユーザーが記事を登録できる', async ({ authenticatedPage }) => {
@@ -67,10 +69,8 @@ test.describe('記事登録スモークテスト', () => {
       authenticatedPage.getByRole('button', { name: /保存中/ })
     ).toBeVisible()
 
-    // Then: 送信成功後にリダイレクトされる（記事一覧またはダッシュボード）
-    // NOTE: リダイレクト先は将来実装される記事一覧ページ
-    // 現在は "/" にリダイレクトされる想定
-    await expect(authenticatedPage).toHaveURL(/\/$/, { timeout: 5000 })
+    // Then: 送信成功後に記事一覧ページへリダイレクトされる
+    await expect(authenticatedPage).toHaveURL('/articles', { timeout: 5000 })
   })
 
   test('プラットフォーム自動判定が複数プラットフォームで動作する', async ({

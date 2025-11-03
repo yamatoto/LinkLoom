@@ -1,6 +1,9 @@
 import { chromium, FullConfig } from '@playwright/test'
 import * as path from 'path'
 import * as fs from 'fs'
+import { setupTestData } from './setup-test-data'
+import { createClient } from '@supabase/supabase-js'
+import type { Database } from '@/types/database.types'
 
 /**
  * Playwright Global Setup - 実際のGoogle OAuth認証
@@ -177,6 +180,47 @@ async function globalSetup(_config: FullConfig) {
     await context.storageState({ path: authFile })
 
     console.log(`💾 認証状態を保存しました: ${authFile}`)
+
+    // Step 6: 認証済みユーザーのIDを取得してテストデータを投入
+    try {
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+      const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+      if (!supabaseUrl || !supabaseServiceKey) {
+        console.warn(
+          '⚠️  SUPABASE_SERVICE_ROLE_KEY が設定されていません。テストデータ投入をスキップします。'
+        )
+      } else {
+        // Service Role Keyを使ってユーザーIDを取得
+        const supabase = createClient<Database>(supabaseUrl, supabaseServiceKey, {
+          auth: {
+            autoRefreshToken: false,
+            persistSession: false,
+          },
+        })
+
+        // テストアカウントのメールアドレスからユーザーIDを取得
+        const { data: users, error: usersError } = await supabase.auth.admin.listUsers()
+
+        if (usersError || !users || users.users.length === 0) {
+          console.warn('⚠️  ユーザー情報の取得に失敗しました。テストデータ投入をスキップします。')
+        } else {
+          // テストアカウントのメールアドレスで絞り込み
+          const testUser = users.users.find((u) => u.email === testEmail)
+
+          if (!testUser) {
+            console.warn(`⚠️  テストユーザー (${testEmail}) が見つかりません。テストデータ投入をスキップします。`)
+          } else {
+            console.log(`👤 認証済みユーザーID: ${testUser.id}`)
+            await setupTestData(testUser.id)
+          }
+        }
+      }
+    } catch (error) {
+      console.warn('⚠️  テストデータ投入中にエラーが発生しました:', error)
+      console.warn('   テストデータなしでテストを続行します。')
+    }
+
     console.log('🎉 Global Setup 完了！')
   } catch (error) {
     console.error('❌ Global Setup 失敗:', error)
