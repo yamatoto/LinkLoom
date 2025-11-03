@@ -81,41 +81,39 @@ export function EditArticleForm({
   }
 
   return (
-    <div className="space-y-6">
-      <ArticleForm
-        onSubmit={handleSubmit}
-        isSubmitting={isSubmitting}
-        submitLabel="記事を更新"
-        submittingLabel="更新中..."
-        initialValues={initialValues}
-      />
-
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <Button
-            type="button"
-            variant="destructive"
-            className="ml-auto"
-            disabled={isSubmitting || isDeleting}
-          >
-            {isDeleting ? '削除中...' : '記事を削除'}
-          </Button>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>この記事を削除しますか？</AlertDialogTitle>
-            <AlertDialogDescription>
-              「{articleTitle}」を削除すると元に戻せません。この記事に紐づくタグ情報も削除されます。
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>キャンセル</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} disabled={isDeleting}>
-              {isDeleting ? '削除中...' : '削除する'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
+    <ArticleForm
+      onSubmit={handleSubmit}
+      isSubmitting={isSubmitting}
+      submitLabel="記事を更新"
+      submittingLabel="更新中..."
+      initialValues={initialValues}
+      additionalActions={
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button
+              type="button"
+              variant="destructive"
+              disabled={isSubmitting || isDeleting}
+            >
+              {isDeleting ? '削除中...' : '記事を削除'}
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>この記事を削除しますか？</AlertDialogTitle>
+              <AlertDialogDescription>
+                「{articleTitle}」を削除すると元に戻せません。この記事に紐づくタグ情報も削除されます。
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={isDeleting}>キャンセル</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDelete} disabled={isDeleting}>
+                {isDeleting ? '削除中...' : '削除する'}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      }
+    />
   )
 }

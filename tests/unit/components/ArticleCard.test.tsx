@@ -86,12 +86,12 @@ describe('ArticleCard', () => {
       expect(container.textContent).not.toContain('TypeScript')
     })
 
-    it('外部リンクボタンが正しく設定されている', () => {
+    it('タイトルリンクが正しく設定されている', () => {
       render(<ArticleCard article={mockArticle} />)
-      const openLink = screen.getByRole('link', { name: '記事を開く' })
-      expect(openLink).toHaveAttribute('href', 'https://zenn.dev/example/articles/test')
-      expect(openLink).toHaveAttribute('target', '_blank')
-      expect(openLink).toHaveAttribute('rel', 'noopener noreferrer')
+      const titleLink = screen.getByRole('link', { name: 'テスト記事タイトル' })
+      expect(titleLink).toHaveAttribute('href', 'https://zenn.dev/example/articles/test')
+      expect(titleLink).toHaveAttribute('target', '_blank')
+      expect(titleLink).toHaveAttribute('rel', 'noopener noreferrer')
     })
 
     it('編集ページへのリンクが表示される', () => {
