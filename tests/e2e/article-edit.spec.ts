@@ -50,11 +50,25 @@ test.describe('記事編集・削除フロー', () => {
     await authenticatedPage.getByLabel(/記事タイトル/).fill(updatedTitle)
     await authenticatedPage.getByLabel(/説明（任意）/).fill(updatedDescription)
     await authenticatedPage.getByRole('button', { name: '記事を更新' }).click()
-    await expect(authenticatedPage.getByLabel(/記事タイトル/)).toHaveValue(updatedTitle, {
-      timeout: 5000,
-    })
+
+    // 更新後は一覧画面に自動遷移
+    await authenticatedPage.waitForURL('/articles', { timeout: 10000 })
+
+    // 一覧画面で更新された記事が表示されることを確認
+    await expect(
+      authenticatedPage.getByTestId('article-card').filter({ hasText: updatedTitle })
+    ).toBeVisible({ timeout: 5000 })
 
     // クリーンアップ: 編集後の記事を削除
+    const updatedCard = authenticatedPage
+      .getByTestId('article-card')
+      .filter({ hasText: updatedTitle })
+      .first()
+    const deletePageHref = await updatedCard
+      .getByRole('link', { name: /^編集$/ })
+      .first()
+      .getAttribute('href')
+    await authenticatedPage.goto(deletePageHref!, { waitUntil: 'networkidle' })
     await authenticatedPage.getByRole('button', { name: '記事を削除' }).click()
     await authenticatedPage.getByRole('button', { name: '削除する' }).click()
     await authenticatedPage.waitForURL('/articles', { timeout: 10000 })

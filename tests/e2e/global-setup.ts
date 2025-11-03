@@ -44,7 +44,7 @@ async function globalSetup(_config: FullConfig) {
 
       const now = Date.now() / 1000 // Unix timestamp in seconds
 
-      // 1. Cookieの有効期限をチェック
+      // Cookieの有効期限をチェック
       let hasValidCookie = false
       if (authData.cookies && authData.cookies.length > 0) {
         hasValidCookie = authData.cookies.some((cookie: { expires?: number }) => {
@@ -54,43 +54,13 @@ async function globalSetup(_config: FullConfig) {
         })
       }
 
-      // 2. Supabase認証トークンの有効期限をチェック
-      let hasValidSupabaseToken = false
-      if (authData.origins && authData.origins.length > 0) {
-        const localhostOrigin = authData.origins.find(
-          (origin: { origin: string }) => origin.origin === 'http://localhost:3000'
-        )
-
-        if (localhostOrigin && localhostOrigin.localStorage) {
-          const authTokenItem = localhostOrigin.localStorage.find(
-            (item: { name: string }) => item.name.includes('auth-token')
-          )
-
-          if (authTokenItem && authTokenItem.value) {
-            try {
-              const tokenData = JSON.parse(authTokenItem.value)
-              // expires_atはUnixタイムスタンプ（秒）
-              if (tokenData.expires_at && tokenData.expires_at > now) {
-                hasValidSupabaseToken = true
-              }
-            } catch {
-              // トークンのパースに失敗した場合は無効扱い
-            }
-          }
-        }
-      }
-
-      if (hasValidCookie && hasValidSupabaseToken) {
-        console.log('✅ 既存の認証セッションを再利用します')
+      // CookieだけでもセッションOK（PlaywrightのstorageStateはlocalStorageを保存しないため）
+      if (hasValidCookie) {
+        console.log('✅ 既存の認証セッション（Cookie）を再利用します')
         console.log(`📁 認証ファイル: ${authFile}`)
         return // 認証をスキップ
       } else {
-        if (!hasValidCookie) {
-          console.log('⚠️  既存の認証Cookie が期限切れです。再認証します。')
-        }
-        if (!hasValidSupabaseToken) {
-          console.log('⚠️  既存のSupabase認証トークンが期限切れです。再認証します。')
-        }
+        console.log('⚠️  既存の認証Cookie が期限切れです。再認証します。')
       }
     } catch (error) {
       console.warn('⚠️  既存の認証ファイルが破損しています。再認証します。', error)
@@ -175,13 +145,18 @@ async function globalSetup(_config: FullConfig) {
 
     console.log('✅ 認証成功！ダッシュボードにリダイレクトされました')
 
-    // Step 5: 認証状態をファイルに保存
+    // Step 5: ページを再読み込みしてlocalStorageを確実に同期
+    console.log('⏳ ページを再読み込みして認証状態を確定中...')
+    await page.reload({ waitUntil: 'networkidle' })
+    console.log('✅ 認証状態が確定しました')
+
+    // Step 6: 認証状態をファイルに保存
     const authFile = path.join(authDir, 'authenticated.json')
     await context.storageState({ path: authFile })
 
     console.log(`💾 認証状態を保存しました: ${authFile}`)
 
-    // Step 6: 認証済みユーザーのIDを取得してテストデータを投入
+    // Step 7: 認証済みユーザーのIDを取得してテストデータを投入
     try {
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
       const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -209,7 +184,9 @@ async function globalSetup(_config: FullConfig) {
           const testUser = users.users.find((u) => u.email === testEmail)
 
           if (!testUser) {
-            console.warn(`⚠️  テストユーザー (${testEmail}) が見つかりません。テストデータ投入をスキップします。`)
+            console.warn(
+              `⚠️  テストユーザー (${testEmail}) が見つかりません。テストデータ投入をスキップします。`
+            )
           } else {
             console.log(`👤 認証済みユーザーID: ${testUser.id}`)
             await setupTestData(testUser.id)
