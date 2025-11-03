@@ -9,7 +9,12 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // 認証を必要としないPublic routes
-  const isPublicRoute = AUTH.PUBLIC_ROUTES.some((route) => pathname.startsWith(route))
+  const isPublicRoute = AUTH.PUBLIC_ROUTES.some((route) => {
+    if (route === ROUTES.HOME) {
+      return pathname === ROUTES.HOME
+    }
+    return pathname === route || pathname.startsWith(`${route}/`)
+  })
 
   // Supabase SSRクライアントを作成
   let supabaseResponse = NextResponse.next({

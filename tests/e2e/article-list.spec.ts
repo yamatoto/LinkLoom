@@ -67,7 +67,7 @@ test.describe('記事一覧ページ', () => {
     await page.goto('/articles', { waitUntil: 'networkidle' })
 
     // ログインページにリダイレクトされることを確認
-    await expect(page).toHaveURL('/login')
+    await expect(page).toHaveURL(/\/login\?redirect=%2Farticles$/)
 
     await context.close()
   })
