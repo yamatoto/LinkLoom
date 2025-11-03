@@ -11,7 +11,7 @@ test.describe('記事一覧ページ', () => {
     await expect(page.getByRole('heading', { name: '記事一覧' })).toBeVisible()
 
     // 記事カードが表示されることを確認（少なくとも1つ）
-    const articleCards = page.locator('a[href*="http"]')
+    const articleCards = page.getByTestId('article-card')
     await expect(articleCards.first()).toBeVisible()
   })
 
@@ -19,7 +19,7 @@ test.describe('記事一覧ページ', () => {
     await page.goto('/articles', { waitUntil: 'networkidle' })
 
     // 最初の記事カードを取得
-    const firstCard = page.locator('a[href*="http"]').first()
+    const firstCard = page.getByTestId('article-card').first()
     await expect(firstCard).toBeVisible()
 
     // カード内に日付が含まれていることを確認（YYYY/MM/DD形式）
@@ -33,10 +33,11 @@ test.describe('記事一覧ページ', () => {
   test('記事カードをクリックすると外部リンクで開く', async ({ page }) => {
     await page.goto('/articles', { waitUntil: 'networkidle' })
 
-    // 最初の記事カードのリンク属性を確認
-    const firstCard = page.locator('a[href*="http"]').first()
-    await expect(firstCard).toHaveAttribute('target', '_blank')
-    await expect(firstCard).toHaveAttribute('rel', 'noopener noreferrer')
+    const firstCard = page.getByTestId('article-card').first()
+    const openLink = firstCard.getByRole('link', { name: '記事を開く' })
+    await expect(openLink).toHaveAttribute('href', /https?:\/\//)
+    await expect(openLink).toHaveAttribute('target', '_blank')
+    await expect(openLink).toHaveAttribute('rel', 'noopener noreferrer')
   })
 
   test('「記事を登録」ボタンが表示され、クリックで登録ページに遷移する', async ({ page }) => {

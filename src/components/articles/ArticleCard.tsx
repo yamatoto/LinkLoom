@@ -1,7 +1,15 @@
 import Link from 'next/link'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { PlatformIcon } from './PlatformIcon'
 import type { ArticleWithPlatform } from '@/types/article'
+import { Button } from '@/components/ui/button'
 
 interface ArticleCardProps {
   article: ArticleWithPlatform
@@ -25,33 +33,51 @@ export function ArticleCard({ article }: ArticleCardProps) {
     : ''
 
   return (
-    <Link href={url} target="_blank" rel="noopener noreferrer" className="block h-full">
-      <Card className="h-full transition-all hover:shadow-lg hover:scale-[1.02] cursor-pointer">
-        <CardHeader>
-          <div className="flex items-center gap-2 mb-2">
-            <PlatformIcon platform={platform} size={24} />
-            <span className="text-xs text-gray-500">{formattedDate}</span>
-          </div>
+    <Card
+      data-testid="article-card"
+      className="flex h-full flex-col transition-all hover:shadow-lg"
+    >
+      <CardHeader className="flex-1">
+        <div className="mb-3 flex items-center gap-2 text-xs text-gray-500">
+          <PlatformIcon platform={platform} size={24} />
+          <span>{formattedDate}</span>
+        </div>
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block text-gray-900 hover:underline"
+        >
           <CardTitle className="line-clamp-2">{title}</CardTitle>
-          {description && (
-            <CardDescription className="line-clamp-3">{description}</CardDescription>
-          )}
-        </CardHeader>
-        {tags.length > 0 && (
-          <CardContent>
-            <div className="flex flex-wrap gap-2">
-              {tags.map((tag) => (
-                <span
-                  key={tag.id}
-                  className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10"
-                >
-                  {tag.name}
-                </span>
-              ))}
-            </div>
-          </CardContent>
+        </a>
+        {description && (
+          <CardDescription className="mt-2 line-clamp-3">{description}</CardDescription>
         )}
-      </Card>
-    </Link>
+      </CardHeader>
+      {tags.length > 0 && (
+        <CardContent className="pt-0">
+          <div className="flex flex-wrap gap-2">
+            {tags.map((tag) => (
+              <span
+                key={tag.id}
+                className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10"
+              >
+                {tag.name}
+              </span>
+            ))}
+          </div>
+        </CardContent>
+      )}
+      <CardFooter className="mt-auto flex gap-2">
+        <Button asChild size="sm">
+          <a href={url} target="_blank" rel="noopener noreferrer">
+            記事を開く
+          </a>
+        </Button>
+        <Button asChild size="sm" variant="outline">
+          <Link href={`/articles/${article.id}`}>編集</Link>
+        </Button>
+      </CardFooter>
+    </Card>
   )
 }

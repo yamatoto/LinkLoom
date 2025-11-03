@@ -8,29 +8,54 @@ import {
   PLATFORM_DISPLAY_NAMES,
   type PlatformSlug,
 } from '@/lib/platform-detector'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 
 interface ArticleFormProps {
   onSubmit: (data: ArticleFormData) => Promise<void>
   isSubmitting?: boolean
+  submitLabel?: string
+  submittingLabel?: string
+  initialValues?: ArticleFormData
 }
 
-export function ArticleForm({ onSubmit, isSubmitting = false }: ArticleFormProps) {
+export function ArticleForm({
+  onSubmit,
+  isSubmitting = false,
+  submitLabel = '記事を保存',
+  submittingLabel = '保存中...',
+  initialValues,
+}: ArticleFormProps) {
+  const defaultValues: ArticleFormData = {
+    url: '',
+    title: '',
+    description: '',
+    tags: [],
+    platform: '',
+    ...initialValues,
+  }
+
   const {
     register,
     handleSubmit,
     watch,
+    reset,
     formState: { errors },
   } = useForm<ArticleFormData>({
     resolver: zodResolver(articleSchema),
-    defaultValues: {
-      url: '',
-      title: '',
-      description: '',
-      tags: [],
-      platform: '',
-    },
+    defaultValues,
   })
+
+  useEffect(() => {
+    if (initialValues) {
+      reset({
+        url: initialValues.url,
+        title: initialValues.title,
+        description: initialValues.description ?? '',
+        tags: initialValues.tags ?? [],
+        platform: initialValues.platform ?? '',
+      })
+    }
+  }, [initialValues, reset])
 
   const urlValue = watch('url')
 
@@ -153,10 +178,10 @@ export function ArticleForm({ onSubmit, isSubmitting = false }: ArticleFormProps
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 />
               </svg>
-              保存中...
+            {submittingLabel}
             </>
           ) : (
-            '記事を保存'
+            submitLabel
           )}
         </button>
       </div>

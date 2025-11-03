@@ -1,6 +1,6 @@
 # LinkLoom 開発計画と進捗
 
-**最終更新**: 2025-10-20 (Phase 1 MVP: 85%完了)
+**最終更新**: 2025-11-03 (Phase 1 MVP: 100%完了)
 
 > **📝 進捗更新ルール（Claude Code向け）**:
 > タスク完了時は必ずユーザーに確認を取り、許可後にこのファイルを更新してください。
@@ -30,23 +30,24 @@
 記事登録     ████████████████████ 100% ✅
 記事一覧表示 ████████████████████ 100% ✅
 検索機能     ████████████████████ 100% ✅
-編集・削除   ░░░░░░░░░░░░░░░░░░░░   0% 📝
+編集・削除   ████████████████████ 100% ✅
 
-全体進捗:    ████████████████░░░░  85%
+全体進捗:    ████████████████████ 100%
 ```
 
 ### 総テスト数
 
-- **167テスト** すべて合格
+- **184テスト** すべて合格
   - 認証: 26テスト（UT 26 + E2E 3）
   - 記事登録: 69テスト（統合10 + UT 53 + E2E 6）
   - 記事一覧: 26テスト（統合8 + UT 12 + E2E 6）
   - 検索機能: 60テスト（統合14 + UT 33 + E2E 13）
+  - 編集・削除: 23テスト（統合11 + UT 4 + E2E 2）
 - **静的解析**: Lint/TypeScript エラー0件
 
 ---
 
-## 🎯 Phase 1: MVP（最小実装） - 現在開発中
+## 🎯 Phase 1: MVP（最小実装） - 完了 ✅
 
 **目標**: 個人利用で記事を保存・検索できる基本機能
 
@@ -92,28 +93,41 @@
 - **コードレビュー**: 品質スコア95/100（Critical Issues 0件）
 - **仕様**: specs/article-search/
 
-### 📝 未実装の機能
+#### 5. 記事編集・削除（2025-11-03完了）
 
-#### 5. 記事編集・削除・アーカイブ
-
-- 記事詳細ページ
-- 編集フォーム
-- 削除確認ダイアログ
-- アーカイブ機能
+- getArticleById/updateArticle/deleteArticle Server Actions
+- 記事詳細ページ（`/articles/[id]`）と編集フォーム
+- AlertDialogによる削除確認ダイアログ
+- ArticleFormの初期値対応・ラベルカスタマイズ機能
+- Next.js 15対応（動的ルートparamsのawait化）
+- **テスト**: 23テスト（統合11 + UT 4 + E2E 2）
+- **仕様**: specs/article-edit/
 
 ---
 
-## 📝 次にやるべきこと
+## 🎯 Phase 2: UX改善と機能拡張
 
-### 優先順位1: 記事編集・削除機能の実装
+### 優先順位1: UX改善（ユーザーフィードバック対応）
 
-**目的**: 登録した記事を編集・削除できるようにする
+**目的**: 実際の使用感から見つかったUX課題を改善し、使いやすさを向上させる
 
 **タスク**:
 
-1. 記事詳細ページ + 編集フォーム
-2. Server Actions（updateArticle, deleteArticle）
-3. テスト（ユニット + E2E）
+#### トップ画面
+
+- [ ] 記事検索リンクの必要性を検討（記事一覧との違いを明確化するか、リンクを削除するか）
+
+#### 一覧画面
+
+- [ ] ヘッダーコンポーネントを追加（ナビゲーション統一）
+- [ ] 編集画面への遷移を高速化（即座に遷移 → ローディング表示 → データ取得）
+- [ ] ボタンデザインの統一（「記事を開く」「記事を登録」「編集」のスタイル統一）
+- [ ] 「◯件の記事が見つかりました」の位置をページ上部へ移動（フィルターの上に表示）
+
+#### 編集画面
+
+- [ ] 更新成功時のユーザーフィードバック改善（トースト表示 + 一覧画面へ自動遷移）
+- [ ] 削除ボタンの配置・デザイン改善（「記事を更新」ボタンとの視覚的統一と配置調整）
 
 ### 技術的負債・改善項目
 
@@ -130,17 +144,16 @@
    - 提案: 共通フック`useSearchParamsUpdate`の作成
    - 影響: コードの保守性向上（機能には影響なし）
 
----
-
-## 🚀 Phase 2-3: 将来の拡張（予定）
-
-### Phase 2: 機能拡張
+### 機能拡張
 
 - メモ・コメント機能
 - 学習進捗管理（読んだ/理解した/実践した）
 - 自動収集（RSS登録による半自動収集）
+- アーカイブ機能
 
-### Phase 3: チーム対応
+---
+
+## 🚀 Phase 3: チーム対応
 
 - マルチユーザー対応（10人以下想定）
 - 記事共有機能
@@ -180,7 +193,7 @@
 
 ## 🔄 次回セッション開始時のチェックリスト
 
-**次セッションの最優先タスク**: 📝 **検索・フィルタリング機能テスト完成（残り20%）**
+**次セッションの最優先タスク**: 📝 **UX改善（ユーザーフィードバック対応）**
 
 再開時に以下を確認してから開発を開始：
 
@@ -200,9 +213,37 @@
 
 ## 📝 最近のセッション作業サマリー
 
+### 2025-11-03: 記事編集・削除機能完全実装（100%完了）
+
+**実装内容**:
+
+- getArticleById/updateArticle/deleteArticle Server Actions（RLS・バリデーション対応）
+- 記事詳細ページ（`/articles/[id]`）とEditArticleFormコンポーネント
+- AlertDialogによる削除確認ダイアログ（Radix UI）
+- ArticleFormの初期値対応・カスタムラベル機能
+- Next.js 15対応（動的ルートparamsのawait化）
+- ArticleCardに編集リンクを追加、data-testidでE2Eテスト対応
+- 23テスト実装（統合11 + UT 4 + E2E 2）
+
+**変更ファイル**:
+
+- `src/app/actions/articles.ts` (getArticleById, updateArticle, deleteArticle)
+- `src/app/articles/[id]/page.tsx` (記事詳細ページ)
+- `src/app/articles/[id]/_components/EditArticleForm.tsx`
+- `src/components/articles/ArticleForm.tsx` (初期値・ラベル対応)
+- `src/components/articles/ArticleCard.tsx` (編集リンク追加)
+- `src/components/ui/alert-dialog.tsx` (新規)
+- `tests/unit/components/ArticleForm.test.tsx` (初期値・ラベルテスト追加)
+- `tests/unit/components/EditArticleForm.test.tsx` (新規)
+- `tests/integration/actions/article-edit.test.ts` (新規)
+- `tests/e2e/article-edit.spec.ts` (新規)
+
+**テスト結果**: 184テストすべて合格（Vitest + Playwright）
+
 ### 2025-10-20: 検索・フィルタリング機能完全実装（100%完了）
 
 **実装内容**:
+
 - searchArticles/getAllTags Server Actions
 - SearchBar/TagFilter/SortSelector/SearchFiltersコンポーネント
 - URL Search Paramsによる状態管理（ブラウザバック対応）
@@ -210,6 +251,7 @@
 - 60テスト実装（統合14 + UT 33 + E2E 13）
 
 **変更ファイル**:
+
 - `src/app/actions/articles.ts` (searchArticles, getAllTags)
 - `src/components/articles/` (4コンポーネント)
 - `tests/unit/components/` (SearchBar, TagFilter, SortSelector)
@@ -269,5 +311,5 @@
 
 ---
 
-**現在フェーズ**: Phase 1 MVP（60%完了）
-**次のタスク**: 検索・フィルタリング機能実装
+**現在フェーズ**: Phase 2（UX改善と機能拡張）
+**次のタスク**: UX改善（ユーザーフィードバック対応）

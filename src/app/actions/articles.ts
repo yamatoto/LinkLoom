@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { articleSchema, type ArticleFormData } from '@/schemas/article.schema'
+import { ZodError } from 'zod'
 import { detectPlatform } from '@/lib/platform-detector'
 import { revalidatePath } from 'next/cache'
 import type { ArticleWithPlatform, Tag, SearchParams } from '@/types/article'
@@ -22,6 +23,22 @@ export interface GetAllTagsResult {
   success: boolean
   error?: string
   tags?: Tag[]
+}
+
+export interface GetArticleResult {
+  success: boolean
+  error?: string
+  article?: ArticleWithPlatform
+}
+
+export interface UpdateArticleResult {
+  success: boolean
+  error?: string
+}
+
+export interface DeleteArticleResult {
+  success: boolean
+  error?: string
 }
 
 /**
@@ -103,7 +120,14 @@ export async function createArticle(data: ArticleFormData): Promise<CreateArticl
       success: true,
       articleId: articleData.id,
     }
-  } catch (error) {
+  } catch (error: unknown) {
+    if (error instanceof ZodError) {
+      const message = error.issues[0]?.message ?? '入力内容に誤りがあります。'
+      return {
+        success: false,
+        error: message,
+      }
+    }
     // ログは本番環境で機密情報を出力しないように注意
     if (process.env.NODE_ENV !== 'production') {
       console.error('予期しないエラー:', error)
@@ -195,6 +219,241 @@ export async function getArticles(): Promise<GetArticlesResult> {
     return {
       success: true,
       articles: articlesWithTags,
+    }
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('予期しないエラー:', error)
+    }
+    return {
+      success: false,
+      error: '予期しないエラーが発生しました。しばらくしてからもう一度お試しください。',
+    }
+  }
+}
+
+/**
+ * 記事詳細を取得するServer Action
+ *
+ * @param articleId - 記事ID
+ * @returns 記事詳細データ
+ */
+export async function getArticleById(articleId: string): Promise<GetArticleResult> {
+  try {
+    const supabase = await createClient()
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
+
+    if (authError || !user) {
+      return {
+        success: false,
+        error: '認証エラー: ログインしてください',
+      }
+    }
+
+    const { data: article, error: fetchError } = await supabase
+      .from('articles')
+      .select(
+        `
+        *,
+        platform:platforms(*)
+      `
+      )
+      .eq('id', articleId)
+      .eq('user_id', user.id)
+      .single()
+
+    if (fetchError || !article) {
+      if (process.env.NODE_ENV === 'development' && fetchError && fetchError.code !== 'PGRST116') {
+        console.error('記事詳細取得エラー:', fetchError)
+      }
+      return {
+        success: false,
+        error: '記事が見つかりませんでした。削除済みの可能性があります。',
+      }
+    }
+
+    const { data: articleTags, error: tagsError } = await supabase
+      .from('article_tags')
+      .select(
+        `
+        tag:tags(*)
+      `
+      )
+      .eq('article_id', articleId)
+
+    if (tagsError) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('記事タグ取得エラー:', tagsError)
+      }
+      return {
+        success: false,
+        error: '記事タグの取得に失敗しました。しばらくしてからもう一度お試しください。',
+      }
+    }
+
+    const tags = (articleTags || [])
+      .map((record) => record.tag)
+      .filter((tag): tag is Tag => Boolean(tag))
+
+    return {
+      success: true,
+      article: {
+        ...article,
+        tags,
+      },
+    }
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('予期しないエラー:', error)
+    }
+    return {
+      success: false,
+      error: '予期しないエラーが発生しました。しばらくしてからもう一度お試しください。',
+    }
+  }
+}
+
+/**
+ * 記事を更新するServer Action
+ *
+ * @param articleId - 記事ID
+ * @param data - 更新データ
+ * @returns 更新結果
+ */
+export async function updateArticle(
+  articleId: string,
+  data: ArticleFormData
+): Promise<UpdateArticleResult> {
+  try {
+    const validatedData = articleSchema.parse(data)
+
+    const supabase = await createClient()
+
+    const platformSlug = detectPlatform(validatedData.url)
+
+    const [authResult, platformResult] = await Promise.all([
+      supabase.auth.getUser(),
+      platformSlug !== 'unknown'
+        ? supabase.from('platforms').select('id').eq('slug', platformSlug).single()
+        : Promise.resolve({ data: null, error: null }),
+    ])
+
+    const {
+      data: { user },
+      error: authError,
+    } = authResult
+
+    if (authError || !user) {
+      return {
+        success: false,
+        error: '認証エラー: ログインしてください',
+      }
+    }
+
+    const platformId = platformResult.data?.id ?? null
+
+    const { data: updatedArticle, error: updateError } = await supabase
+      .from('articles')
+      .update({
+        url: validatedData.url,
+        title: validatedData.title,
+        description: validatedData.description || null,
+        platform_id: platformId,
+      })
+      .eq('id', articleId)
+      .eq('user_id', user.id)
+      .select('id')
+      .single()
+
+    if (updateError || !updatedArticle) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('記事更新エラー:', updateError)
+      }
+      return {
+        success: false,
+        error:
+          updateError && updateError.code === 'PGRST116'
+            ? '記事が見つかりませんでした。削除済みの可能性があります。'
+            : '記事の更新に失敗しました。しばらくしてからもう一度お試しください。',
+      }
+    }
+
+    revalidatePath('/articles')
+    revalidatePath('/')
+    revalidatePath(`/articles/${articleId}`)
+
+    return {
+      success: true,
+    }
+  } catch (error: unknown) {
+    if (error instanceof ZodError) {
+      const message = error.issues[0]?.message ?? '入力内容に誤りがあります。'
+      return {
+        success: false,
+        error: message,
+      }
+    }
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('予期しないエラー:', error)
+    }
+    return {
+      success: false,
+      error: '予期しないエラーが発生しました。しばらくしてからもう一度お試しください。',
+    }
+  }
+}
+
+/**
+ * 記事を削除するServer Action
+ *
+ * @param articleId - 記事ID
+ * @returns 削除結果
+ */
+export async function deleteArticle(articleId: string): Promise<DeleteArticleResult> {
+  try {
+    const supabase = await createClient()
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
+
+    if (authError || !user) {
+      return {
+        success: false,
+        error: '認証エラー: ログインしてください',
+      }
+    }
+
+    const { data: deletedArticle, error: deleteError } = await supabase
+      .from('articles')
+      .delete()
+      .eq('id', articleId)
+      .eq('user_id', user.id)
+      .select('id')
+      .single()
+
+    if (deleteError || !deletedArticle) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('記事削除エラー:', deleteError)
+      }
+      return {
+        success: false,
+        error:
+          deleteError && deleteError.code === 'PGRST116'
+            ? '記事が見つかりませんでした。削除済みの可能性があります。'
+            : '記事の削除に失敗しました。しばらくしてからもう一度お試しください。',
+      }
+    }
+
+    revalidatePath('/articles')
+    revalidatePath('/')
+
+    return {
+      success: true,
     }
   } catch (error) {
     if (process.env.NODE_ENV !== 'production') {
