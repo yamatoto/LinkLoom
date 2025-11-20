@@ -408,7 +408,9 @@ describe('getArticles Server Action', () => {
         error: null,
       })
       const mockArticlesSelect = vi.fn().mockReturnValue({
-        order: mockOrderBy,
+        eq: vi.fn().mockReturnValue({
+          order: mockOrderBy,
+        }),
       })
 
       const mockIn = vi.fn().mockResolvedValue({
@@ -471,7 +473,9 @@ describe('getArticles Server Action', () => {
         error: null,
       })
       const mockArticlesSelect = vi.fn().mockReturnValue({
-        order: mockOrderBy,
+        eq: vi.fn().mockReturnValue({
+          order: mockOrderBy,
+        }),
       })
 
       const mockIn = vi.fn().mockResolvedValue({
@@ -508,7 +512,9 @@ describe('getArticles Server Action', () => {
         error: null,
       })
       const mockArticlesSelect = vi.fn().mockReturnValue({
-        order: mockOrderBy,
+        eq: vi.fn().mockReturnValue({
+          order: mockOrderBy,
+        }),
       })
 
       const mockIn = vi.fn().mockResolvedValue({
@@ -922,8 +928,10 @@ describe('searchArticles Server Action', () => {
         error: null,
       })
       const mockArticlesSelect = vi.fn().mockReturnValue({
-        or: mockOr.mockReturnValue({
-          order: mockOrderBy,
+        eq: vi.fn().mockReturnValue({
+          or: mockOr.mockReturnValue({
+            order: mockOrderBy,
+          }),
         }),
       })
 
@@ -965,8 +973,10 @@ describe('searchArticles Server Action', () => {
         error: null,
       })
       const mockArticlesSelect = vi.fn().mockReturnValue({
-        or: mockOr.mockReturnValue({
-          order: mockOrderBy,
+        eq: vi.fn().mockReturnValue({
+          or: mockOr.mockReturnValue({
+            order: mockOrderBy,
+          }),
         }),
       })
 
@@ -1004,7 +1014,9 @@ describe('searchArticles Server Action', () => {
         error: null,
       })
       const mockArticlesSelect = vi.fn().mockReturnValue({
-        order: mockOrderBy,
+        eq: vi.fn().mockReturnValue({
+          order: mockOrderBy,
+        }),
       })
 
       const mockIn = vi.fn().mockResolvedValue({
@@ -1053,8 +1065,10 @@ describe('searchArticles Server Action', () => {
         error: null,
       })
       const mockArticlesSelect = vi.fn().mockReturnValue({
-        in: mockInArticles.mockReturnValue({
-          order: mockOrderBy,
+        eq: vi.fn().mockReturnValue({
+          in: mockInArticles.mockReturnValue({
+            order: mockOrderBy,
+          }),
         }),
       })
 
@@ -1114,7 +1128,9 @@ describe('searchArticles Server Action', () => {
         error: null,
       })
       const mockArticlesSelect = vi.fn().mockReturnValue({
-        order: mockOrderBy,
+        eq: vi.fn().mockReturnValue({
+          order: mockOrderBy,
+        }),
       })
 
       mockFrom.mockImplementation((table: string) => {
@@ -1146,7 +1162,9 @@ describe('searchArticles Server Action', () => {
         error: null,
       })
       const mockArticlesSelect = vi.fn().mockReturnValue({
-        order: mockOrderBy,
+        eq: vi.fn().mockReturnValue({
+          order: mockOrderBy,
+        }),
       })
 
       const mockIn = vi.fn().mockResolvedValue({
@@ -1180,7 +1198,9 @@ describe('searchArticles Server Action', () => {
         error: null,
       })
       const mockArticlesSelect = vi.fn().mockReturnValue({
-        order: mockOrderBy,
+        eq: vi.fn().mockReturnValue({
+          order: mockOrderBy,
+        }),
       })
 
       const mockIn = vi.fn().mockResolvedValue({
@@ -1214,7 +1234,9 @@ describe('searchArticles Server Action', () => {
         error: null,
       })
       const mockArticlesSelect = vi.fn().mockReturnValue({
-        order: mockOrderBy,
+        eq: vi.fn().mockReturnValue({
+          order: mockOrderBy,
+        }),
       })
 
       const mockIn = vi.fn().mockResolvedValue({
@@ -1254,8 +1276,10 @@ describe('searchArticles Server Action', () => {
         error: null,
       })
       const mockArticlesSelect = vi.fn().mockReturnValue({
-        or: mockOr.mockReturnValue({
-          order: mockOrderBy,
+        eq: vi.fn().mockReturnValue({
+          or: mockOr.mockReturnValue({
+            order: mockOrderBy,
+          }),
         }),
       })
 
@@ -1314,7 +1338,9 @@ describe('searchArticles Server Action', () => {
         error: { message: 'Database error', code: 'DB_ERROR' },
       })
       const mockArticlesSelect = vi.fn().mockReturnValue({
-        order: mockOrderBy,
+        eq: vi.fn().mockReturnValue({
+          order: mockOrderBy,
+        }),
       })
 
       mockFrom.mockImplementation((table: string) => {

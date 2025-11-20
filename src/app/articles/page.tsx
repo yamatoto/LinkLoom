@@ -1,16 +1,15 @@
-import { redirect } from 'next/navigation'
-import { searchArticles, getAllTags } from '@/app/actions/articles'
-import { ArticleList } from '@/components/articles/ArticleList'
-import { SearchFilters } from '@/components/articles/SearchFilters'
+import { Suspense } from 'react'
 import { Header } from '@/components/layout/Header'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import type { SearchParams } from '@/types/article'
+import { ArticlesContent } from './_components/ArticlesContent'
+import { ArticlesSidebar } from './_components/ArticlesSidebar'
 
 /**
  * 記事一覧ページ
  *
- * Server Componentでデータフェッチ・検索を実行し、記事一覧を表示
+ * Suspenseで囲むことでストリーミングレンダリングを実現し、
+ * 静的部分を即座に表示してUXを向上
  */
 export default async function ArticlesPage({
   searchParams,
@@ -19,95 +18,105 @@ export default async function ArticlesPage({
 }) {
   const params = await searchParams
 
-  // 検索パラメータの解析
-  const keyword = typeof params.keyword === 'string' ? params.keyword : undefined
-  const tagIdsParam = params.tagIds
-  const tagIds =
-    typeof tagIdsParam === 'string' ? tagIdsParam.split(',').filter(Boolean) : undefined
-  const sortBy = params.sortBy === 'updated_at' ? 'updated_at' : 'created_at'
-  const sortOrder = params.sortOrder === 'asc' ? 'asc' : 'desc'
-
-  const searchParamsObj: SearchParams = {
-    keyword,
-    tagIds,
-    sortBy,
-    sortOrder,
-  }
-
-  // 記事検索とタグ一覧を並列取得
-  const [articlesResult, tagsResult] = await Promise.all([
-    searchArticles(searchParamsObj),
-    getAllTags(),
-  ])
-
-  // 認証エラーの場合はログインページへリダイレクト
-  if (!articlesResult.success && articlesResult.error?.includes('認証エラー')) {
-    redirect('/login')
-  }
-
-  // その他のエラーの場合はエラーメッセージを表示
-  if (!articlesResult.success) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <Header />
-        <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-          <div className="flex flex-col items-center justify-center py-12">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-16 h-16 text-red-400 mb-4"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
-              />
-            </svg>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">エラーが発生しました</h3>
-            <p className="text-sm text-gray-500 mb-4">{articlesResult.error}</p>
-            <Button asChild variant="outline">
-              <Link href="/">ホームに戻る</Link>
-            </Button>
-          </div>
-        </main>
-      </div>
-    )
-  }
-
-  const articles = articlesResult.articles || []
-  const tags = tagsResult.success ? tagsResult.tags || [] : []
-
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mb-8">
+        <div className="mb-8 flex items-center justify-between">
           <h1 className="text-3xl font-bold text-gray-900">記事一覧</h1>
           <Button asChild>
             <Link href="/articles/new">記事を登録</Link>
           </Button>
         </div>
 
-        {/* 検索結果件数 */}
-        <div className="text-sm text-muted-foreground mb-6">
-          {articles.length}件の記事が見つかりました
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
           {/* 検索・フィルタサイドバー */}
           <aside className="md:col-span-1">
-            <SearchFilters tags={tags} />
+            <Suspense fallback={<SidebarLoadingFallback />}>
+              <ArticlesSidebar />
+            </Suspense>
           </aside>
 
           {/* 記事一覧メインコンテンツ */}
           <div className="md:col-span-3">
-            <ArticleList articles={articles} />
+            <Suspense fallback={<ArticlesLoadingFallback />}>
+              <ArticlesContent searchParams={params} />
+            </Suspense>
           </div>
         </div>
       </main>
     </div>
+  )
+}
+
+function SidebarLoadingFallback() {
+  return (
+    <div className="space-y-6">
+      {/* キーワード検索 */}
+      <div>
+        <h3 className="mb-2 text-sm font-semibold">キーワード検索</h3>
+        <div className="h-10 w-full animate-pulse rounded-md bg-gray-200" />
+      </div>
+
+      {/* 並び順 */}
+      <div>
+        <h3 className="mb-2 text-sm font-semibold">並び順</h3>
+        <div className="h-10 w-full animate-pulse rounded-md bg-gray-200" />
+      </div>
+
+      {/* タグフィルタ */}
+      <div>
+        <h3 className="mb-2 text-sm font-semibold">タグでフィルタ</h3>
+        <div className="space-y-2">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <div className="h-4 w-4 animate-pulse rounded bg-gray-200" />
+              <div className="h-4 w-24 animate-pulse rounded bg-gray-200" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ArticlesLoadingFallback() {
+  return (
+    <>
+      {/* 検索結果件数 */}
+      <div className="mb-6 text-sm text-muted-foreground">
+        <span className="inline-block h-5 w-32 animate-pulse rounded bg-gray-200" />
+      </div>
+
+      {/* 記事一覧 */}
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-2">
+        {[...Array(6)].map((_, i) => (
+          <div
+            key={i}
+            className="flex flex-col rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
+          >
+            {/* プラットフォームアイコンと日付 */}
+            <div className="mb-3 flex items-center justify-between">
+              <div className="h-6 w-6 animate-pulse rounded bg-gray-200" />
+              <div className="h-4 w-20 animate-pulse rounded bg-gray-200" />
+            </div>
+
+            {/* タイトル */}
+            <div className="mb-2 h-6 w-full animate-pulse rounded bg-gray-300" />
+
+            {/* 説明 */}
+            <div className="mb-4 space-y-2">
+              <div className="h-4 w-full animate-pulse rounded bg-gray-200" />
+              <div className="h-4 w-3/4 animate-pulse rounded bg-gray-200" />
+            </div>
+
+            {/* 編集ボタン */}
+            <div className="mt-auto">
+              <div className="h-9 w-16 animate-pulse rounded-md bg-gray-200" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </>
   )
 }

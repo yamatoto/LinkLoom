@@ -39,9 +39,12 @@ export function HomePage() {
                 {/* 記事登録 */}
                 <Link
                   href="/articles/new"
+                  prefetch={true}
                   className="group rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all hover:border-blue-500 hover:shadow-md"
                 >
-                  <h2 className="font-semibold text-gray-900 group-hover:text-blue-600">記事登録</h2>
+                  <h2 className="font-semibold text-gray-900 group-hover:text-blue-600">
+                    記事登録
+                  </h2>
                   <p className="mt-2 text-sm text-gray-600">URLから記事を登録</p>
                   <p className="mt-2 flex items-center text-xs font-medium text-blue-600">
                     <span>今すぐ登録</span>
@@ -64,9 +67,12 @@ export function HomePage() {
                 {/* 記事一覧 */}
                 <Link
                   href="/articles"
+                  prefetch={true}
                   className="group rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all hover:border-blue-500 hover:shadow-md"
                 >
-                  <h2 className="font-semibold text-gray-900 group-hover:text-blue-600">記事一覧</h2>
+                  <h2 className="font-semibold text-gray-900 group-hover:text-blue-600">
+                    記事一覧
+                  </h2>
                   <p className="mt-2 text-sm text-gray-600">保存した記事を一覧表示</p>
                   <p className="mt-2 flex items-center text-xs font-medium text-blue-600">
                     <span>一覧を見る</span>

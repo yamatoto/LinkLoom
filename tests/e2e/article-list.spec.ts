@@ -30,14 +30,15 @@ test.describe('記事一覧ページ', () => {
     await expect(cardTitle).toBeVisible()
   })
 
-  test('記事カードをクリックすると外部リンクで開く', async ({ page }) => {
+  test('記事カードのタイトルをクリックすると外部リンクで開く', async ({ page }) => {
     await page.goto('/articles', { waitUntil: 'networkidle' })
 
     const firstCard = page.getByTestId('article-card').first()
-    const openLink = firstCard.getByRole('link', { name: '記事を開く' })
-    await expect(openLink).toHaveAttribute('href', /https?:\/\//)
-    await expect(openLink).toHaveAttribute('target', '_blank')
-    await expect(openLink).toHaveAttribute('rel', 'noopener noreferrer')
+    // タイトルリンクは記事タイトルを持つ最初の外部リンク
+    const titleLink = firstCard.locator('a[target="_blank"]').first()
+    await expect(titleLink).toHaveAttribute('href', /https?:\/\//)
+    await expect(titleLink).toHaveAttribute('target', '_blank')
+    await expect(titleLink).toHaveAttribute('rel', 'noopener noreferrer')
   })
 
   test('「記事を登録」ボタンが表示され、クリックで登録ページに遷移する', async ({ page }) => {

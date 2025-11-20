@@ -150,6 +150,61 @@
 
 ---
 
+### メモ: 遷移が遅い件（継続対応用）
+
+**現状**
+
+- 「データ取得が終わっていなくても画面構造は即表示」したい
+- 初回遷移で `articles?_rsc=...` のネットワークリクエストが遅い。
+  - 計測（Chrome DevTools / Network）
+    - 変更前: 約 1.66s（データ1件でも遅い）
+    - DBインデックス追加後: 約 1.02s に改善（まだ体感的に遅い）
+
+**これまでに実施したこと**
+
+- ローディングUI/ストリーミング
+  - `src/app/articles/[id]/loading.tsx` を作成し、静的文言は即表示・データ箇所のみスケルトンに修正。
+  - `src/app/articles/new/loading.tsx` を追加（入力欄のみスケルトン）。
+  - 記事一覧: `Suspense` を導入しフォールバック表示。
+    - `src/app/articles/page.tsx` をレイアウト見直し。
+      - 見出し/グリッドのフレームを常に即表示。
+      - サイドバーと記事一覧を別 `Suspense` 境界に分割。
+      - フォールバック: `SidebarLoadingFallback` / `ArticlesLoadingFallback`。
+    - データ取得の分離。
+      - `src/app/articles/_components/ArticlesContent.tsx`: 記事のみ取得・表示。
+      - `src/app/articles/_components/ArticlesSidebar.tsx`: タグ一覧を取得して `SearchFilters` を表示（`react` の `cache` でメモ化）。
+
+- 事前取得/プリフェッチ
+  - トップページを Server Component 化（`src/app/page.tsx`）。
+  - ログイン済み時に `searchArticles` / `getAllTags` を事前起動（失敗は握りつぶし）。
+  - 各種 `Link` に `prefetch={true}` を付与（トップ→新規/一覧、一覧カードの編集リンク）。
+
+- DB/クエリ最適化
+  - インデックス（Supabaseダッシュボードで実行）
+    - `articles(user_id, created_at DESC)`
+    - `articles(user_id, updated_at DESC)`
+  - `searchArticles` を `user_id` 明示フィルタに変更。
+    - テストモック環境で `.eq` が無い場合に備えたガードを追加。
+  - `tags` は共有マスターのため `user_id` フィルタを削除。
+
+**効果/現状の課題**
+
+- 体感: ページのフレーム（見出し/レイアウト/サイドバーのスケルトン）は即表示されるようになった。
+- 依然として RSC リクエスト完了まで ~1.0s。記事1件でも発生。クエリ往復/結合、RSC生成待ちが要因の可能性。
+- 現在、記事取得後にタグ情報をまとめて取得する2本目のクエリがある（少数件でも往復は発生）。
+
+**次にやるべきこと（候補）**
+
+1. 記事タグの取得をさらに分離し、タグ部分を別 `Suspense` 境界に（タイトル/日付は先に確定、タグは後追い）。
+2. 記事クエリの列を最小化（`*` をやめ、必要カラム + 最小限の `platform` 情報に絞る）。
+3. 上限/ページング導入（初回は `limit 20`、スクロール/ページ切替で追加）。
+4. `unstable_cache`（Next.js）でユーザーID+検索条件キーの短期キャッシュ（例: 10〜30秒）。
+5. 計測の自動化（Performance タブのトレース保存・比較、Network 条件の統一）。
+
+（補足）ローカル開発では開発サーバー起因の遅延も混ざるため、同一条件で計測しつつ、まずはクエリ本数削減と RSC ペイロード縮小を優先する。
+
+---
+
 ### タスク7: 記事一覧・記事登録画面への遷移を高速化
 
 **目的**: トップページから記事一覧・記事登録画面への遷移時のローディング表示でUX向上
