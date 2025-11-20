@@ -72,7 +72,9 @@ export function ArticleCard({ article }: ArticleCardProps) {
       )}
       <CardFooter className="mt-auto">
         <Button asChild size="sm" variant="outline">
-          <Link href={`/articles/${article.id}`}>編集</Link>
+          <Link href={`/articles/${article.id}`} prefetch={true}>
+            編集
+          </Link>
         </Button>
       </CardFooter>
     </Card>
